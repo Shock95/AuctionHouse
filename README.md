@@ -23,6 +23,8 @@ Check the [releases tab](https://github.com/Shock95x/AuctionHouse/releases) or [
 ## Config
 ```yaml
 ---
+# DO NOT EDIT THIS VALUE, INTERNAL USE ONLY.
+config-version: 1
 # Sets the prefix for this plugin.
 prefix: "[&l&6Auction House&r]"
 # Sets the default language for the plugin, you can edit text and messages in this file.
