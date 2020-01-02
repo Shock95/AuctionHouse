@@ -1,0 +1,19 @@
+--- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/Shock95x/AuctionHouse
+branches:
+- master
+projects:
+  AuctionHouse:
+    path: ""
+    libs:
+    - src: poggit/libasynql/libasynql
+      version: ^3.2.0
+    - src: poggit/muqsit/invmenu
+      branch: master
+      version: ^2.1.0
+    - src: poggit/SOFe/AwaitGenerator
+      version: ^2.2.0
+    - src: poggit/JackMD/UpdateNotifier
+      version: ^1.0.0
+    - src: poggit/JackMD/ConfigUpdater
+      version: ^1.0.0
+...

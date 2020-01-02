@@ -1,0 +1,28 @@
+name: AuctionHouse
+main: AuctionHouse\AuctionHouse
+version: 1.0.0
+api: 3.0.0
+author: Shock95x
+softdepend: [EconomyAPI]
+virions:
+    - "InvMenu"
+    - "libasynql"
+    - "await-generator"
+    - "UpdateNotifier"
+    - "ConfigUpdater"
+permissions:
+    auctionhouse.command:
+        default: op
+        children:
+            auctionhouse.command.shop:
+                default: true
+                description: Allows player to open auction house menu.
+            auctionhouse.command.sell:
+                default: true
+                description: Allows player to list item in the auction house.
+            auctionhouse.command.listings:
+                default: true
+                description: Allows player to view their own listings.
+            auctionhouse.command.update:
+                default: op
+                description: Allows player to reload the config and save to database.
