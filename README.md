@@ -54,8 +54,9 @@ blacklist:
 | /ah sell **[price]**      | Allows player to list items in their hand on the auction house. **[price]** is the amount that the player is listing the item to sell for     |
 | /ah listings | Shows all active listings of the player|
 | /ah update | Allows player to reload the config and save the database (OP command) |
+| /ah about | Shows AuctionHouse version the server is running and author of this plugin |
 ---
 ## API
 ### Events
-- [AuctionHouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/events/AuctionStartEvent.php)
-- [AuctionHouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/events/AuctionEndEvent.php)
+- [AuctionHouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionStartEvent.php)
+- [AuctionHouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionEndEvent.php)

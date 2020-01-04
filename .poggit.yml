@@ -4,6 +4,7 @@ branches:
 projects:
   AuctionHouse:
     path: ""
+    icon: icon.png
     libs:
     - src: poggit/libasynql/libasynql
       version: ^3.2.0

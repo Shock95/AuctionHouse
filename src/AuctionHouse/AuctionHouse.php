@@ -40,7 +40,7 @@ class AuctionHouse extends PluginBase {
 
 	public function onLoad() {
 		$this->saveDefaultConfig();
-		UpdateNotifier::checkUpdate($this, "AuctionHouse", "1.0.0");
+		UpdateNotifier::checkUpdate($this, $this->getDescription()->getName(), $this->getDescription()->getVersion());
 		ConfigUpdater::checkUpdate($this, $this->getConfig(), "config-version", 1);
 	}
 

@@ -27,10 +27,9 @@ class AHCommand extends Command implements PluginIdentifiableCommand {
 	 * @param AuctionHouse $plugin
 	 */
 	public function __construct(AuctionHouse $plugin) {
-		parent::__construct("ah", "Opens AuctionHouse", "Usage: /ah [shop | sell | listings | update]", []);
+		parent::__construct("ah", "Opens AuctionHouse", Utils::prefixMessage(TextFormat::RED . "Usage: /ah [shop | sell | listings | update | about]"), []);
 		$this->plugin = $plugin;
 		$this->setAliases(["auctionhouse"]);
-		$this->setUsage(Utils::prefixMessage(TextFormat::RED . $this->getUsage()));
 		$this->setPermissionMessage(Utils::prefixMessage(TextFormat::RED . "You do not have permission to use this command!"));
 	}
 
@@ -80,7 +79,7 @@ class AHCommand extends Command implements PluginIdentifiableCommand {
 						return false;
 					}
 				}
-				if($args[1] == null || !is_numeric($args[1])) {
+				if(!isset($args[1]) || !is_numeric($args[1])) {
 					$this->plugin->getMessage($sender, "invalid-price");
 					return false;
 				}
@@ -97,6 +96,10 @@ class AHCommand extends Command implements PluginIdentifiableCommand {
 				$sender->getInventory()->removeItem($item);
 				DataHolder::addListing($sender, (int) $args[1], (new BigEndianNBTStream())->writeCompressed($item->nbtSerialize()));
 				$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $this->getEconomy()->getMonetaryUnit() . $args[1], $item->getCount()], $this->getPlugin()->getMessage($sender, "item-listed", true)));
+				return true;
+			case "about":
+				$author = $this->plugin->getDescription()->getAuthors()[0];
+				$sender->sendMessage(Utils::prefixMessage(TextFormat::BLUE . "This server is running AuctionHouse v" . $this->plugin->getDescription()->getVersion() . " by " . $author));
 				return true;
 		}
 		$sender->sendMessage($this->getUsage());

@@ -227,7 +227,7 @@ class MenuHandler {
 		$player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], $this->plugin->getMessage($player, "purchased-item", true)));
 
 		if($pl->isOnline()) {
-			$pl->sendMessage($player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], $this->plugin->getMessage($player, "seller-item", true))));
+			$pl->sendMessage($player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], $this->plugin->getMessage($player, "seller-message", true))));
 		}
 		(new AuctionEndEvent($auction, AuctionEndEvent::PURCHASED, $player))->call();
 		return true;
