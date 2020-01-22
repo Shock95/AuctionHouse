@@ -88,7 +88,7 @@ class AuctionHouse extends PluginBase {
 		if(!$this->getServer()->getOnlineMode()) {
 			$this->getLogger()->warning("Xbox Live authentication appears to be disabled, it is recommended to enable it to prevent possible UUID spoofing.");
 		}
-		$this->getServer()->getCommandMap()->register("ah", new AHCommand($this));
+		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this));
 		$this->menuHandler = new MenuHandler($this);
 	}
 

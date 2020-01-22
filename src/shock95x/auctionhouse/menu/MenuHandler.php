@@ -218,6 +218,7 @@ class MenuHandler {
 			$this->plugin->getMessage($player, "not-enough-space");
 			return false;
 		}
+		DataHolder::removeAuction($auction);
 		$this->getPlugin()->economyProvider->addMoney($auction->getSeller(), $auction->getPrice());
 		$this->getPlugin()->economyProvider->subtractMoney($player, $auction->getPrice());
 		$player->getInventory()->addItem($item);
@@ -226,9 +227,8 @@ class MenuHandler {
 		$player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], $this->plugin->getMessage($player, "purchased-item", true)));
 
 		if($pl->isOnline()) {
-			$pl->sendMessage($player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], $this->plugin->getMessage($player, "seller-message", true))));
+			$pl->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], $this->plugin->getMessage($player, "seller-message", true)));
 		}
-		DataHolder::removeAuction($auction);
 		(new AuctionEndEvent($auction, AuctionEndEvent::PURCHASED, $player))->call();
 		return true;
 	}
