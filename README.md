@@ -58,5 +58,5 @@ blacklist:
 ---
 ## API
 ### Events
-- [AuctionHouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionStartEvent.php)
-- [AuctionHouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionEndEvent.php)
+- [shock95x\auctionhouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionStartEvent.php)
+- [shock95x\auctionhouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionEndEvent.php)
