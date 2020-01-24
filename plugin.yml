@@ -1,6 +1,6 @@
 name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
-version: 1.0.3
+version: 1.0.4
 api: 3.0.0
 author: Shock95x
 softdepend: [EconomyAPI]
