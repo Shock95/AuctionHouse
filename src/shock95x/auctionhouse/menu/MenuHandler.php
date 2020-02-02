@@ -109,8 +109,9 @@ class MenuHandler {
 			$player->removeWindow($inventory);
 			$id = $itemClicked->getNamedTag()->getLong("marketId");
 
-			$menu = InvMenu::createSessionized(InvMenu::TYPE_CHEST)
+			$menu = InvMenu::create(InvMenu::TYPE_CHEST)
 				->readonly()
+				->sessionize()
 				->setName($this->getPlugin()->getMessage($player, "purchase-menu-name", true, false))
 				->setListener([$this, "handlePurchase"]);
 
