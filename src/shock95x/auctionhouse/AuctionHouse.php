@@ -229,9 +229,8 @@ class AuctionHouse extends PluginBase {
 		for($i = 0; $i < 45; ++$i) {
 			if($currentMenu != null) $currentMenu->setItem($i, Item::get(Item::AIR));
 		}
-		$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)
+		$menu = InvMenu::createSessionized(InvMenu::TYPE_DOUBLE_CHEST)
 			->readonly()
-			->sessionize()
 			->setListener([$this->menuHandler, "handleExpired"]);
 		for($j = $n2; $j <= $n3; ++$j) {
 			++$n4;
@@ -279,9 +278,8 @@ class AuctionHouse extends PluginBase {
 			if($currentMenu != null) $currentMenu->setItem($i, Item::get(Item::AIR));
 		}
 
-		$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)
+		$menu = InvMenu::createSessionized(InvMenu::TYPE_DOUBLE_CHEST)
 			->readonly()
-			->sessionize()
 			->setListener([$this->menuHandler, "handleListings"]);
 		for($j = $n2; $j <= $n3; ++$j) {
 			++$n4;
