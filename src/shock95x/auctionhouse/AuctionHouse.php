@@ -2,6 +2,7 @@
 namespace shock95x\auctionhouse;
 
 use DateTime;
+use Exception;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\MenuHandler;
 use shock95x\auctionhouse\database\Database;
@@ -41,7 +42,7 @@ class AuctionHouse extends PluginBase {
 	public function onLoad() {
 		$this->saveDefaultConfig();
 		UpdateNotifier::checkUpdate($this, $this->getDescription()->getName(), $this->getDescription()->getVersion());
-		ConfigUpdater::checkUpdate($this, $this->getConfig(), "config-version", 1);
+		ConfigUpdater::checkUpdate($this, $this->getConfig(), "config-version", 2);
 	}
 
 	public function onEnable() : void {
@@ -139,6 +140,7 @@ class AuctionHouse extends PluginBase {
 		}
 		if(!isset($this->translation[strtolower($locale)][$key])) {
 			$sender->sendMessage(Utils::prefixMessage("Key '" . $key . "' could not be found in the '" . $locale . "'' language file, please contact the server administrator."));
+			return false;
 		}
 		$message = $prefix ? Utils::prefixMessage($this->translation[strtolower($locale)][$key]) : $this->translation[strtolower($locale)][$key];
 		if($return) return $message;
@@ -153,6 +155,7 @@ class AuctionHouse extends PluginBase {
 	 * @param Inventory $currentMenu
 	 * @param int $n
 	 * @return bool
+	 * @throws Exception
 	 */
 	public function sendAHMenu(Player $player, $currentMenu = null, int $n = 1) {
 		MenuHandler::setViewingMenu($player, MenuHandler::AUCTION_MENU);

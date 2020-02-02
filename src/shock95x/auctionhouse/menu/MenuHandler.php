@@ -105,7 +105,7 @@ class MenuHandler {
 			$this->getPlugin()->sendExpired($player, null);
 			return false;
 		}
-		if($action->getSlot() <= 44) {
+		if($action->getSlot() <= 44 && $itemClicked->getNamedTag()->hasTag("marketId")) {
 			$player->removeWindow($inventory);
 			$id = $itemClicked->getNamedTag()->getLong("marketId");
 

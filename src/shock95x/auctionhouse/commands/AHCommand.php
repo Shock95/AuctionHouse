@@ -1,6 +1,7 @@
 <?php
 namespace shock95x\auctionhouse\commands;
 
+use Exception;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\utils\Settings;
@@ -38,6 +39,7 @@ class AHCommand extends Command implements PluginIdentifiableCommand {
 	 * @param string[] $args
 	 *
 	 * @return mixed
+	 * @throws Exception
 	 */
 	public function execute(CommandSender $sender, string $commandLabel, array $args): bool {
 		if (!$sender instanceof Player) {

@@ -1,10 +1,10 @@
 ---
 # DO NOT EDIT THIS VALUE, INTERNAL USE ONLY.
-config-version: 1
+config-version: 2
 # Sets the prefix for this plugin.
 prefix: "[&l&6Auction House&r]"
 # Sets the default language for the plugin, you can edit text and messages in this file.
-default-language: en-US
+default-language: en_US
 # Sets the amount of hours a listing is active before being automatically cancelled and expired.
 expire-interval: 48
 # Sets the price it costs to list one item on the auction house.
