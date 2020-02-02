@@ -51,7 +51,7 @@ class MenuHandler {
 
 	public function handleListings(Player $player, Item $itemClicked, Item $itemClickedWith, SlotChangeAction $action) {
 		$inventory = $action->getInventory();
-		if($action->getSlot() <= 44) {
+		if($action->getSlot() <= 44 && $itemClicked->getNamedTag()->hasTag("marketId") && $itemClicked->getId() !== Item::AIR) {
 			$auction = DataHolder::getListingById($itemClicked->getNamedTag()->getLong("marketId"));
 			if($auction == null) {
 				return;

@@ -14,7 +14,6 @@ use JackMD\UpdateNotifier\UpdateNotifier;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\LongTag;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
