@@ -15,8 +15,8 @@ cancelled-item: "&eYou have &6cancelled &ean auction. Return cancelled and expir
 cancelled-purchase: "&cYou have cancelled this purchase"
 admin-removed: "&eListing removed."
 purchased-item: "&2You have bought &d@item &r&d(x@amount) &2for &d@price"               #@player, @item, @price, @amount
-seller-message: "&e@player &bpurchased @item (x@amount) from you for &d@price!"           #@player, @item, @price, @amount
-returned-item: "&2You have removed &d@item &r&d(x@amount) &2from the auction house."
+seller-message: "&e@player &bpurchased @item (x@amount) from you for &d@price!"         #@player, @item, @price, @amount
+returned-item: "&2You have removed &d@item &r&d(x@amount) &2from the auction house."                     #@item, @amount
 
 # Error messages
 in-creative: "&cYou cannot sell items while in creative mode."

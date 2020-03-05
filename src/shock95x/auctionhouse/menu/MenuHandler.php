@@ -81,6 +81,7 @@ class MenuHandler {
 				DataHolder::removeAuction($auction);
 				$inventory->setItem($action->getSlot(), Item::get(Item::AIR));
 				$player->getInventory()->addItem($item);
+				$player->sendMessage(str_replace(["@item", "@amount"], [$item->getName(), $item->getCount()], $this->plugin->getMessage($player, "returned-item", true)));
 			}
 		}
 		$this->handleMainPage($player, $itemClicked);
