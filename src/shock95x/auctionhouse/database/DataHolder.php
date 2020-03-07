@@ -52,7 +52,7 @@ class DataHolder {
 		return $array;
 	}
 
-	public static function getListingById(int $id) : Listing {
+	public static function getListingById(int $id) {
 		foreach((array) self::$listings as $listing) {
 			if($listing->getMarketId() == $id) {
 				return $listing;

@@ -199,7 +199,8 @@ class MenuHandler {
 		}
 		$marketId = $itemClicked->getNamedTag()->getLong("marketId");
 		$auction = DataHolder::getListingById($marketId);
-		if ($auction == null) {
+		if($auction == null) {
+			$this->plugin->getMessage($player, "listing-gone");
 			return false;
 		}
 		$item = $auction->getItem();

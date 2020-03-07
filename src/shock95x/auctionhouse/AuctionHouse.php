@@ -138,7 +138,8 @@ class AuctionHouse extends PluginBase {
 			$locale = Settings::getDefaultLang();
 		}
 		if(!isset($this->translation[strtolower($locale)][$key])) {
-			$sender->sendMessage(Utils::prefixMessage("Key '" . $key . "' could not be found in the '" . $locale . "'' language file, please contact the server administrator."));
+			$this->getLogger()->warning("Key '" . $key . "' could not be found in the '" . $locale . "'' language file, add this key to the language file or update the file by deleting it and restarting the server.");
+			//$sender->sendMessage(Utils::prefixMessage("Key '" . $key . "' could not be found in the '" . $locale . "'' language file, please contact the server administrator."));
 			return false;
 		}
 		$message = $prefix ? Utils::prefixMessage($this->translation[strtolower($locale)][$key]) : $this->translation[strtolower($locale)][$key];
