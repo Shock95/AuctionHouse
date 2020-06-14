@@ -38,7 +38,7 @@ class AHCommand extends Command implements PluginIdentifiableCommand {
 	 * @param string $commandLabel
 	 * @param string[] $args
 	 *
-	 * @return mixed
+	 * @return bool
 	 * @throws Exception
 	 */
 	public function execute(CommandSender $sender, string $commandLabel, array $args): bool {
@@ -91,6 +91,10 @@ class AHCommand extends Command implements PluginIdentifiableCommand {
 				$listingPrice = Settings::getListingPrice();
 				if(($this->getEconomy()->getMoney($sender) < $listingPrice) && $listingPrice != 0) {
 					$this->plugin->getMessage($sender, "invalid-balance");
+					return false;
+				}
+				if($args[1] < Settings::getMinPrice() || ($args[1] > Settings::getMaxPrice() && Settings::getMaxPrice() != -1)) {
+					$sender->sendMessage(str_replace(["@min", "@max"], [Settings::getMinPrice(), Settings::getMaxPrice()], $this->plugin->getMessage($sender, "price-range", true)));
 					return false;
 				}
 				if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);

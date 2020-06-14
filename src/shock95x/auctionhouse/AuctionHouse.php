@@ -2,7 +2,7 @@
 namespace shock95x\auctionhouse;
 
 use DateTime;
-use Exception;
+use muqsit\invmenu\session\PlayerManager;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\MenuHandler;
 use shock95x\auctionhouse\database\Database;
@@ -11,8 +11,6 @@ use shock95x\auctionhouse\utils\Pagination;
 use shock95x\auctionhouse\utils\Settings;
 use JackMD\ConfigUpdater\ConfigUpdater;
 use JackMD\UpdateNotifier\UpdateNotifier;
-use pocketmine\inventory\Inventory;
-use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
@@ -41,7 +39,7 @@ class AuctionHouse extends PluginBase {
 	public function onLoad() {
 		$this->saveDefaultConfig();
 		UpdateNotifier::checkUpdate($this, $this->getDescription()->getName(), $this->getDescription()->getVersion());
-		ConfigUpdater::checkUpdate($this, $this->getConfig(), "config-version", 2);
+		ConfigUpdater::checkUpdate($this, $this->getConfig(), "config-version", 3);
 	}
 
 	public function onEnable() : void {
@@ -91,6 +89,7 @@ class AuctionHouse extends PluginBase {
 
 	public function onDisable() {
 		$this->database->save();
+		$this->database->close();
 	}
 
 	/**
@@ -148,51 +147,47 @@ class AuctionHouse extends PluginBase {
 		return "";
 	}
 
-	/**
-	 * Sends the Auction House menu to specified player
-	 *
-	 * @param Player $player
-	 * @param Inventory $currentMenu
-	 * @param int $n
-	 * @return bool
-	 * @throws Exception
-	 */
-	public function sendAHMenu(Player $player, $currentMenu = null, int $n = 1) {
+	public function sendAHMenu(Player $player, int $n = 1) {
 		MenuHandler::setViewingMenu($player, MenuHandler::AUCTION_MENU);
 		$list = DataHolder::getListings();
 		if($n < 1) {
 			$size = count($list);
-            $n = $size / 45;
-            if ($size % 45 > 0) {
-            	++$n;
-            }
-        }
+			$n = $size / 45;
+			if ($size % 45 > 0) {
+				++$n;
+			}
+		}
 		$size2 = count($list);
-        $n2 = ($n - 1) * 45;
-        $n3 = ($n2 + 44 >= $size2) ? ($size2 - 1) : ($n * 45 - 1);
-        if ($n3 - $n2 + 1 < 1 && $n != 1) {
-        	$this->sendAHMenu($player, null, 1);
-	        return false;
-        }
-        $n4 = 0;
-        for($i = 0; $i < 45; ++$i) {
-			if($currentMenu != null) $currentMenu->setItem($i, Item::get(Item::AIR));
-        }
-		$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)
-			->readonly()
-			->sessionize()
-			->setListener([$this->menuHandler, "handleItemSelection"]);
+		$n2 = ($n - 1) * 45;
+		$n3 = ($n2 + 44 >= $size2) ? ($size2 - 1) : ($n * 45 - 1);
+		if ($n3 - $n2 + 1 < 1 && $n != 1) {
+			$this->sendAHMenu($player, 1);
+			return false;
+		}
+		$n4 = 0;
+
+		$menu = null;
+		$newMenu = false;
+		if(PlayerManager::get($player)->getCurrentMenu() == null) {
+			$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)->readonly();
+			$newMenu = true;
+		} else {
+			$menu = PlayerManager::get($player)->getCurrentMenu();
+			$menu->getInventoryForPlayer($player)->clearAll();
+		}
+		$menu->setListener([$this->menuHandler, "handleItemSelection"]);
+		$inventory = $menu->getInventoryForPlayer($player);
+
 		for($j = $n2; $j <= $n3; ++$j) {
 			++$n4;
 			if(!isset($list[$j])) return false;
 			$auction = $list[$j];
 			$item = clone $auction->getItem();
-
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
 			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName() . "\n" . TextFormat::GRAY . str_repeat("-", 25) . "\n" . TextFormat::GREEN . "Click here to purchase.\n\n" . TextFormat::BLUE . "Price: " . TextFormat::YELLOW . $this->economyProvider->getMonetaryUnit() . $auction->getPrice() . "\n" . TextFormat::BLUE . "Seller: " . TextFormat::YELLOW . $auction->getSeller() . "\n" . TextFormat::BLUE . "Expires: " . TextFormat::YELLOW . ($endTime->days * 24 + $endTime->h) . ":" . $endTime->i . "\n" . TextFormat::GRAY . str_repeat("-", 25));
-			$menu->getInventory($player)->addItem($item);
+			$inventory->addItem($item);
 		}
 		Pagination::setPage($player, $n);
 		$total = count($list);
@@ -200,17 +195,17 @@ class AuctionHouse extends PluginBase {
 		for($i = 0; $i < $total; $i += 45) $max++;
 		if($max == 0) $max = 1;
 		$p = Pagination::getPage($player);
-		MenuRenderer::setAuctionItems($player, $menu->getInventory($player), $p, $max, $total, count((array) DataHolder::getListingsByPlayer($player)), count((array)DataHolder::getListingsByPlayer($player, true)));
-		$menu->send($player, $this->getMessage($player, "menu-name", true, false));
+		MenuRenderer::setAuctionItems($player, $inventory, $p, $max, $total, count((array) DataHolder::getListingsByPlayer($player)), count((array)DataHolder::getListingsByPlayer($player, true)));
+
+		if($newMenu) $menu->send($player, $this->getMessage($player, "menu-name", true, false));
 		return true;
 	}
 
 	/**
 	 * @param Player $player
-	 * @param Inventory|null $currentMenu
 	 * @param int $n
 	 */
-	public function sendExpired(Player $player, Inventory $currentMenu = null, int $n = 1) : void {
+	public function sendExpired(Player $player, int $n = 1) : void {
 		MenuHandler::setViewingMenu($player, MenuHandler::EXPIRED_MENU);
 		$list = DataHolder::getListingsByPlayer($player, true);
 		if($n < 1) {
@@ -222,17 +217,23 @@ class AuctionHouse extends PluginBase {
 		$n2 = ($n - 1) * 45;
 		$n3 = ($n2 + 44 >= $size2) ? ($size2 - 1) : ($n * 45 - 1);
 		if($n3 - $n2 + 1 < 1 && $n != 1) {
-			$this->sendExpired($player, null, 1);
+			$this->sendExpired($player, 1);
 			return;
 		}
 		$n4 = 0;
-		for($i = 0; $i < 45; ++$i) {
-			if($currentMenu != null) $currentMenu->setItem($i, Item::get(Item::AIR));
+
+		$menu = null;
+		$newMenu = false;
+		if(PlayerManager::get($player)->getCurrentMenu() == null) {
+			$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)->readonly();
+			$newMenu = true;
+		} else {
+			$menu = PlayerManager::get($player)->getCurrentMenu();
+			$menu->getInventoryForPlayer($player)->clearAll();
 		}
-		$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)
-			->readonly()
-			->sessionize()
-			->setListener([$this->menuHandler, "handleExpired"]);
+
+		$menu->setListener([$this->menuHandler, "handleExpired"]);
+		$inventory = $menu->getInventoryForPlayer($player);
 		for($j = $n2; $j <= $n3; ++$j) {
 			++$n4;
 			if(!isset($list[$j])) return;
@@ -241,7 +242,7 @@ class AuctionHouse extends PluginBase {
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
 			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName() . "\n" . TextFormat::GRAY . str_repeat("-", 25) . "\n" . TextFormat::GREEN . "Click here to receive item.\n\n" . TextFormat::BLUE . "Price: " . TextFormat::YELLOW . $this->economyProvider->getMonetaryUnit() . $auction->getPrice() . "\n" . TextFormat::GRAY . str_repeat("-", 25));
-			$menu->getInventory($player)->addItem($item);
+			$inventory->addItem($item);
 		}
 		Pagination::setPage($player, $n);
 		$total = count($list);
@@ -249,16 +250,16 @@ class AuctionHouse extends PluginBase {
 		for($i = 0; $i < $total; $i += 45) $max++;
 		if($max == 0) $max = 1;
 		$p = Pagination::getPage($player);
-		menu\MenuRenderer::setExpiredItems($player, $menu->getInventory($player), $p, $max, $total);
-		$menu->send($player, $this->getMessage($player, "expired-menu-name", true, false));
+		MenuRenderer::setExpiredItems($player, $inventory, $p, $max, $total);
+
+		if($newMenu) $menu->send($player, $this->getMessage($player, "expired-menu-name", true, false));
 	}
 
 	/**
 	 * @param Player $player
-	 * @param Inventory|null $currentMenu
 	 * @param int $n
 	 */
-	public function sendListings(Player $player, Inventory $currentMenu = null, int $n = 1) : void {
+	public function sendListings(Player $player,  int $n = 1) : void {
 		MenuHandler::setViewingMenu($player, MenuHandler::LISTINGS_MENU);
 		$list = DataHolder::getListingsByPlayer($player);
 		if($n < 1) {
@@ -270,19 +271,26 @@ class AuctionHouse extends PluginBase {
 		$n2 = ($n - 1) * 45;
 		$n3 = ($n2 + 44 >= $size2) ? ($size2 - 1) : ($n * 45 - 1);
 		if($n3 - $n2 + 1 < 1 && $n != 1) {
-			$this->sendListings($player, null, 1);
+			$this->sendListings($player,  1);
 			return;
 		}
 		$n4 = 0;
 
-		for($i = 0; $i < 45; ++$i) {
-			if($currentMenu != null) $currentMenu->setItem($i, Item::get(Item::AIR));
+		$menu = null;
+		$newMenu = false;
+		if(PlayerManager::get($player)->getCurrentMenu() == null) {
+			$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)->readonly();
+			$newMenu = true;
+		} else {
+			$menu = PlayerManager::get($player)->getCurrentMenu();
+			$menu->getInventoryForPlayer($player)->clearAll();
+			/*for($i = 0; $i < 45; ++$i) {
+				$menu->getInventory($player)>setItem($i, Item::get(Item::AIR));
+			}*/
 		}
-
-		$menu = InvMenu::create(InvMenu::TYPE_DOUBLE_CHEST)
-			->readonly()
-			->sessionize()
-			->setListener([$this->menuHandler, "handleListings"]);
+		$menu->setListener([$this->menuHandler, "handleListings"]);
+		$inventory = $menu->getInventoryForPlayer($player);
+		
 		for($j = $n2; $j <= $n3; ++$j) {
 			++$n4;
 			if(!isset($list[$j])) return;
@@ -291,7 +299,7 @@ class AuctionHouse extends PluginBase {
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
 			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName() . "\n" . TextFormat::GRAY . str_repeat("-", 25) . "\n" . TextFormat::RED . "Click here to remove listing\n\n" . TextFormat::BLUE . "Price: " . TextFormat::YELLOW . $this->economyProvider->getMonetaryUnit() . $auction->getPrice() . "\n" . TextFormat::GRAY . str_repeat("-", 25));
-			$menu->getInventory($player)->addItem($item);
+			$inventory->addItem($item);
 		}
 		Pagination::setPage($player, $n);
 		$total = count($list);
@@ -299,7 +307,10 @@ class AuctionHouse extends PluginBase {
 		for($i = 0; $i < $total; $i += 45) $max++;
 		if($max == 0) $max = 1;
 		$p = Pagination::getPage($player);
-		MenuRenderer::setListingItems($player, $menu->getInventory($player), $p, $max, $total);
-		$menu->send($player, $this->getMessage($player, "listings-menu-name", true, false));
+		MenuRenderer::setListingItems($player, $inventory, $p, $max, $total);
+		if($newMenu) $menu->send($player, $this->getMessage($player, "listings-menu-name", true, false));
 	}
+
+	/*protected function getPlayerMenu(Player $player) : InvMenu {
+	}*/
 }

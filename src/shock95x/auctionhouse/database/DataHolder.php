@@ -12,7 +12,7 @@ use SOFe\AwaitGenerator\Await;
 class DataHolder {
 
 	/** @var Listing[] */
-	private static $listings = array();
+	private static $listings;
 	private static $database;
 
 	public function __construct(Database $database) {
@@ -20,12 +20,14 @@ class DataHolder {
 	}
 
 	public function loadListings() {
+		self::$listings = array();
 		Await::f2c(function () {
 			$rows = (array) yield self::$database->fetchAll();
 			foreach($rows as $listing) {
 				self::$listings[] = new Listing($listing, self::$database->getParser());
 			}
 		});
+		DataHolder::$database->getConnector()->waitAll();
 		AuctionHouse::getInstance()->getScheduler()->scheduleRepeatingTask(new ListingExpireTask(DataHolder::$database), 6000);
 	}
 
@@ -52,7 +54,11 @@ class DataHolder {
 		return $array;
 	}
 
-	public static function getListingById(int $id) {
+	/**
+	 * @param int $id
+	 * @return Listing
+	 */
+	public static function getListingById(int $id) : Listing {
 		foreach((array) self::$listings as $listing) {
 			if($listing->getMarketId() == $id) {
 				return $listing;

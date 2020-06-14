@@ -12,6 +12,8 @@ class Settings {
 	private static $listingPrice = 0;
 	private static $creativeSale = false;
 	private static $maxItems = 45;
+	private static $minPrice = 0;
+	private static $maxPrice = -1;
 	private static $blacklist = [];
 
 	public static function init(Config $config) {
@@ -21,6 +23,8 @@ class Settings {
 		self::$listingPrice = $config->get("listing-price");
 		self::$creativeSale = $config->get("creative-sale");
 		self::$maxItems = $config->get("max-items");
+		self::$minPrice = $config->get("min-price");
+		self::$maxPrice = $config->get("max-price");
 		self::$blacklist = $config->getNested("blacklist");
 	}
 
@@ -66,6 +70,13 @@ class Settings {
 		return self::$maxItems;
 	}
 
+	public static function getMinPrice() : int {
+		return self::$minPrice;
+	}
+
+	public static function getMaxPrice() : int {
+		return self::$maxPrice;
+	}
 	/**
 	 * @return Item[]
 	 */

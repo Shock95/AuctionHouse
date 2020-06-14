@@ -1,8 +1,12 @@
 ---
 # DO NOT EDIT THIS VALUE, INTERNAL USE ONLY.
-config-version: 2
+config-version: 3
 # Sets the prefix for this plugin.
 prefix: "[&l&6Auction House&r]"
+# Minimum price required to create a listing
+min-price: 0
+# Maximum price a listing can have (-1 = No limit)
+max-price: -1
 # Sets the default language for the plugin, you can edit text and messages in this file.
 default-language: en_US
 # Sets the amount of hours a listing is active before being automatically cancelled and expired.

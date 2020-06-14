@@ -30,6 +30,7 @@ class MenuHandler {
 
 	public function __construct(AuctionHouse $plugin) {
 		$this->plugin = $plugin;
+		self::$menuOpen = [];
 	}
 
 	public static function setViewingMenu(Player $player, int $menu) {
@@ -95,16 +96,21 @@ class MenuHandler {
 	public function handleItemSelection(Player $player, Item $itemClicked, Item $itemClickedWith, SlotChangeAction $action) : bool {
 		$inventory = $action->getInventory();
 		if($itemClicked->getNamedTag()->hasTag("refresh")) {
-			$this->getPlugin()->sendAHMenu($player, $inventory, 2);
+			$this->getPlugin()->sendAHMenu($player, 2);
 			return false;
 		}
 		if($itemClicked->getNamedTag()->hasTag("listings")) {
-			$this->getPlugin()->sendListings($player, null);
+			$this->getPlugin()->sendListings($player);
 			return false;
 		}
 		if($itemClicked->getNamedTag()->hasTag("expired")) {
-			$this->getPlugin()->sendExpired($player, null);
+			$this->getPlugin()->sendExpired($player);
 			return false;
+		}
+		if($itemClicked->getNamedTag()->hasTag("pagination")) {
+			$page = $itemClicked->getNamedTag()->getByte("pagination");
+			$this->handlePagination($player, $page);
+			return true;
 		}
 		if($action->getSlot() <= 44 && $itemClicked->getNamedTag()->hasTag("marketId")) {
 			$player->removeWindow($inventory);
@@ -112,11 +118,10 @@ class MenuHandler {
 
 			$menu = InvMenu::create(InvMenu::TYPE_CHEST)
 				->readonly()
-				->sessionize()
 				->setName($this->getPlugin()->getMessage($player, "purchase-menu-name", true, false))
 				->setListener([$this, "handlePurchase"]);
 
-			$newInv = $menu->getInventory($player);
+			$newInv = $menu->getInventoryForPlayer($player);
 
 			$item = clone $itemClicked;
 			$newInv->setItem(13, $item);
@@ -134,11 +139,6 @@ class MenuHandler {
 			$this->getPlugin()->getScheduler()->scheduleDelayedTask(new MenuDelayTask($player, $menu), 10);
 			return true;
 		}
-		if($itemClicked->getNamedTag()->hasTag("pagination")) {
-			$page = $itemClicked->getNamedTag()->getByte("pagination");
-			$this->handlePagination($player, $page);
-			return true;
-		}
 		return true;
 	}
 
@@ -147,39 +147,39 @@ class MenuHandler {
 			case self::AUCTION_MENU:
 				switch($pagination) {
 					case Pagination::BACK:
-						$this->plugin->sendAHMenu($player, null, Pagination::getPage($player) - 1);
+						$this->plugin->sendAHMenu($player, Pagination::getPage($player) - 1);
 						break;
 					case Pagination::NEXT:
-						$this->plugin->sendAHMenu($player, null, Pagination::getPage($player) + 1);
+						$this->plugin->sendAHMenu($player, Pagination::getPage($player) + 1);
 						break;
 					case Pagination::REFRESH:
-						$this->plugin->sendAHMenu($player, null, Pagination::getPage($player));
+						$this->plugin->sendAHMenu($player, Pagination::getPage($player));
 						break;
 				}
 				break;
 			case self::LISTINGS_MENU:
 				switch($pagination) {
 					case Pagination::BACK:
-						$this->plugin->sendListings($player, null, Pagination::getPage($player) - 1);
+						$this->plugin->sendListings($player, Pagination::getPage($player) - 1);
 						break;
 					case Pagination::NEXT:
-						$this->plugin->sendListings($player, null, Pagination::getPage($player) + 1);
+						$this->plugin->sendListings($player, Pagination::getPage($player) + 1);
 						break;
 					case Pagination::REFRESH:
-						$this->plugin->sendListings($player, null, Pagination::getPage($player));
+						$this->plugin->sendListings($player, Pagination::getPage($player));
 						break;
 				}
 				break;
 			case self::EXPIRED_MENU:
 				switch($pagination) {
 					case Pagination::BACK:
-						$this->plugin->sendExpired($player, null, Pagination::getPage($player) - 1);
+						$this->plugin->sendExpired($player, Pagination::getPage($player) - 1);
 						break;
 					case Pagination::NEXT:
-						$this->plugin->sendExpired($player, null, Pagination::getPage($player) + 1);
+						$this->plugin->sendExpired($player, Pagination::getPage($player) + 1);
 						break;
 					case Pagination::REFRESH:
-						$this->plugin->sendExpired($player, null, Pagination::getPage($player));
+						$this->plugin->sendExpired($player, Pagination::getPage($player));
 						break;
 				}
 				break;

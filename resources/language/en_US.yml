@@ -31,6 +31,7 @@ cannot-afford: "&6You do not have enough money to buy this item."
 item-blacklisted: "&cThat item is not allowed to be put on the auction house!"
 invalid-balance: "&cYou do not have enough money to list an auction."
 listing-gone: "&cThis listing no longer exists."
+price-range: "&cInvalid price range"                                                                         #@min, @max
 
 # Items in the menu UI
 listed-item:
