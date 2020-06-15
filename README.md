@@ -62,8 +62,8 @@ blacklist:
 ---  
 ## API  
 ### Events  
-- [shock95x\auctionhouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionStartEvent.php)  
-- [shock95x\auctionhouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/AuctionHouse/event/AuctionEndEvent.php)  
+- [shock95x\auctionhouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionStartEvent.php)  
+- [shock95x\auctionhouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionEndEvent.php)  
   
 ## Contributing  
 You can contribute to this project by creating a new language file and opening a PR!  
