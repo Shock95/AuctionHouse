@@ -71,7 +71,7 @@ class ConfigUpdater{
 
 		rename($configPath . $originalConfig, $configPath . $oldConfig);
 
-		self::saveFile($pluginPath, $configPath, $originalConfig);
+		self::saveFile($plugin, $pluginPath, $configPath, $originalConfig);
 
 		$task = new ClosureTask(function(int $currentTick) use ($plugin, $updateMessage): void{
 			$plugin->getLogger()->critical($updateMessage);
@@ -127,25 +127,13 @@ class ConfigUpdater{
 	 * Taken from pocketmine\plugin\PluginBase::saveResource().
 	 * Edited to be used for this virion.
 	 *
+	 * @param Plugin $plugin
 	 * @param string $pluginPath
 	 * @param string $outPath
 	 * @param string $configName
 	 * @return bool
 	 */
-	private static function saveFile(string $pluginPath, string $outPath, string $configName): bool{
-		$out = $outPath . $configName;
-
-		$fileName = $pluginPath . "resources/" . $configName;
-		$resource = fopen($fileName, "rb");
-
-		if(!file_exists(dirname($out))){
-			mkdir(dirname($out), 0755, true);
-		}
-
-		$ret = stream_copy_to_stream($resource, $fp = fopen($out, "wb")) > 0;
-		fclose($fp);
-		fclose($resource);
-
-		return $ret;
+	private static function saveFile(Plugin $plugin, string $pluginPath, string $outPath, string $configName): bool{
+		return $plugin->saveResource($configName, true);
 	}
 }
