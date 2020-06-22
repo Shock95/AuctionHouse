@@ -57,8 +57,11 @@ class AHCommand extends Command implements PluginIdentifiableCommand {
 					$sender->sendMessage($this->getPermissionMessage());
 					return false;
 				}
+				$config = $this->getPlugin()->getConfig();
+				$config->reload();
+				Settings::init($config);
+				$this->getPlugin()->loadLanguages();
 				$this->getPlugin()->getDatabase()->save();
-				Settings::init($this->getPlugin()->getConfig());
 				$sender->sendMessage(Utils::prefixMessage(TextFormat::GREEN . "Update completed"));
 				return true;
 			case "listings":

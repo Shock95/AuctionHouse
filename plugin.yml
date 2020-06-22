@@ -1,6 +1,6 @@
 name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
-version: 1.1.0
+version: 1.1.1
 api: 3.0.0
 author: Shock95x
 softdepend: [EconomyAPI]
@@ -25,4 +25,4 @@ permissions:
                 description: Allows player to view their own listings.
             auctionhouse.command.update:
                 default: op
-                description: Allows player to reload the config and save to database.
+                description: Allows player to reload configuration files and save to database.

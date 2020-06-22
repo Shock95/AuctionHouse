@@ -2,6 +2,7 @@
 namespace shock95x\auctionhouse;
 
 use DateTime;
+use Exception;
 use muqsit\invmenu\session\PlayerManager;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\MenuHandler;
@@ -9,7 +10,6 @@ use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\MenuRenderer;
 use shock95x\auctionhouse\utils\Pagination;
 use shock95x\auctionhouse\utils\Settings;
-use JackMD\ConfigUpdater\ConfigUpdater;
 use JackMD\UpdateNotifier\UpdateNotifier;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -19,6 +19,7 @@ use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\economy\EconomySProvider;
+use shock95x\auctionhouse\utils\ConfigUpdater;
 use shock95x\auctionhouse\utils\Utils;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\InvMenuHandler;
@@ -44,23 +45,21 @@ class AuctionHouse extends PluginBase {
 
 	public function onEnable() : void {
 		self::$instance = $this;
+		$this->saveDefaultConfig();
 		$statements = [$this->getDataFolder() . "statements/", $this->getDataFolder() . "language/"];
 		foreach ($statements as $directory) {
 			if(!is_dir($directory)) mkdir($directory);
 		}
-		$this->saveDefaultConfig();
-		$resources = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false];
+
+		$resources = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false]; //todo
 		foreach ($resources as $file => $replace) {
 			$this->saveResource($file, $replace);
 		}
-		foreach(glob($this->getDataFolder() . "language/*.yml") as $file) {
-			$locale = new Config($file, Config::YAML);
-			$localeCode = basename($file, ".yml");
-			$this->translation[strtolower($localeCode)] = $locale->getAll();
-			array_walk_recursive($this->translation[strtolower($localeCode)], function (&$element) {
-				$element = str_replace("&", "\xc2\xa7", $element);
-			});
-		}
+
+		$defaultLang = new Config($this->getDataFolder() . "language/en_US.yml", Config::YAML);
+		ConfigUpdater::checkUpdate($this, $defaultLang, "lang-version", 1);
+
+		$this->loadLanguages();
 		if(empty($this->translation)) {
 			$this->getServer()->getLogger()->error("No language file has been found, will now disable plugin");
 			$this->getServer()->getPluginManager()->disablePlugin($this);
@@ -90,6 +89,17 @@ class AuctionHouse extends PluginBase {
 	public function onDisable() {
 		$this->database->save();
 		$this->database->close();
+	}
+
+	public function loadLanguages() {
+		foreach(glob($this->getDataFolder() . "language/*.yml") as $file) {
+			$locale = new Config($file, Config::YAML);
+			$localeCode = basename($file, ".yml");
+			$this->translation[strtolower($localeCode)] = $locale->getAll();
+			array_walk_recursive($this->translation[strtolower($localeCode)], function (&$element) {
+				$element = str_replace("&", "\xc2\xa7", $element);
+			});
+		}
 	}
 
 	/**
@@ -137,7 +147,7 @@ class AuctionHouse extends PluginBase {
 			$locale = Settings::getDefaultLang();
 		}
 		if(!isset($this->translation[strtolower($locale)][$key])) {
-			$this->getLogger()->warning("Key '" . $key . "' could not be found in the '" . $locale . "'' language file, add this key to the language file or update the file by deleting it and restarting the server.");
+			$this->getLogger()->warning("Key '" . $key . "' could not be found in the '" . $locale . "' language file, add this key to the language file or update the file by deleting it and restarting the server.");
 			//$sender->sendMessage(Utils::prefixMessage("Key '" . $key . "' could not be found in the '" . $locale . "'' language file, please contact the server administrator."));
 			return false;
 		}
@@ -186,7 +196,10 @@ class AuctionHouse extends PluginBase {
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
-			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName() . "\n" . TextFormat::GRAY . str_repeat("-", 25) . "\n" . TextFormat::GREEN . "Click here to purchase.\n\n" . TextFormat::BLUE . "Price: " . TextFormat::YELLOW . $this->economyProvider->getMonetaryUnit() . $auction->getPrice() . "\n" . TextFormat::BLUE . "Seller: " . TextFormat::YELLOW . $auction->getSeller() . "\n" . TextFormat::BLUE . "Expires: " . TextFormat::YELLOW . ($endTime->days * 24 + $endTime->h) . ":" . $endTime->i . "\n" . TextFormat::GRAY . str_repeat("-", 25));
+
+			$listedItem = $this->getMessage($player, "listed-item", true, false);
+			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore(str_replace(["%price%", "%seller%", "%time%"], [$auction->getPrice(true), $auction->getSeller(), ($endTime->days * 24 + $endTime->h) . ":" . $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem)));
+
 			$inventory->addItem($item);
 		}
 		Pagination::setPage($player, $n);
@@ -241,7 +254,10 @@ class AuctionHouse extends PluginBase {
 			$item = clone $auction->getItem();
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
-			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName() . "\n" . TextFormat::GRAY . str_repeat("-", 25) . "\n" . TextFormat::GREEN . "Click here to receive item.\n\n" . TextFormat::BLUE . "Price: " . TextFormat::YELLOW . $this->economyProvider->getMonetaryUnit() . $auction->getPrice() . "\n" . TextFormat::GRAY . str_repeat("-", 25));
+
+			$expiredItem = $this->getMessage($player, "expired-item", true, false);
+			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore(str_replace(["%price%"], [$auction->getPrice(true)], preg_filter('/^/', TextFormat::RESET, $expiredItem)));
+
 			$inventory->addItem($item);
 		}
 		Pagination::setPage($player, $n);
@@ -258,6 +274,7 @@ class AuctionHouse extends PluginBase {
 	/**
 	 * @param Player $player
 	 * @param int $n
+	 * @throws Exception
 	 */
 	public function sendListings(Player $player,  int $n = 1) : void {
 		MenuHandler::setViewingMenu($player, MenuHandler::LISTINGS_MENU);
@@ -298,7 +315,12 @@ class AuctionHouse extends PluginBase {
 			$item = clone $auction->getItem();
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
-			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName() . "\n" . TextFormat::GRAY . str_repeat("-", 25) . "\n" . TextFormat::RED . "Click here to remove listing\n\n" . TextFormat::BLUE . "Price: " . TextFormat::YELLOW . $this->economyProvider->getMonetaryUnit() . $auction->getPrice() . "\n" . TextFormat::GRAY . str_repeat("-", 25));
+
+			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
+
+			$listedItem = $this->getMessage($player, "your-listed-item", true, false);
+			$item->setCompoundTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore(str_replace(["%price%", "%time%"], [$auction->getPrice(true), ($endTime->days * 24 + $endTime->h) . ":" . $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem)));
+
 			$inventory->addItem($item);
 		}
 		Pagination::setPage($player, $n);

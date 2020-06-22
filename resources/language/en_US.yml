@@ -1,4 +1,7 @@
 ---
+# DO NOT EDIT THIS VALUE, INTERNAL USE ONLY. #
+lang-version: 1
+
 # Refer to https://minecraft.gamepedia.com/Formatting_codes for formatting codes, you can replace the '§' symbol with a '&'
 
 # The titles of the Auction House UI
@@ -37,22 +40,30 @@ price-range: "&cInvalid price range"                                            
 listed-item:
     # %price% = Price of listing
     # %seller% = Username of seller
-    # %expire% = Time until listing expires
+    # %time% = Time until listing expires
     - "&7-------------------------"
     - "&aClick here to purchase."
     - ""
-    - "&9Price: &e$%price%"
+    - "&9Price: &e%price%"
     - "&9Seller: &e%seller%"
     - "&9Expire: &e%time%"
     - "&7-------------------------"
 your-listed-item:
     # %price% = Price of listing
-    # %expire% = Time until listing expires
+    # %time% = Time until listing expires
     - "&7-------------------------"
-    - "&cClick here to cancel."
+    - "&cClick here to remove listing."
     - ""
-    - "&9Price: &e$%price%"
+    - "&9Price: &e%price%"
     - "&9Expire: &e%time%"
+    - "&7-------------------------"
+expired-item:
+    # %price% = Price of listing
+    - "&7-------------------------"
+    - "&aClick here to receive item."
+    - ""
+    - ""
+    - "&9Price: &e%price%"
     - "&7-------------------------"
 view-listed-items:
     # %selling% = Number of active listings

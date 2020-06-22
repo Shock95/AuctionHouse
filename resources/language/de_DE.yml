@@ -1,0 +1,171 @@
+---
+# Refer to https://minecraft.gamepedia.com/Formatting_codes for formatting codes, you can replace the '§' symbol with a '&'
+
+# The titles of the Auction House UI
+menu-name: "&l&6VerkaufsHaus"
+listings-menu-name: "&6Active Angebote"
+expired-menu-name: "&6Ausgelaufende/Abgebrochende Angebote"
+purchase-menu-name: "Kauf ausführen"
+
+# Chat messages
+item-purchased: "&eItem &6gekauft&e!"
+buyer-purchased: "&6%buyer% &eHat ein Angebot für &6$%price%&e Gekauft&e!"
+item-listed: "&2Du Bietest nun: &d@item &r&d(x@amount) &2für &d@price. Mit: /ah listings kannst du deine Angebote sehen"
+cancelled-item: "&eDu hast die auktion &6abbgerochen&e.Hole dir Ausgelaufende Items und Abbgebrochende Angebot Items bei:&6/ah expired&e."
+cancelled-purchase: "&cDu hasst den Kauf abgebrochen!"
+admin-removed: "&eAngebot entfernt."
+purchased-item: "&2Du hast &d@item &r&d(x@amount) &2für &d@price Gekauft"               #@player, @item, @price, @amount
+seller-message: "&e@player &bhat @item (x@amount) von dir für &d@price Gekauft!"         #@player, @item, @price, @amount
+returned-item: "&2Du hasst &d@item &r&d(x@amount) &2zurückgezogen."                     #@item, @amount
+
+# Error messages
+in-creative: "&cDu kannst nur sachen im survival modus Verkaufen &6[/gamemode 0]."
+max-listings: "&cDu kannst nicht mehr wie 45 Angebote haben."
+invalid-price: "&cFalscher Preis."
+no_empty: "&cDein Inventar ist Leer."
+not-enough-space: "Du hasst kein platzt in deinen Inventar"
+self-purchase: "&cDu kannst nicht deine eigenen Angebote Kaufen!"
+item-gone: "Dieses Item exestiert nicht mehr"
+no-item: "&cDu musst ein Item in deiner Hand halten!"
+cannot-afford: "&6Du hast nicht genug Geld um dir das zu Kaufen."
+item-blacklisted: "&cDas Item darfst du nicht verkaufen!"
+invalid-balance: "&cDu hasst nicht genug geld um das Item zum Verkauf Anzubieten."
+listing-gone: "&cDas Angebot Exestiert nichtmehr."
+price-range: "&cZu großer/zu kleiner Preis"                                                                         #@min, @max
+
+# Items in the menu UI
+listed-item:
+    # %price% = Price of listing
+    # %seller% = Username of seller
+    # %time% = Time until listing expires
+    - "&7-------------------------"
+    - "&aKlicke hier um es zu Kaufen."
+    - ""
+    - "&9Preis: &e%price%"
+    - "&9Verkäufer: &e%seller%"
+    - "&9Läuft aus in: &e%time% Stunden"
+    - "&7-------------------------"
+your-listed-item:
+    # %price% = Price of listing
+    # %time% = Time until listing expires
+    - "&7-------------------------"
+    - "&cKlick hier um das Angebot zu schließen."
+    - ""
+    - "&9Preis: &e%price%"
+    - "&9Läuft aus in: &e%time% Stunden"
+    - "&7-------------------------"
+expired-item:
+    # %price% = Price of listing
+    - "&7-------------------------"
+    - "&aKlicke um das Item Abzuholen."
+    - ""
+    - ""
+    - "&9Preis: &e%price%$"
+    - "&7-------------------------"
+view-listed-items:
+    # %selling% = Number of active listings
+    id: 264
+    name: "&6Items die du Verkaufst:"
+    lore:
+        - "&aKlicke hier um eine liste deiner Items zu sehen"
+        - "&aDie du Verkaufst."
+        - ""
+        - "&9Verkauft: &e%selling%"
+view-expired-items:
+    # %expired% = Number of Expired / Cancelled Items
+    id: 394
+    name: "&6Abholen: Abgelaufender/Abbgebrochende Angebote"
+    lore:
+        - "&r&aKlicke um eine list der Abgelaufenden Items zu erhalten und einzusammeln"
+        - "&aItems die Abgelaufenoder abbgebrochen wurden."
+        - ""
+        - "&9Items zum einsammeln: &e%expired%"
+previous-page:
+    id: "339"
+    name: "&a<- Haupt Seite"
+    lore:
+        - "Gehe zum Start"
+next-page:
+    id: "339"
+    name: "&aNächste seite ->"
+    lore:
+        - "Gehe zur nächsten seite"
+back-button:
+    id: "339"
+    name: "&6Zurück"
+    lore:
+sell-description:
+    id: "388"
+    name: "&6Verkauf von Items"
+    lore:
+        - "&aUm ein Item zum verkauf anzubieten:"
+        - "&aHalte das Item in derine hand und schreibe; &b/ah sell <preis>|in den Chat&a."
+main-description:
+    id: "340"
+    name: "&6Was ist das Hier?"
+    lore:
+        - "&aDas hier ist ein verkaufshaus!"
+        - "&aDu kannst hier Items zum verkauf Anbieten"
+        - "&aWelche andere kaufen können."
+        - ""
+        - "&aDas ist ein guter weg deine Items zu verkauf"
+        - "&aAnzubieten und geld zu verdienen"
+        - "&adurch vielleicht Interresierte spieler."
+main-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    id: "54"
+    name: "&l&6Verkaufs Haus"
+    lore:
+        - "&aseite %page%/%max%"
+        - "&7Anzahl der Items; &b%total% &7"
+        - "Klicke um die seite neu zu Laden"
+listings-description:
+    id: "340"
+    name: "&6Was ist das?"
+    lore:
+        - "&aDas ist eine liste all deiner Angebote"
+        - "&adie du momentan in Verkaufs Haus hast"
+        - ""
+        - "&aDu kannst deine angebote hier abbrechen"
+        - "&aund alle Items die Bagelaufen sind Einsammeln ."
+listings-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    id: "54"
+    name: "&l&6Liste"
+    lore:
+        - "&aSeite %page%/%max%"
+        - "&7Items &b%total% &7"
+expired-description:
+    id: "340"
+    name: "&6Was ist das?"
+    lore:
+        - "&aDiese seite zeigt dir all deine:"
+        - "&aAbgelaufende oder Abgebrochende angebote an"
+        - "&adie du dir hier abholen kannst"
+        - "&aitem back to you from this menu."
+        - ""
+        - "&aKlicke einfach auf das Item wenn du"
+        - "&agenug platz im inventar hast."
+expired-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    id: "152"
+    name: "&l&6Abgelaufen"
+    lore:
+        - "&aSeite: %page%/%max%"
+        - "&7Anzahl der Items &b%total% &7"
+purchase-confirm:
+    name: "&aKauf durchführen"
+purchase-cancel:
+    name: "&cKauf abbrechen"
+purchaseItem:
+    lore:
+        - ""
+        - "&9Preis: &e$%price%"
+        - "&9Verkäufer: &e%seller%"
+...

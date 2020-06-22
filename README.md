@@ -67,6 +67,12 @@ blacklist:
   
 ## Contributing  
 You can contribute to this project by creating a new language file and opening a PR!  
-### Supported languages  
+### Supported languages and contributors 
 - [Shock95x](https://github.com/Shock95x) (English)  
 - [No4NaMe](https://github.com/No4NaMe) (Russian)
+- Chaosfelix4451#0157 (German)
+
+## Credits / Virions Used
+- [InvMenu](https://github.com/Muqsit/InvMenu) (Muqsit)  
+- [ConfigUpdater](https://github.com/JackMD/ConfigUpdater) (JackMD)
+- [UpdateNotifier](https://github.com/JackMD/UpdateNotifier) (JackMD)

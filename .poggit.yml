@@ -15,6 +15,4 @@ projects:
       version: ^2.2.0
     - src: JackMD/UpdateNotifier/UpdateNotifier
       version: ^1.0.0
-    - src: JackMD/ConfigUpdater/ConfigUpdater
-      version: ^1.0.0
 ...
