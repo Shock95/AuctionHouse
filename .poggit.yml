@@ -9,8 +9,7 @@ projects:
     - src: poggit/libasynql/libasynql
       version: ^3.3.0
     - src: muqsit/InvMenu/InvMenu
-      branch: master
-      version: 3.1.0
+      version: ^3.1.1
     - src: SOF3/await-generator/await-generator
       version: ^2.2.0
     - src: JackMD/UpdateNotifier/UpdateNotifier

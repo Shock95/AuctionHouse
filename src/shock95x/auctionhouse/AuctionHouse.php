@@ -82,6 +82,9 @@ class AuctionHouse extends PluginBase {
 			$this->getServer()->getPluginManager()->disablePlugin($this);
 			return;
 		}
+		if($this->getServer()->getPluginManager()->getPlugin("InvCrashFix") == null) {
+			$this->getLogger()->warning("InvCrashFix is required to fix client crashes on 1.16, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
+		}
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this));
 		$this->menuHandler = new MenuHandler($this);
 	}
