@@ -21,8 +21,13 @@ class Utils {
 		return str_replace("&", "\xc2\xa7", Settings::getPrefix() . " " . $string);
 	}
 
-	public static function isBlacklisted(Item $item) {
-		//todo
+	public static function isBlacklisted(Item $item) : bool {
+		foreach(Settings::getBlacklist() as $blacklistedItem) {
+			if($item->getId() == $blacklistedItem->getId() && $item->getDamage() == $blacklistedItem->getDamage()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static function setViewingMenu(Player $player, int $menu) {

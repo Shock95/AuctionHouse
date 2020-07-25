@@ -12,6 +12,7 @@ use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
+use shock95x\auctionhouse\utils\Utils;
 
 class SellCommand extends BaseSubCommand {
 
@@ -32,11 +33,9 @@ class SellCommand extends BaseSubCommand {
 			$sender->sendMessage(Locale::getMessage($sender, "in-creative"));
 			return;
 		}
-		foreach (Settings::getBlacklist() as $blacklistedItem) {
-			if($item->getId() == $blacklistedItem->getId() && $item->getDamage() == $blacklistedItem->getDamage()) {
-				$sender->sendMessage(Locale::getMessage($sender, "item-blacklisted"));
-				return;
-			}
+		if(Utils::isBlacklisted($item)) {
+			$sender->sendMessage(Locale::getMessage($sender, "item-blacklisted"));
+			return;
 		}
 		if(!isset($args["price"]) || !is_numeric($args["price"])) {
 			Locale::getMessage($sender, "invalid-price");
