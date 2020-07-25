@@ -11,6 +11,7 @@ class Settings {
 	private static $expireInterval = 48;
 	private static $listingPrice = 0;
 	private static $creativeSale = false;
+	private static $allowLore = true;
 	private static $maxItems = 45;
 	private static $minPrice = 0;
 	private static $maxPrice = -1;
@@ -64,16 +65,29 @@ class Settings {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public static function allowLore(): bool {
+		return self::$allowLore;
+	}
+
+	/**
 	 * @return int
 	 */
 	public static function getMaxItems(): int {
 		return self::$maxItems;
 	}
 
+	/**
+	 * @return int
+	 */
 	public static function getMinPrice() : int {
 		return self::$minPrice;
 	}
 
+	/**
+	 * @return int
+	 */
 	public static function getMaxPrice() : int {
 		return self::$maxPrice;
 	}

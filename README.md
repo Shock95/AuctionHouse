@@ -23,28 +23,28 @@ Check the [releases tab](https://github.com/Shock95x/AuctionHouse/releases) or [
 ## Config  
 ```yaml  
 ---  
-# DO NOT EDIT THIS VALUE, INTERNAL USE ONLY.  
-config-version: 3  
-# Sets the prefix for this plugin.  
-prefix: "[&l&6Auction House&r]"  
-# Minimum price required to create a listing  
+# Sets the prefix for this plugin.
+prefix: "[&l&6Auction House&r]"
+# Minimum price required to create a listing
 min-price: 0
-# Maximum price a listing can have (-1 = No limit)  
+# Maximum price a listing can have (-1 = No limit)
 max-price: -1
-# Sets the default language for the plugin, you can edit text and messages in this file.  
+# Sets the default language for the plugin, you can edit text and messages in this file.
 default-language: en_US
-# Sets the amount of hours a listing is active before being automatically cancelled and expired.  
-expire-interval: 48  
-# Sets the price it costs to list one item on the auction house.  
-listing-price: 0  
-# Allows or blocks players in creative mode from selling items.  
-creative-sale: false  
-# The maximum amount of listings a player can have.  
-max-items: 45  
-# Items that cannot be listed on the auction. Refer to https://minecraftitemids.com/ or https://minecraft-ids.grahamedgecombe.com/ for a list of item ids.  
-blacklist:  
-  - '1000' #Example items, these items dont exist in MC, but you should use ones that do if you want.  
-  - '1001:12'  
+# Sets the amount of hours a listing is active before being automatically cancelled and expired.
+expire-interval: 48
+# Sets the price it costs to list one item on the auction house.
+listing-price: 0
+# Allows or blocks players in creative mode from selling items.
+creative-sale: false
+# The maximum amount of listings a player can have.
+max-items: 45
+# Shows item lore on the auction house (Allows custom enchants to show)
+show-lore: true
+# Items that cannot be listed on the auction. Refer to https://minecraftitemids.com/ or https://minecraft-ids.grahamedgecombe.com/ for a list of item ids.
+blacklist:
+  - '1000' #Example items, these items dont exist in MC, but you should use ones that do if you want.
+  - '1001:12'
   - '12333:4'
 ...  
 ```  
@@ -74,5 +74,6 @@ You can contribute to this project by creating a new language file and opening a
 
 ## Credits / Virions Used
 - [InvMenu](https://github.com/Muqsit/InvMenu) (Muqsit)  
+- [Commando](https://github.com/CortexPE/Commando) (CortexPE)
 - [ConfigUpdater](https://github.com/JackMD/ConfigUpdater) (JackMD)
 - [UpdateNotifier](https://github.com/JackMD/UpdateNotifier) (JackMD)

@@ -1,12 +1,12 @@
 <?php
 namespace shock95x\auctionhouse\auction;
 
-use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\utils\BinaryStringParserInstance;
-use shock95x\auctionhouse\utils\Utils;
 use pocketmine\item\Item;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use shock95x\auctionhouse\AuctionHouse;
+use shock95x\auctionhouse\database\utils\BinaryStringParserInstance;
+use shock95x\auctionhouse\utils\Utils;
 
 class Listing {
 

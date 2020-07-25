@@ -13,7 +13,7 @@ class EconomySProvider implements EconomyProvider {
          * EconomySProvider constructor.
          */
         public function __construct(){
-                $this->economyAPI = EconomyAPI::getInstance();
+        	$this->economyAPI = EconomyAPI::getInstance();
         }
 
 		/**
@@ -23,7 +23,7 @@ class EconomySProvider implements EconomyProvider {
 		 * @throws ReflectionException
 		 */
         public function addMoney($player, int $amount): void{
-                $this->economyAPI->addMoney($player, $amount);
+        	$this->economyAPI->addMoney($player, $amount);
         }
 
 		/**
@@ -33,7 +33,7 @@ class EconomySProvider implements EconomyProvider {
 		 * @throws ReflectionException
 		 */
         public function subtractMoney($player, int $amount): void{
-                $this->economyAPI->reduceMoney($player, $amount);
+        	$this->economyAPI->reduceMoney($player, $amount);
         }
 
         /**

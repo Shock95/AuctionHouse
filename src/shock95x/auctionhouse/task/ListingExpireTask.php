@@ -1,8 +1,8 @@
 <?php
 namespace shock95x\auctionhouse\task;
 
-use shock95x\auctionhouse\database\Database;
 use pocketmine\scheduler\Task;
+use shock95x\auctionhouse\database\Database;
 
 class ListingExpireTask extends Task {
 

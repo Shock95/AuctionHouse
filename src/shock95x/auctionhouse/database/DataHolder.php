@@ -1,12 +1,12 @@
 <?php
 namespace shock95x\auctionhouse\database;
 
+use pocketmine\Player;
 use shock95x\auctionhouse\auction\Listing;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\event\AuctionStartEvent;
 use shock95x\auctionhouse\task\ListingExpireTask;
 use shock95x\auctionhouse\utils\Utils;
-use pocketmine\Player;
 use SOFe\AwaitGenerator\Await;
 
 class DataHolder {
@@ -34,6 +34,7 @@ class DataHolder {
 	/**
 	 * @param Player $player
 	 * @param bool $expired
+	 *
 	 * @return Listing[]
 	 */
 	public static function getListingsByPlayer(Player $player, bool $expired = false) {
@@ -55,10 +56,34 @@ class DataHolder {
 	}
 
 	/**
+	 * @param string $player
+	 * @param bool $expired
+	 *
+	 * @return Listing[]
+	 */
+	public static function getListingsByUsername(string $player, bool $expired = false) {
+		$array = [];
+		foreach((array) self::$listings as $listing) {
+			if(strtolower($listing->getSeller()) == $player) {
+				if($expired) {
+					if($listing->isExpired()) {
+						$array[] = $listing;
+					}
+				} else {
+					if(!$listing->isExpired()) {
+						$array[] = $listing;
+					}
+				}
+			}
+		}
+		return $array;
+	}
+
+	/**
 	 * @param int $id
 	 * @return Listing
 	 */
-	public static function getListingById(int $id) : Listing {
+	public static function getListingById(int $id) : ?Listing {
 		foreach((array) self::$listings as $listing) {
 			if($listing->getMarketId() == $id) {
 				return $listing;
