@@ -95,6 +95,7 @@ class Database {
 			"end_time" => $endTime,
 			"expired" => $expired
 		]);
+		$this->database->waitAll();
 	}
 
 	public function fetchAll() : Generator {
