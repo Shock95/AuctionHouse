@@ -38,7 +38,7 @@ item-blacklisted: "&cThat item is not allowed to be put on the auction house!"
 invalid-balance: "&cYou do not have enough money to list an auction."
 listing-gone: "&cThis listing no longer exists."
 price-range: "&cInvalid price range"                                                                         #@min, @max
-player-not-found: "&cThis player has no listings."
+player-not-found: "&cThis player has no active listings."
 player-listings-usage: "&cView your listings with /ah listings"
 
 # Items in the menu UI

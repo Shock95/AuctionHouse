@@ -41,7 +41,7 @@ class AdminMenu extends AHMenu {
 	
 	public function renderItems() {
 		parent::renderItems();
-		$list = DataHolder::getListings();
+		$list = DataHolder::getListings(true);
 		if($this->page < 1) {
 			$size = count($list);
 			$this->page = $size / 45;

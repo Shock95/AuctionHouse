@@ -57,7 +57,9 @@ blacklist:
 | /ah shop | Opens the shop menu    |  
 | /ah sell **[price]** | Allows player to list items in their hand on the auction house. **[price]** is the amount that the player is listing the item to sell for     |  
 | /ah listings | Shows all active listings of the player|  
-| /ah update | Allows player to reload the config and save the database (OP command) |  
+| /ah listings **[player]**| Shows all active listings of a specific player|  
+| /ah admin | Opens the AuctionHouse admin menu (OP Command)|  
+| /ah reload | Allows player to reload the config and save the database (OP command) |  
 | /ah about | Shows AuctionHouse version the server is running and author of this plugin |  
 ---  
 ## API  

@@ -32,9 +32,7 @@ class PlayerListingMenu extends AHMenu {
 	}
 
 	public function setItems(int $page, int $max, int $total) : void {
-		$description = Locale::getMessage($this->getPlayer(), "listings-description", true, false);
 		$stats = Locale::getMessage($this->getPlayer(), "listings-stats", true, false);
-		$this->getInventory()->setItem(53, Item::get($description["id"])->setCustomName(TextFormat::RESET . $description["name"])->setLore(preg_filter('/^/', TextFormat::RESET, $description["lore"])));
 		$this->getInventory()->setItem(49, Item::get($stats["id"])->setCustomName(TextFormat::RESET . $stats["name"])->setLore(str_replace(["%page%", "%max%", "%total%"], [$page, $max, $total], preg_filter('/^/', TextFormat::RESET, $stats["lore"]))));
 	}
 
