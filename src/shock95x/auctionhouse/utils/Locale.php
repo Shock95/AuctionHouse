@@ -13,14 +13,14 @@ class Locale {
 	public static $translation;
 
 	public static function init(AuctionHouse $plugin) {
-		Locale::loadLanguages($plugin->getDataFolder());
+		self::loadLanguages($plugin->getDataFolder());
 
-		if(empty(Locale::$translation)) {
+		if(empty(self::$translation)) {
 			$plugin->getLogger()->error("No language file has been found, disabling plugin...");
 			$plugin->disablePlugin();
 			return;
 		}
-		if(!isset(Locale::$translation[strtolower(Settings::getDefaultLang())])) {
+		if(!isset(self::$translation[strtolower(Settings::getDefaultLang())])) {
 			$plugin->getLogger()->error("Default language file could not be found, disabling plugin...");
 			$plugin->disablePlugin();
 			return;
@@ -31,8 +31,8 @@ class Locale {
 		foreach(glob($dataFolder . "language/*.yml") as $file) {
 			$locale = new Config($file, Config::YAML);
 			$localeCode = basename($file, ".yml");
-			Locale::$translation[strtolower($localeCode)] = $locale->getAll();
-			array_walk_recursive(Locale::$translation[strtolower($localeCode)], function (&$element) {
+			self::$translation[strtolower($localeCode)] = $locale->getAll();
+			array_walk_recursive(self::$translation[strtolower($localeCode)], function (&$element) {
 				$element = str_replace("&", "\xc2\xa7", $element);
 			});
 		}
@@ -49,14 +49,14 @@ class Locale {
 	 */
 	public static function getMessage(?Player $sender, $key, bool $return = false, $prefix = true) {
 		$locale = Settings::getDefaultLang();
-		if(isset(Locale::$translation[strtolower($sender->getLocale())])) {
+		if(isset(self::$translation[strtolower($sender->getLocale())])) {
 			$locale = $sender->getLocale();
 		}
-		if(!isset(Locale::$translation[strtolower($locale)][$key])) {
+		if(!isset(self::$translation[strtolower($locale)][$key])) {
 			Server::getInstance()->getLogger()->warning("Key '" . $key . "' could not be found in the '" . $locale . "' language file, add this key to the language file or update the file by deleting it and restarting the server.");
 			return false;
 		}
-		$message = $prefix ? Utils::prefixMessage(Locale::$translation[strtolower($locale)][$key]) : Locale::$translation[strtolower($locale)][$key];
+		$message = $prefix ? Utils::prefixMessage(self::$translation[strtolower($locale)][$key]) : self::$translation[strtolower($locale)][$key];
 		if($return) return $message;
 		if($sender != null) $sender->sendMessage($message);
 		return "";

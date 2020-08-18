@@ -1,6 +1,4 @@
 --- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/Shock95x/AuctionHouse
-branches:
-- master
 projects:
   AuctionHouse:
     path: ""

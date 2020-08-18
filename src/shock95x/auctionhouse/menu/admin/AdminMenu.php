@@ -14,12 +14,10 @@ use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\AHMenu;
 use shock95x\auctionhouse\task\MenuDelayTask;
 use shock95x\auctionhouse\utils\Locale;
-use shock95x\auctionhouse\utils\Pagination;
+use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 
 class AdminMenu extends AHMenu {
-	
-	private $page;
 	
 	public function __construct(Player $player, int $page = 1) {
 		$this->setName(Locale::getMessage($player, "admin-menu-name", true, false));
@@ -40,51 +38,37 @@ class AdminMenu extends AHMenu {
 	}
 	
 	public function renderItems() {
-		parent::renderItems();
-		$list = DataHolder::getListings(true);
-		if($this->page < 1) {
-			$size = count($list);
-			$this->page = $size / 45;
-			if ($size % 45 > 0) {
-				++$this->page;
-			}
-		}
-		$size2 = count($list);
-		$n2 = ($this->page - 1) * 45;
-		$n3 = ($n2 + 44 >= $size2) ? ($size2 - 1) : ($this->page * 45 - 1);
-		if ($n3 - $n2 + 1 < 1 && $this->page != 1) {
-			$this->page = 1;
-			$this->renderItems();
-			return false;
-		}
-		$n4 = 0;
-		
-		$inventory = $this->getInventory();
-		$player = $this->getPlayer();
+        $total = count(DataHolder::getListings(true));
+        $max = 0;
+        for($i = 0; $i < $total; $i += 45) $max++;
+        if($max == 0) $max = 1;
 
-		for($j = $n2; $j <= $n3; ++$j) {
-			++$n4;
-			if(!isset($list[$j])) break;
-			$auction = $list[$j];
+        $this->page < 1 ? $this->page = 1 : $this->page;
+        $start = ($this->page - 1) * 45;
+        $listings = array_slice(DataHolder::getListings(true), $start, 45);
+
+        if($this->page > $max) {
+            $this->page = 1;
+            $this->renderItems();
+            return false;
+        }
+        foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
 			if($auction->isExpired()) {
-				$status = Locale::getMessage($player, "status-expired", true, false);
+				$status = Locale::getMessage($this->getPlayer(), "status-expired", true, false);
 			} else {
-				$status = Locale::getMessage($player, "status-active", true, false);
+				$status = Locale::getMessage($this->getPlayer(), "status-active", true, false);
 			}
-			$listedItem = Locale::getMessage($player, "listed-item-admin", true, false);
-			$item->setNamedTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore(str_replace(["%price%", "%seller%", "%status%"], [$auction->getPrice(true), $auction->getSeller(), $status], preg_filter('/^/', TextFormat::RESET, $listedItem)));
+			$listedItem = Locale::getMessage($this->getPlayer(), "listed-item-admin", true, false);
+			$item->setNamedTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore(str_replace(["%price%", "%seller%", "%status%"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $status], preg_filter('/^/', TextFormat::RESET, $listedItem)));
 
-			$inventory->addItem($item);
+            $this->getInventory()->setItem($key, $item);
 		}
-
-		$total = count($list);
-		$max = 0;
-		for($i = 0; $i < $total; $i += 45) $max++;
-		if($max == 0) $max = 1;
-		
+        for($i = count($listings); $i < 45; ++$i) {
+            $this->getInventory()->setItem($i, Item::get(Item::AIR));
+        }
 		$this->setItems($this->page, $max, $total, count((array) DataHolder::getListings(true)));
 	}
 
@@ -100,20 +84,6 @@ class AdminMenu extends AHMenu {
 			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new MenuDelayTask($player, new ManageListingMenu($player, $listing)), 10);
 		}
 		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
-	}
-
-	public function handlePagination(int $page) {
-		switch($page) {
-			case Pagination::BACK:
-				new AdminMenu($this->getPlayer(), $this->page - 1);
-				break;
-			case Pagination::NEXT:
-				new AdminMenu($this->getPlayer(), $this->page + 1);
-				break;
-			case Pagination::REFRESH:
-				new AdminMenu($this->getPlayer(), $this->page);
-				break;
-		}
 	}
 
 	public function show(Player $player) {

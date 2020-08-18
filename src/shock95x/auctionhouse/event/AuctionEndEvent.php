@@ -32,7 +32,7 @@ class AuctionEndEvent extends Event {
 		return $this->type;
 	}
 
-	public function getPurchaser() : Player {
+	public function getPurchaser() : ?Player {
 		return $this->purchaser;
 	}
 

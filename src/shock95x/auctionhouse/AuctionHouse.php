@@ -58,6 +58,7 @@ class AuctionHouse extends PluginBase {
 			$this->getServer()->getPluginManager()->disablePlugin($this);
 			return;
 		}
+		Settings::setMonetaryUnit($this->getEconomyProvider()->getMonetaryUnit());
 		if($this->getServer()->getPluginManager()->getPlugin("InvCrashFix") == null) {
 			$this->getLogger()->warning("InvCrashFix is required to fix client crashes on 1.16, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
 		}
@@ -65,16 +66,14 @@ class AuctionHouse extends PluginBase {
 	}
 
 	public function onDisable() {
-		if(!isset($this->database)) return;
-		$this->database->save();
-		$this->database->close();
+		if(isset($this->database)) {
+            $this->database->close();
+        }
 	}
 
 	public function reload() {
 		Locale::init($this);
-		$this->getConfig()->reload();
 		Settings::init($this->getConfig());
-		$this->database->save();
 		$this->getLogger()->info("Configuration files reloaded");
 	}
 

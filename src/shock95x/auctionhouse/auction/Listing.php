@@ -2,54 +2,65 @@
 namespace shock95x\auctionhouse\auction;
 
 use pocketmine\item\Item;
-use pocketmine\nbt\BigEndianNBTStream;
-use pocketmine\nbt\tag\CompoundTag;
-use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\utils\BinaryStringParserInstance;
-use shock95x\auctionhouse\utils\Utils;
+use shock95x\auctionhouse\utils\Settings;
 
 class Listing {
 
-	private $data;
-	private $item;
+	private $id;
+	private $uuid;
+	private $price;
+	private $username;
+	private $endTime;
+	private $expired;
 
-	public function __construct(array $data, BinaryStringParserInstance $parser) {
-		$this->data = $data;
-		$nbt = (new BigEndianNBTStream())->readCompressed($parser->decode($data["nbt"]));
-		assert($nbt instanceof CompoundTag);
-		$this->item = Item::nbtDeserialize($nbt);
-	}
+    private $item;
 
+    public function __construct(int $id, string $uuid, int $price, string $username, int $endTime, bool $expired, Item $item) {
+        $this->id = $id;
+        $this->uuid = $uuid;
+        $this->price = $price;
+        $this->username = $username;
+        $this->endTime = $endTime;
+        $this->expired = $expired;
+        $this->item = $item;
+    }
 
-	public function getItem() : Item {
+	public function getItem(): Item {
 		return $this->item;
 	}
 
-	public function getPrice(bool $monetaryUnit = false) {
-		return $monetaryUnit ? AuctionHouse::getInstance()->economyProvider->getMonetaryUnit() . $this->data["price"] : $this->data["price"];
+	public function getPrice(bool $monetaryUnit = false, bool $formatted = false) {
+		$price = $this->price;
+    	if($formatted) {
+    		$price = number_format($price);
+	    }
+    	if($monetaryUnit) {
+    		$price = Settings::getMonetaryUnit() . $price;
+	    }
+    	return $price;
 	}
 
-	public function getSeller(bool $uuid = false) : string {
-		return $uuid ? $this->data["uuid"] : $this->data["username"];
+	public function getSeller(bool $uuid = false): string {
+		return $uuid ? $this->uuid : $this->username;
 	}
 
-	public function getMarketId() : int {
-		return $this->data["id"];
+	public function getMarketId(): int {
+		return $this->id;
 	}
 
-	public function setEndTime() {
-		$this->data["end_time"] = Utils::getEndTime();
+	public function setEndTime(int $time): void {
+		$this->endTime = $time;
 	}
 
-	public function getEndTime() : int {
-		return $this->data["end_time"];
+	public function getEndTime(): int {
+		return $this->endTime;
 	}
 
-	public function setExpired() {
-		$this->data["expired"] = true;
+	public function setExpired(bool $expired = true): void {
+		$this->expired = $expired;
 	}
 
-	public function isExpired() {
-		return $this->data["expired"];
+	public function isExpired(): bool{
+		return $this->expired;
 	}
 }

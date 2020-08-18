@@ -11,6 +11,7 @@ class Utils {
 	public const EXPIRED_MENU = 2;
 	public const ADMIN_MENU = 3;
 
+	/** @var array */
 	private static $menuOpen;
 
 	public static function getEndTime() : int {

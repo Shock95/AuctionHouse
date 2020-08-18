@@ -25,6 +25,14 @@ DELETE FROM auctions
 WHERE id = :id;
 -- # }
 
+-- # { expired
+-- #    :id string
+-- #    :expired bool
+UPDATE auctions
+SET expired = :expired
+WHERE id = :id;
+-- # }
+
 -- # { insert
 -- #    :uuid string
 -- #    :username string

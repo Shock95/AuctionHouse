@@ -28,7 +28,6 @@ class ManageListingMenu extends AHMenu {
 	}
 
 	public function renderItems() {
-		parent::renderItems();
 		$item = $this->listing->getItem();
 		$player = $this->getPlayer();
 		$inventory = $this->getInventory();

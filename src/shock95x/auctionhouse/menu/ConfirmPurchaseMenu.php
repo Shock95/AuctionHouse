@@ -13,6 +13,7 @@ use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\utils\Locale;
+use shock95x\auctionhouse\utils\Settings;
 
 class ConfirmPurchaseMenu extends AHMenu {
 
@@ -29,8 +30,6 @@ class ConfirmPurchaseMenu extends AHMenu {
 	}
 	
 	public function renderItems() {
-		parent::renderItems();
-
 		$id = $this->clickedItem->getNamedTag()->getLong("marketId");
 		$this->getInventory()->setItem(13, $this->clickedItem);
 
@@ -89,14 +88,12 @@ class ConfirmPurchaseMenu extends AHMenu {
 		$player->getInventory()->addItem($item);
 		$player->removeWindow($inventory);
 		$pl = AuctionHouse::getInstance()->getServer()->getPlayerByRawUUID($auction->getSeller(true));
-		$player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], Locale::getMessage($player, "purchased-item", true)));
+		$player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::getMessage($player, "purchased-item", true)));
 
 		if($pl != null) {
-			$pl->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true), $item->getCount()], Locale::getMessage($player, "seller-message", true)));
+			$pl->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::getMessage($player, "seller-message", true)));
 		}
 		(new AuctionEndEvent($auction, AuctionEndEvent::PURCHASED, $player))->call();
 		return true;
 	}
-
-	public function handlePagination(int $page) {}
 }

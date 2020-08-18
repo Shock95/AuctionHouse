@@ -56,11 +56,11 @@ blacklist:
 | /ah      | AuctionHouse main command, opens the shop menu if there are no specified parameters |  
 | /ah shop | Opens the shop menu    |  
 | /ah sell **[price]** | Allows player to list items in their hand on the auction house. **[price]** is the amount that the player is listing the item to sell for     |  
-| /ah listings | Shows all active listings of the player|  
-| /ah listings **[player]**| Shows all active listings of a specific player|  
-| /ah admin | Opens the AuctionHouse admin menu (OP Command)|  
-| /ah reload | Allows player to reload the config and save the database (OP command) |  
-| /ah about | Shows AuctionHouse version the server is running and author of this plugin |  
+| /ah listings | Shows all active listings of the player |  
+| /ah listings **[player]**| Shows all active listings of a specific player |  
+| /ah admin | Opens the AuctionHouse admin menu (OP Command) |  
+| /ah reload | Allows player to reload configuration files (OP command) |  
+| /ah about | Shows AuctionHouse version the server is running |  
 ---  
 ## API  
 ### Events  
@@ -76,6 +76,8 @@ You can contribute to this project by creating a new language file and opening a
 
 ## Credits / Virions Used
 - [InvMenu](https://github.com/Muqsit/InvMenu) (Muqsit)  
+- [libasynql](https://github.com/poggit/libasynql) (SOFe)
+- [await-generator](https://github.com/SOF3/await-generator) (SOFe)
 - [Commando](https://github.com/CortexPE/Commando) (CortexPE)
 - [ConfigUpdater](https://github.com/JackMD/ConfigUpdater) (JackMD)
 - [UpdateNotifier](https://github.com/JackMD/UpdateNotifier) (JackMD)

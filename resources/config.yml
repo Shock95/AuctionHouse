@@ -20,9 +20,11 @@ creative-sale: false
 max-items: 45
 # Shows item lore on the auction house
 show-lore: true
+# Formats price with commas (ex. 1,000,000)
+price-formatted: true
 # Items that cannot be listed on the auction. Refer to https://minecraftitemids.com/ or https://minecraft-ids.grahamedgecombe.com/ for a list of item ids.
 blacklist:
-  - '1000' #Example items, these items dont exist in MC, but you should use ones that do if you want.
+  - '1000' # Example items, these items dont exist in MC, but you should use ones that do if you want.
   - '1001:12'
   - '12333:4'
 

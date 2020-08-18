@@ -5,7 +5,6 @@ use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\item\Item;
-use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\Player;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
@@ -57,7 +56,7 @@ class SellCommand extends BaseSubCommand {
 		}
 		if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);
 		$sender->getInventory()->removeItem($item);
-		DataHolder::addListing($sender, (int) $price, (new BigEndianNBTStream())->writeCompressed($item->nbtSerialize()));
+		DataHolder::addListing($sender, $item, (int) $price);
 		$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $this->getEconomy()->getMonetaryUnit() . $price, $item->getCount()], Locale::getMessage($sender, "item-listed", true)));
 	}
 

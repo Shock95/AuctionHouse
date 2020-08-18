@@ -27,4 +27,4 @@ permissions:
                 description: Opens the AuctionHouse admin menu.
             auctionhouse.command.reload:
                 default: op
-                description: Allows player to reload configuration files and save to database.
+                description: Allows player to reload configuration files.

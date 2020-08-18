@@ -13,7 +13,7 @@ class MenuDelayTask extends Task {
 	private $menu;
 
 	/**
-	 * OpenPurchasesMessageForm constructor.
+	 * MenuDelayTask constructor.
 	 *
 	 * @param Player $player
 	 * @param InvMenu $menu
