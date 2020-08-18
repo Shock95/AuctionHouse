@@ -41,7 +41,7 @@ WHERE id = :id;
 -- #    :id int
 -- #    :end_time int
 -- #    :expired bool
-INSERT OR REPLACE INTO auctions(uuid, username, price, nbt, id, end_time, expired) VALUES (:uuid, :username, :price, :nbt, :id, :end_time, :expired);
+INSERT INTO auctions(uuid, username, price, nbt, id, end_time, expired) VALUES (:uuid, :username, :price, :nbt, :id, :end_time, :expired);
 -- # }
 
 -- # }
