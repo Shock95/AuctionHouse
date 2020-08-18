@@ -9,6 +9,7 @@ virions:
     - "libasynql"
     - "await-generator"
     - "UpdateNotifier"
+    - "Commando"
 permissions:
     auctionhouse.command:
         default: op
