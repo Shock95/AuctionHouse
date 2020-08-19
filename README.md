@@ -66,8 +66,12 @@ blacklist:
 ---  
 ## API  
 ### Events  
-- [shock95x\auctionhouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionStartEvent.php)  
-- [shock95x\auctionhouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionEndEvent.php)  
+| Event        | Description           |  
+| ------------- | -------------- |  
+| [shock95x\auctionhouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionStartEvent.php) | Called when an auction is started |  
+| [shock95x\auctionhouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionEndEvent.php)   | Called when an auction has ended    |  
+| [shock95x\auctionhouse\event\ItemListedEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/ItemListedEvent.php)   | Called when an item is listed by player (cancellable) |  
+| [shock95x\auctionhouse\event\MenuCloseEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/MenuCloseEvent.php) | Called when a menu is closed by player |  
   
 ## Contributing  
 You can contribute to this project by creating a new language file and opening a PR!  
