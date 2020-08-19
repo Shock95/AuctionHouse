@@ -41,7 +41,8 @@ WHERE id = :id;
 -- #    :id int
 -- #    :end_time int
 -- #    :expired bool
-INSERT INTO auctions(uuid, username, price, nbt, id, end_time, expired) VALUES (:uuid, :username, :price, :nbt, :id, :end_time, :expired);
+INSERT INTO auctions(uuid, username, price, nbt, id, end_time, expired) VALUES (:uuid, :username, :price, :nbt, :id, :end_time, :expired)
+ON CONFLICT(id) DO UPDATE SET id=id+1;
 -- # }
 
 -- # }
