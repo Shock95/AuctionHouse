@@ -6,7 +6,7 @@ lang-version: 2
 
 # The titles of the Auction House UI
 menu-name: "&l&6Auction House"
-listings-menu-name: "&aActive Listings"
+listings-menu-name: "&2Active Listings"
 expired-menu-name: "&cCancelled / Expired Listings"
 purchase-menu-name: "Confirm Purchase"
 admin-menu-name: "&l&cAdmin Menu"

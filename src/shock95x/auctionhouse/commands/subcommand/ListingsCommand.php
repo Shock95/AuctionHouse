@@ -21,7 +21,7 @@ class ListingsCommand extends BaseSubCommand {
 			return;
 		}
 		if(!isset($args["player"])) {
-			new ListingsMenu($sender);
+			new ListingsMenu($sender, false);
 			return;
 		}
 		$player = strtolower($args["player"]);

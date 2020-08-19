@@ -4,18 +4,16 @@ namespace shock95x\auctionhouse\commands\subcommand;
 use CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
-use shock95x\auctionhouse\menu\admin\AdminMenu;
+use shock95x\auctionhouse\menu\ExpiredMenu;
 
-class AdminCommand extends BaseSubCommand {
+class ExpiredCommand extends BaseSubCommand {
 
-	protected function prepare(): void {
-		$this->setPermission("auctionhouse.command.admin");
-	}
+	protected function prepare(): void {}
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		if(!$sender instanceof Player) {
 			return;
 		}
-		new AdminMenu($sender, false);
+		new ExpiredMenu($sender, false);
 	}
 }

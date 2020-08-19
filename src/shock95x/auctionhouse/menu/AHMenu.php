@@ -27,10 +27,11 @@ abstract class AHMenu extends InvMenu {
 
 	protected $inventory;
 	
-	public function __construct(Player $player) {
+	public function __construct(Player $player, bool $returnMain = false, bool $pagination = false) {
 		$type = InvMenuHandler::getMenuType($this->inventoryType);
 		parent::__construct($type);
-
+		$this->returnMain = $returnMain;
+		$this->pagination = $pagination;
 		// workaround for recursive menus
 		if(PlayerManager::get($player)->getCurrentMenu() != null && !$this->newMenu) {
 			$menu = PlayerManager::get($player)->getCurrentMenu();
@@ -41,13 +42,11 @@ abstract class AHMenu extends InvMenu {
 			$this->inventory = $type->createInventory();
 			$this->setListener([$this, "handle"]);
 		}
-
 		$this->player = $player;
-		$this->readonly();
 
+		$this->readonly();
 		$this->renderPagination();
 		$this->renderItems();
-
 		$this->show($player);
 	}
 

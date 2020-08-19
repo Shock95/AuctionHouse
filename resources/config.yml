@@ -12,7 +12,7 @@ max-price: -1
 default-language: en_US
 # Sets the amount of hours a listing is active before being automatically cancelled and expired.
 expire-interval: 48
-# Sets the price it costs to list one item on the auction house.
+# Sets the price it costs to list an item on the auction house.
 listing-price: 0
 # Allows or blocks players in creative mode from selling items.
 creative-sale: false

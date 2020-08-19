@@ -19,13 +19,10 @@ use shock95x\auctionhouse\utils\Utils;
 
 class AdminMenu extends AHMenu {
 	
-	public function __construct(Player $player, int $page = 1) {
+	public function __construct(Player $player, bool $returnMain = true, int $page = 1) {
 		$this->setName(Locale::getMessage($player, "admin-menu-name", true, false));
-
 		$this->page = $page;
-		$this->returnMain = true;
-		$this->pagination = true;
-		parent::__construct($player);
+		parent::__construct($player, $returnMain, true);
 	}
 	
 	public function setItems(int $page, int $max, int $expiredCount, int $listingCount) {
