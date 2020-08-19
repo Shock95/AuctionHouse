@@ -42,6 +42,7 @@ WHERE id = :id;
 -- #    :end_time int
 -- #    :expired bool
 INSERT INTO auctions(uuid, username, price, nbt, id, end_time, expired) VALUES (:uuid, :username, :price, :nbt, :id, :end_time, :expired)
+ON DUPLICATE KEY UPDATE id = id + 1;
 -- # }
 
 -- # }

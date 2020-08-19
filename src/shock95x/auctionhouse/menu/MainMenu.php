@@ -26,7 +26,7 @@ class MainMenu extends AHMenu {
 		$this->setName(Locale::getMessage($player, "menu-name", true, false));
 		$this->page = $page;
 		$this->pagination = true;
-		parent::__construct($player);
+		parent::__construct($player, false, true);
 	}
 
 	public function setItems(int $page, int $max, int $total, int $selling, int $expiredNum): void {
