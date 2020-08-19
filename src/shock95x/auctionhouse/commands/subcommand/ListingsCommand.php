@@ -30,7 +30,7 @@ class ListingsCommand extends BaseSubCommand {
 			Locale::getMessage($sender, "player-listings-usage");
 			return;
 		}
-		if(empty(DataHolder::getListingsByUsername($player)) || DataHolder::getListingsByUsername($player) == null) {
+		if(empty(DataHolder::getListingsByUsername($player))) {
 			Locale::getMessage($sender, "player-not-found");
 			return;
 		}

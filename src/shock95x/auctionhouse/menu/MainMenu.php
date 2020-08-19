@@ -87,7 +87,7 @@ class MainMenu extends AHMenu {
         for($i = count($listings); $i < 45; ++$i) {
             $this->getInventory()->setItem($i, Item::get(Item::AIR));
         }
-		$this->setItems($this->page, $max, $total, count((array) DataHolder::getListingsByPlayer($this->getPlayer())), count((array) DataHolder::getListingsByPlayer($this->getPlayer(), true)));
+		$this->setItems($this->page, $max, $total, count(DataHolder::getListingsByPlayer($this->getPlayer())), count(DataHolder::getListingsByPlayer($this->getPlayer(), true)));
 		return true;
 	}
 

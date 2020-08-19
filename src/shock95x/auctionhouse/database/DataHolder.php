@@ -50,7 +50,7 @@ class DataHolder {
 	 */
 	public static function getListingsByPlayer(Player $player, bool $expired = false) {
 		$array = [];
-		foreach((array) self::$listings as $listing) {
+		foreach(self::$listings as $listing) {
 			if($listing->getSeller(true) == $player->getRawUniqueId()) {
 				if($expired) {
 					if($listing->isExpired()) {
@@ -74,7 +74,7 @@ class DataHolder {
 	 */
 	public static function getListingsByUsername(string $player, bool $expired = false) {
 		$array = [];
-		foreach((array) self::$listings as $listing) {
+		foreach(self::$listings as $listing) {
 			if(strtolower($listing->getSeller()) == $player) {
 				if($expired) {
 					if($listing->isExpired()) {
@@ -94,8 +94,8 @@ class DataHolder {
 	 * @param int $id
 	 * @return Listing
 	 */
-	public static function getListingById(int $id) : ?Listing {
-		foreach((array) self::$listings as $listing) {
+	public static function getListingById(int $id): ?Listing {
+		foreach(self::$listings as $listing) {
 			if($listing->getMarketId() == $id) {
 				return $listing;
 			}
@@ -120,7 +120,7 @@ class DataHolder {
 	public static function getListings(bool $expired = false) {
 		if(!$expired) {
 			$array = [];
-			foreach ((array) self::$listings as $listing) {
+			foreach (self::$listings as $listing) {
 				if(!$listing->isExpired()) {
 					$array[] = $listing;
 				}
@@ -136,7 +136,7 @@ class DataHolder {
     }
 
 	public static function removeAuction(Listing $auction) {
-		$index = array_search($auction, (array) self::$listings);
+		$index = array_search($auction, self::$listings);
 		if($index !== false){
 			unset(self::$listings[$index]);
 		}

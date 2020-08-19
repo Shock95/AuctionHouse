@@ -11,7 +11,7 @@ expired-menu-name: "&cCancelled / Expired Listings"
 purchase-menu-name: "Confirm Purchase"
 admin-menu-name: "&l&cAdmin Menu"
 manage-listing-name: "&l&eManage Listing"
-player-listing: "&l&a{player}'s &6Listings"
+player-listing: "&2{player}'s &6Listings"
 
 # Chat messages
 item-purchased: "&eItem &6purchased&e!"

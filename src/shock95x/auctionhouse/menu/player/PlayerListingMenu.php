@@ -24,8 +24,7 @@ class PlayerListingMenu extends AHMenu {
 		$this->setName(str_replace("{player}", $username, Locale::getMessage($player, "player-listing", true, false)));
 		$this->page = $page;
 		$this->username = $username;
-		$this->pagination = true;
-		parent::__construct($player);
+		parent::__construct($player, false, true);
 	}
 
 	public function setItems(int $page, int $max, int $total) : void {
