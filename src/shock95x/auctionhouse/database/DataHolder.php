@@ -103,13 +103,14 @@ class DataHolder {
 		return null;
 	}
 
-    public static function addListing(Player $player, Item $item, int $price) {
+    public static function addListing(Player $player, Item $item, int $price): Listing {
 	    $listing = new Listing(time(), $player->getRawUniqueId(), $price, $player->getName(), Utils::getEndTime(), false, $item);
         self::$listings[] = $listing;
 
         $nbt = self::$endianStream->writeCompressed($item->nbtSerialize());
         self::$database->insert($listing->getSeller(true), $listing->getSeller(), $listing->getPrice(), $nbt, $listing->getEndTime(), $listing->isExpired(), $listing->getMarketId());
         (new AuctionStartEvent($listing))->call();
+        return $listing;
     }
 
 	/**

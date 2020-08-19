@@ -9,6 +9,7 @@ use pocketmine\Player;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\economy\EconomyProvider;
+use shock95x\auctionhouse\event\ItemListedEvent;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
@@ -54,12 +55,15 @@ class SellCommand extends BaseSubCommand {
 			$sender->sendMessage(str_replace(["@min", "@max"], [Settings::getMinPrice(), Settings::getMaxPrice()], Locale::getMessage($sender, "price-range", true)));
 			return;
 		}
-		if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);
-		$sender->getInventory()->removeItem($item);
-		DataHolder::addListing($sender, $item, (int) $price);
-		$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $this->getEconomy()->getMonetaryUnit() . $price, $item->getCount()], Locale::getMessage($sender, "item-listed", true)));
+		$event = new ItemListedEvent($sender, $item, $price);
+		$event->call();
+		if(!$event->isCancelled()) {
+			if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);
+			$sender->getInventory()->removeItem($item);
+			DataHolder::addListing($sender, $item, (int) $price);
+			$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $this->getEconomy()->getMonetaryUnit() . $price, $item->getCount()], Locale::getMessage($sender, "item-listed", true)));
+		}
 	}
-
 
 	public function getEconomy() : ?EconomyProvider {
 		if(!$this->getPlugin() instanceof AuctionHouse) {

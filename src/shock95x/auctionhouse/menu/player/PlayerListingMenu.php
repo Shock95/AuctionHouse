@@ -14,6 +14,7 @@ use shock95x\auctionhouse\menu\ConfirmPurchaseMenu;
 use shock95x\auctionhouse\task\MenuDelayTask;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
+use shock95x\auctionhouse\utils\Utils;
 
 class PlayerListingMenu extends AHMenu {
 
@@ -72,5 +73,10 @@ class PlayerListingMenu extends AHMenu {
 			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new MenuDelayTask($player, new ConfirmPurchaseMenu($this->getPlayer(), clone $itemClicked)), 10);
 		}
 		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
+	}
+
+	public function show(Player $player) {
+		Utils::setViewingMenu($player, Utils::PLAYER_LISTINGS_MENU);
+		parent::show($player);
 	}
 }

@@ -10,6 +10,9 @@ class Utils {
 	public const LISTINGS_MENU = 1;
 	public const EXPIRED_MENU = 2;
 	public const ADMIN_MENU = 3;
+	public const CONFIRM_PURCHASE_MENU = 4;
+	public const MANAGE_LISTING_MENU = 5;
+	public const PLAYER_LISTINGS_MENU = 6;
 
 	/** @var array */
 	private static $menuOpen;

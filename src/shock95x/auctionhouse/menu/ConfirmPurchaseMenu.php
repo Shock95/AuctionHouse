@@ -14,6 +14,7 @@ use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
+use shock95x\auctionhouse\utils\Utils;
 
 class ConfirmPurchaseMenu extends AHMenu {
 
@@ -72,7 +73,7 @@ class ConfirmPurchaseMenu extends AHMenu {
 			Locale::getMessage($player, "self-purchase");
 			return false;
 		}
-		if (AuctionHouse::getInstance()->economyProvider->getMoney($player) < $auction->getPrice()) {
+		if (AuctionHouse::getInstance()->getEconomyProvider()->getMoney($player) < $auction->getPrice()) {
 			$player->removeWindow($inventory);
 			Locale::getMessage($player, "cannot-afford");
 			return false;
@@ -83,8 +84,8 @@ class ConfirmPurchaseMenu extends AHMenu {
 			return false;
 		}
 		DataHolder::removeAuction($auction);
-		AuctionHouse::getInstance()->economyProvider->addMoney($auction->getSeller(), $auction->getPrice());
-		AuctionHouse::getInstance()->economyProvider->subtractMoney($player, $auction->getPrice());
+		AuctionHouse::getInstance()->getEconomyProvider()->addMoney($auction->getSeller(), $auction->getPrice());
+		AuctionHouse::getInstance()->getEconomyProvider()->subtractMoney($player, $auction->getPrice());
 		$player->getInventory()->addItem($item);
 		$player->removeWindow($inventory);
 		$pl = AuctionHouse::getInstance()->getServer()->getPlayerByRawUUID($auction->getSeller(true));
@@ -95,5 +96,10 @@ class ConfirmPurchaseMenu extends AHMenu {
 		}
 		(new AuctionEndEvent($auction, AuctionEndEvent::PURCHASED, $player))->call();
 		return true;
+	}
+
+	public function show(Player $player) {
+		Utils::setViewingMenu($player, Utils::CONFIRM_PURCHASE_MENU);
+		parent::show($player);
 	}
 }

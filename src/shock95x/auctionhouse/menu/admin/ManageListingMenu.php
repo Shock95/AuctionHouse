@@ -14,6 +14,7 @@ use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\menu\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
+use shock95x\auctionhouse\utils\Utils;
 
 class ManageListingMenu extends AHMenu {
 
@@ -72,5 +73,8 @@ class ManageListingMenu extends AHMenu {
 		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
 	}
 
-	public function handlePagination(int $page) {}
+	public function show(Player $player) {
+		Utils::setViewingMenu($player, Utils::MANAGE_LISTING_MENU);
+		parent::show($player);
+	}
 }
