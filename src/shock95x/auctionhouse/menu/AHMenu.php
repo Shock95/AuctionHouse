@@ -32,6 +32,7 @@ abstract class AHMenu extends InvMenu {
 		parent::__construct($type);
 		$this->returnMain = $returnMain;
 		$this->pagination = $pagination;
+
 		// workaround for recursive menus
 		if(PlayerManager::get($player)->getCurrentMenu() != null && !$this->newMenu) {
 			$menu = PlayerManager::get($player)->getCurrentMenu();

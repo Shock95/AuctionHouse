@@ -11,9 +11,11 @@ AuctionHouse allows players to list their items for sale and purchase items that
 >- Config (See below)  
 >- Multi-lang support  
 >- Custom Events  
+>- Cancel Listings
 >- Economy plugin support (EconomyAPI as of now)  
 >- MySQL and SQLite database support  
 >- Customizable messages  
+>- Admin menu  
 - And more coming soon!  
 ---  
 ## Download  
