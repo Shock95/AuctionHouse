@@ -34,7 +34,7 @@ class DataHolder {
 			    $nbt = $listing["nbt"];
                 $nbt = self::$endianStream->readCompressed(self::$database->getParser()->decode($nbt));
                 if($nbt instanceof CompoundTag) {
-                    self::$listings[] = new Listing($listing["id"], $listing["uuid"], $listing["price"], $listing["username"], $listing["end_time"], $listing["expired"], Item::nbtDeserialize($nbt));
+                	array_unshift(self::$listings,  new Listing($listing["id"], $listing["uuid"], $listing["price"], $listing["username"], $listing["end_time"], $listing["expired"], Item::nbtDeserialize($nbt)));
                 }
 			}
 		});
@@ -105,7 +105,7 @@ class DataHolder {
 
     public static function addListing(Player $player, Item $item, int $price): Listing {
 	    $listing = new Listing(time(), $player->getRawUniqueId(), $price, $player->getName(), Utils::getEndTime(), false, $item);
-        self::$listings[] = $listing;
+	    array_unshift(self::$listings, $listing);
 
         $nbt = self::$endianStream->writeCompressed($item->nbtSerialize());
         self::$database->insert($listing->getSeller(true), $listing->getSeller(), $listing->getPrice(), $nbt, $listing->getEndTime(), $listing->isExpired(), $listing->getMarketId());
