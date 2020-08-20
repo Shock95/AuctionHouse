@@ -130,6 +130,19 @@ class DataHolder {
 		return self::$listings;
 	}
 
+	/**
+	 * @return Listing[]
+	 */
+	public static function getExpiredListings() {
+		$array = [];
+		foreach(self::$listings as $listing) {
+			if($listing->isExpired()) {
+				$array[] = $listing;
+			}
+		}
+		return $array;
+	}
+
     public static function setExpired(Listing $auction, bool $expired = true) {
         $auction->setExpired($expired);
         self::$database->setExpired($auction->getMarketId(), $expired);

@@ -66,7 +66,7 @@ class AdminMenu extends AHMenu {
         for($i = count($listings); $i < 45; ++$i) {
             $this->getInventory()->setItem($i, Item::get(Item::AIR));
         }
-		$this->setItems($this->page, $max, $total, count(DataHolder::getListings(true)));
+		$this->setItems($this->page, $max, count(DataHolder::getExpiredListings()), $total);
 	}
 
 	public function handle(Player $player, Item $itemClicked, Item $itemClickedWith, SlotChangeAction $action): bool {
