@@ -25,6 +25,7 @@ abstract class AHMenu extends InvMenu {
 	protected $pagination = false;
 	protected $newMenu = false;
 
+	/** @var InvMenuInventory  */
 	protected $inventory;
 	
 	public function __construct(Player $player, bool $returnMain = false, bool $pagination = false) {
@@ -109,7 +110,7 @@ abstract class AHMenu extends InvMenu {
 		return $this->player;
 	}
 
-	public function getInventory() {
+	public function getInventory(): InvMenuInventory {
 		return $this->inventory;
 	}
 

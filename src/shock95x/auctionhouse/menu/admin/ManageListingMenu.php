@@ -67,7 +67,7 @@ class ManageListingMenu extends AHMenu {
 		if($itemClicked->getNamedTag()->hasTag("delete")) {
 			DataHolder::removeAuction($listing);
 			(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_PURGED))->call();
-			new AdminMenu($player);
+			new AdminMenu($player, false);
 			return true;
 		}
 		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
