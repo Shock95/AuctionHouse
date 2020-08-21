@@ -1,14 +1,17 @@
 ---
 # DO NOT EDIT THIS VALUE, INTERNAL USE ONLY. #
-lang-version: 1
+lang-version: 2
 
 # Refer to https://minecraft.gamepedia.com/Formatting_codes for formatting codes, you can replace the '§' symbol with a '&'
 
 # The titles of the Auction House UI
 menu-name: "&l&6Auction House"
-listings-menu-name: "&6Active Listings"
-expired-menu-name: "&6Cancelled / Expired Listings"
+listings-menu-name: "&2Active Listings"
+expired-menu-name: "&cCancelled / Expired Listings"
 purchase-menu-name: "Confirm Purchase"
+admin-menu-name: "&l&cAdmin Menu"
+manage-listing-name: "&l&eManage Listing"
+player-listing: "&2{player}'s &6Listings"
 
 # Chat messages
 item-purchased: "&eItem &6purchased&e!"
@@ -30,11 +33,13 @@ not-enough-space: "Not enough inventory space"
 self-purchase: "&cYou cannot buy your own items on the auction house!"
 item-gone: "This item no longer exists"
 no-item: "&cYou must be holding an item in your hand!"
-cannot-afford: "&6You do not have enough money to buy this item."
+cannot-afford: "&cYou do not have enough money to buy this item."
 item-blacklisted: "&cThat item is not allowed to be put on the auction house!"
 invalid-balance: "&cYou do not have enough money to list an auction."
 listing-gone: "&cThis listing no longer exists."
 price-range: "&cInvalid price range"                                                                         #@min, @max
+player-not-found: "&cThis player has no active listings."
+player-listings-usage: "&cView your listings with /ah listings"
 
 # Items in the menu UI
 listed-item:
@@ -83,6 +88,47 @@ view-expired-items:
       - "&aitems you have cancelled or have expired."
       - ""
       - "&9Items to collect: &e%expired%"
+
+# Admin Menu
+view-admin-menu:
+    id: 331
+    name: "&e&k----- &r&l&c Admin Menu &r&e&k-----"
+    lore:
+        - "&r&aClick here to view the admin menu."
+        #- "&aYou can remove specific items here."
+main-stats-admin:
+    # %page% = Current page
+    # %max% = Max page
+    # %expired% = Expired listing count
+    # %total% = Total listing count
+    id: "152"
+    name: "&l&cAdmin Menu"
+    lore:
+        - "&aPage %page%/%max%"
+        - "&7Total of &b%total% &7items"
+        - "&c(&b%expired% &cexpired items)"
+        - "Click to refresh page"
+listed-item-admin:
+    # %price% = Price of listing
+    # %seller% = Username of seller
+    # %status% = Status of the listing (Active/Expired)
+    - "&7-------------------------"
+    - "&6Click here to edit listing."
+    - ""
+    - "&9Price: &e%price%"
+    - "&9Seller: &e%seller%"
+    - "&9Status: %status%"
+    - "&7-------------------------"
+
+status-active: "&aActive"
+status-expired: "&cExpired"
+selected-listing-name: "&l&cManage Listing"
+
+duplicate-item: "&aClick here to duplicate item to inventory"
+remove-listing: "&eClick here to remove listing"
+delete-item: "&cClick here to delete item and listing"
+
+# Pagination items
 previous-page:
     id: "339"
     name: "&a<- Previous Page"

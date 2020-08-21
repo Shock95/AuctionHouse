@@ -25,6 +25,14 @@ DELETE FROM auctions
 WHERE id = :id;
 -- # }
 
+-- # { expired
+-- #    :id string
+-- #    :expired bool
+UPDATE auctions
+SET expired = :expired
+WHERE id = :id;
+-- # }
+
 -- # { insert
 -- #    :uuid string
 -- #    :username string
@@ -33,7 +41,8 @@ WHERE id = :id;
 -- #    :id int
 -- #    :end_time int
 -- #    :expired bool
-INSERT OR REPLACE INTO auctions(uuid, username, price, nbt, id, end_time, expired) VALUES (:uuid, :username, :price, :nbt, :id, :end_time, :expired);
+INSERT INTO auctions(uuid, username, price, nbt, id, end_time, expired) VALUES (:uuid, :username, :price, :nbt, :id, :end_time, :expired)
+ON CONFLICT(id) DO UPDATE SET id = id + 1;
 -- # }
 
 -- # }

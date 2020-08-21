@@ -39,7 +39,6 @@ declare(strict_types = 1);
 
 namespace shock95x\auctionhouse\utils;
 
-use pocketmine\Server;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Config;

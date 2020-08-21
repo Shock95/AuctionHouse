@@ -11,17 +11,24 @@ class Settings {
 	private static $expireInterval = 48;
 	private static $listingPrice = 0;
 	private static $creativeSale = false;
+	private static $allowLore = true;
+	private static $formatPrice = true;
 	private static $maxItems = 45;
 	private static $minPrice = 0;
 	private static $maxPrice = -1;
 	private static $blacklist = [];
 
+	private static $monetaryUnit;
+
 	public static function init(Config $config) {
+	    $config->reload();
 		self::$prefix = $config->get("prefix");
 		self::$defaultLang = $config->get("default-language");
 		self::$expireInterval = $config->get("expire-interval");
 		self::$listingPrice = $config->get("listing-price");
 		self::$creativeSale = $config->get("creative-sale");
+		self::$allowLore = $config->get("show-lore");
+		self::$formatPrice = $config->get("price-formatted");
 		self::$maxItems = $config->get("max-items");
 		self::$minPrice = $config->get("min-price");
 		self::$maxPrice = $config->get("max-price");
@@ -64,17 +71,37 @@ class Settings {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public static function allowLore(): bool {
+		return self::$allowLore;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public static function formatPrice(): bool {
+		return self::$formatPrice;
+	}
+
+	/**
 	 * @return int
 	 */
 	public static function getMaxItems(): int {
 		return self::$maxItems;
 	}
 
-	public static function getMinPrice() : int {
+	/**
+	 * @return int
+	 */
+	public static function getMinPrice(): int {
 		return self::$minPrice;
 	}
 
-	public static function getMaxPrice() : int {
+	/**
+	 * @return int
+	 */
+	public static function getMaxPrice(): int {
 		return self::$maxPrice;
 	}
 	/**
@@ -87,4 +114,18 @@ class Settings {
 		}
 		return $array;
 	}
+
+    /**
+     * @param string $monetaryUnit
+     */
+    public static function setMonetaryUnit($monetaryUnit): void {
+        self::$monetaryUnit = $monetaryUnit;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMonetaryUnit() {
+        return self::$monetaryUnit;
+    }
 }

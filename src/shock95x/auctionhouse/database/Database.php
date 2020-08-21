@@ -2,15 +2,13 @@
 namespace shock95x\auctionhouse\database;
 
 use Generator;
-use shock95x\auctionhouse\event\AuctionEndEvent;
-use shock95x\auctionhouse\database\utils\BinaryStringParser;
-use shock95x\auctionhouse\database\utils\BinaryStringParserInstance;
-use shock95x\auctionhouse\AuctionHouse;
-use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\utils\Config;
 use poggit\libasynql\DataConnector;
 use poggit\libasynql\libasynql;
 use poggit\libasynql\SqlError;
+use shock95x\auctionhouse\AuctionHouse;
+use shock95x\auctionhouse\database\utils\BinaryStringParser;
+use shock95x\auctionhouse\database\utils\BinaryStringParserInstance;
 use SOFe\AwaitGenerator\Await;
 
 class Database {
@@ -65,17 +63,6 @@ class Database {
 		return yield Await::ONCE;
 	}
 
-	public function save() {
-		$list = DataHolder::getListings();
-		foreach($list as $listing) {
-			if(time() >= $listing->getEndTime()) {
-				$listing->setExpired();
-				(new AuctionEndEvent($listing, AuctionEndEvent::EXPIRED))->call();
-			}
-			$this->insert($listing->getSeller(true), $listing->getSeller(), $listing->getPrice(), (new BigEndianNBTStream())->writeCompressed($listing->getItem()->nbtSerialize()), $listing->getEndTime(), $listing->isExpired(), $listing->getMarketId());
-		}
-	}
-
 	/**
 	 * @param string $uuid
 	 * @param string $username
@@ -102,7 +89,11 @@ class Database {
 		return yield Await::ONCE;
 	}
 
-	public function deleteFromId(string $id) {
+	public function setExpired(string $id, bool $expired = true) {
+        $this->database->executeGeneric(Query::EXPIRED, ["id" => $id, "expired" => $expired]);
+    }
+
+	public function delete(string $id) {
 		$this->database->executeGeneric(Query::DELETE, ["id" => $id]);
 	}
 

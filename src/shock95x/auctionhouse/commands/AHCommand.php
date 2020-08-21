@@ -1,127 +1,36 @@
 <?php
 namespace shock95x\auctionhouse\commands;
 
-use Exception;
-use shock95x\auctionhouse\database\DataHolder;
-use shock95x\auctionhouse\economy\EconomyProvider;
-use shock95x\auctionhouse\utils\Settings;
-use shock95x\auctionhouse\utils\Utils;
-use pocketmine\command\Command;
+use CortexPE\Commando\BaseCommand;
 use pocketmine\command\CommandSender;
-use pocketmine\command\PluginIdentifiableCommand;
-use pocketmine\item\Item;
-use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\Player;
-use pocketmine\plugin\Plugin;
-use shock95x\auctionhouse\AuctionHouse;
-use pocketmine\utils\TextFormat;
+use shock95x\auctionhouse\commands\subcommand\AboutCommand;
+use shock95x\auctionhouse\commands\subcommand\AdminCommand;
+use shock95x\auctionhouse\commands\subcommand\ExpiredCommand;
+use shock95x\auctionhouse\commands\subcommand\ListingsCommand;
+use shock95x\auctionhouse\commands\subcommand\ReloadCommand;
+use shock95x\auctionhouse\commands\subcommand\SellCommand;
+use shock95x\auctionhouse\commands\subcommand\ShopCommand;
+use shock95x\auctionhouse\menu\MainMenu;
 
-class AHCommand extends Command implements PluginIdentifiableCommand {
+class AHCommand extends BaseCommand {
 
-	/** @var AuctionHouse */
-	protected $plugin;
-
-	/**
-	 * EventListener constructor.
-	 *
-	 * @param AuctionHouse $plugin
-	 */
-	public function __construct(AuctionHouse $plugin) {
-		parent::__construct("ah", "Opens AuctionHouse", Utils::prefixMessage(TextFormat::RED . "Usage: /ah [shop | sell | listings | update | about]"), []);
-		$this->plugin = $plugin;
-		$this->setAliases(["auctionhouse"]);
-		$this->setPermissionMessage(Utils::prefixMessage(TextFormat::RED . "You do not have permission to use this command!"));
+	protected function prepare(): void {
+		$this->registerSubCommand(new ShopCommand("shop", "Shows AH shop menu"));
+		$this->registerSubCommand(new AdminCommand("admin", "Shows AH admin menu"));
+		$this->registerSubCommand(new SellCommand("sell", "Sell item in hand to the AH"));
+		$this->registerSubCommand(new ListingsCommand("listings", "Shows player listings"));
+		$this->registerSubCommand(new ExpiredCommand("expired", "Shows expired listings"));
+		$this->registerSubCommand(new ReloadCommand("reload", "Reload plugin configuration files"));
+		$this->registerSubCommand(new AboutCommand("about", "Plugin information"));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string $commandLabel
-	 * @param string[] $args
-	 *
-	 * @return bool
-	 * @throws Exception
-	 */
-	public function execute(CommandSender $sender, string $commandLabel, array $args): bool {
-		if (!$sender instanceof Player) {
-			$sender->sendMessage("You must execute this command in-game.");
-			return false;
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
+		if(!$sender instanceof Player) {
+			return;
 		}
-		assert($sender instanceof Player);
-		if (count($args) == 0 || $args[0] == "shop") {
-			$this->plugin->sendAHMenu($sender);
-			return true;
+		if(count($args) == 0) {
+			new MainMenu($sender);
 		}
-		switch ($args[0]) {
-			case "update":
-				if(!$sender->hasPermission("auctionhouse.command.update")) {
-					$sender->sendMessage($this->getPermissionMessage());
-					return false;
-				}
-				$config = $this->getPlugin()->getConfig();
-				$config->reload();
-				Settings::init($config);
-				$this->getPlugin()->loadLanguages();
-				$this->getPlugin()->getDatabase()->save();
-				$sender->sendMessage(Utils::prefixMessage(TextFormat::GREEN . "Update completed"));
-				return true;
-			case "listings":
-				$this->plugin->sendListings($sender);
-				return true;
-			case "sell":
-				$item = $sender->getInventory()->getItemInHand();
-				if($item == null || $item->getId() == Item::AIR) {
-					$sender->sendMessage($this->plugin->getMessage($sender, "no-item"));
-					return false;
-				}
-				if($sender->isCreative() && !Settings::getCreativeSale()) {
-					$sender->sendMessage($this->plugin->getMessage($sender, "in-creative"));
-					return false;
-				}
-				foreach (Settings::getBlacklist() as $blacklistedItem) {
-					if($item->getId() == $blacklistedItem->getId() && $item->getDamage() == $blacklistedItem->getDamage()) {
-						$sender->sendMessage($this->plugin->getMessage($sender, "item-blacklisted"));
-						return false;
-					}
-				}
-				if(!isset($args[1]) || !is_numeric($args[1])) {
-					$this->plugin->getMessage($sender, "invalid-price");
-					return false;
-				}
-				if(count(DataHolder::getListingsByPlayer($sender)) >= (Settings::getMaxItems())) {
-					$this->plugin->getMessage($sender, "max-listings");
-					return false;
-				}
-				$listingPrice = Settings::getListingPrice();
-				if(($this->getEconomy()->getMoney($sender) < $listingPrice) && $listingPrice != 0) {
-					$this->plugin->getMessage($sender, "invalid-balance");
-					return false;
-				}
-				if($args[1] < Settings::getMinPrice() || ($args[1] > Settings::getMaxPrice() && Settings::getMaxPrice() != -1)) {
-					$sender->sendMessage(str_replace(["@min", "@max"], [Settings::getMinPrice(), Settings::getMaxPrice()], $this->plugin->getMessage($sender, "price-range", true)));
-					return false;
-				}
-				if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);
-				$sender->getInventory()->removeItem($item);
-				DataHolder::addListing($sender, (int) $args[1], (new BigEndianNBTStream())->writeCompressed($item->nbtSerialize()));
-				$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $this->getEconomy()->getMonetaryUnit() . $args[1], $item->getCount()], $this->getPlugin()->getMessage($sender, "item-listed", true)));
-				return true;
-			case "about":
-				$author = $this->plugin->getDescription()->getAuthors()[0];
-				$sender->sendMessage(Utils::prefixMessage(TextFormat::BLUE . "This server is running AuctionHouse v" . $this->plugin->getDescription()->getVersion() . " by " . $author));
-				return true;
-		}
-		$sender->sendMessage($this->getUsage());
-		return true;
-	}
-
-	/**
-	 * @return AuctionHouse
-	 */
-	public function getPlugin() : Plugin{
-		return $this->plugin;
-	}
-
-	public function getEconomy() : EconomyProvider {
-		return $this->getPlugin()->economyProvider;
 	}
 }

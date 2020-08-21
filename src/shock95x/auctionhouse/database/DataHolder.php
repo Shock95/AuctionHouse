@@ -1,12 +1,15 @@
 <?php
 namespace shock95x\auctionhouse\database;
 
+use pocketmine\item\Item;
+use pocketmine\nbt\BigEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
 use shock95x\auctionhouse\auction\Listing;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\event\AuctionStartEvent;
 use shock95x\auctionhouse\task\ListingExpireTask;
 use shock95x\auctionhouse\utils\Utils;
-use pocketmine\Player;
 use SOFe\AwaitGenerator\Await;
 
 class DataHolder {
@@ -15,8 +18,12 @@ class DataHolder {
 	private static $listings;
 	private static $database;
 
+	/** @var BigEndianNBTStream */
+	public static $endianStream;
+
 	public function __construct(Database $database) {
 		self::$database = $database;
+		self::$endianStream = new BigEndianNBTStream();
 	}
 
 	public function loadListings() {
@@ -24,22 +31,51 @@ class DataHolder {
 		Await::f2c(function () {
 			$rows = (array) yield self::$database->fetchAll();
 			foreach($rows as $listing) {
-				self::$listings[] = new Listing($listing, self::$database->getParser());
+			    $nbt = $listing["nbt"];
+                $nbt = self::$endianStream->readCompressed(self::$database->getParser()->decode($nbt));
+                if($nbt instanceof CompoundTag) {
+                	array_unshift(self::$listings,  new Listing($listing["id"], $listing["uuid"], $listing["price"], $listing["username"], $listing["end_time"], $listing["expired"], Item::nbtDeserialize($nbt)));
+                }
 			}
 		});
-		DataHolder::$database->getConnector()->waitAll();
-		AuctionHouse::getInstance()->getScheduler()->scheduleRepeatingTask(new ListingExpireTask(DataHolder::$database), 6000);
+		self::$database->getConnector()->waitAll();
+        AuctionHouse::getInstance()->getScheduler()->scheduleRepeatingTask(new ListingExpireTask(), 1200);
 	}
 
 	/**
 	 * @param Player $player
 	 * @param bool $expired
+	 *
 	 * @return Listing[]
 	 */
 	public static function getListingsByPlayer(Player $player, bool $expired = false) {
 		$array = [];
-		foreach((array) self::$listings as $listing) {
+		foreach(self::$listings as $listing) {
 			if($listing->getSeller(true) == $player->getRawUniqueId()) {
+				if($expired) {
+					if($listing->isExpired()) {
+						$array[] = $listing;
+					}
+				} else {
+					if(!$listing->isExpired()) {
+						$array[] = $listing;
+					}
+				}
+			}
+		}
+		return $array;
+	}
+
+	/**
+	 * @param string $player
+	 * @param bool $expired
+	 *
+	 * @return Listing[]
+	 */
+	public static function getListingsByUsername(string $player, bool $expired = false) {
+		$array = [];
+		foreach(self::$listings as $listing) {
+			if(strtolower($listing->getSeller()) == $player) {
 				if($expired) {
 					if($listing->isExpired()) {
 						$array[] = $listing;
@@ -58,8 +94,8 @@ class DataHolder {
 	 * @param int $id
 	 * @return Listing
 	 */
-	public static function getListingById(int $id) : Listing {
-		foreach((array) self::$listings as $listing) {
+	public static function getListingById(int $id): ?Listing {
+		foreach(self::$listings as $listing) {
 			if($listing->getMarketId() == $id) {
 				return $listing;
 			}
@@ -67,11 +103,15 @@ class DataHolder {
 		return null;
 	}
 
-	public static function addListing(Player $player, int $price, string $nbt) {
-		$listing = new Listing(["uuid" => $player->getRawUniqueId(), "username" => $player->getName(), "price" => $price, "nbt" => self::$database->getParser()->encode($nbt), "id" => time(), "end_time" => Utils::getEndTime(), "expired" => false],  self::$database->getParser());
-		self::$listings[] = $listing;
-		(new AuctionStartEvent($listing))->call();
-	}
+    public static function addListing(Player $player, Item $item, int $price): Listing {
+	    $listing = new Listing(time(), $player->getRawUniqueId(), $price, $player->getName(), Utils::getEndTime(), false, $item);
+	    array_unshift(self::$listings, $listing);
+
+        $nbt = self::$endianStream->writeCompressed($item->nbtSerialize());
+        self::$database->insert($listing->getSeller(true), $listing->getSeller(), $listing->getPrice(), $nbt, $listing->getEndTime(), $listing->isExpired(), $listing->getMarketId());
+        (new AuctionStartEvent($listing))->call();
+        return $listing;
+    }
 
 	/**
 	 * @param bool $expired
@@ -80,7 +120,7 @@ class DataHolder {
 	public static function getListings(bool $expired = false) {
 		if(!$expired) {
 			$array = [];
-			foreach ((array)self::$listings as $listing) {
+			foreach (self::$listings as $listing) {
 				if(!$listing->isExpired()) {
 					$array[] = $listing;
 				}
@@ -90,11 +130,29 @@ class DataHolder {
 		return self::$listings;
 	}
 
+	/**
+	 * @return Listing[]
+	 */
+	public static function getExpiredListings() {
+		$array = [];
+		foreach(self::$listings as $listing) {
+			if($listing->isExpired()) {
+				$array[] = $listing;
+			}
+		}
+		return $array;
+	}
+
+    public static function setExpired(Listing $auction, bool $expired = true) {
+        $auction->setExpired($expired);
+        self::$database->setExpired($auction->getMarketId(), $expired);
+    }
+
 	public static function removeAuction(Listing $auction) {
-		$index = array_search($auction, (array) self::$listings);
+		$index = array_search($auction, self::$listings);
 		if($index !== false){
 			unset(self::$listings[$index]);
 		}
-		self::$database->deleteFromId($auction->getMarketId());
+		self::$database->delete($auction->getMarketId());
 	}
 }
