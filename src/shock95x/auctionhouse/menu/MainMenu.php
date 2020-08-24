@@ -2,7 +2,6 @@
 namespace shock95x\auctionhouse\menu;
 
 use DateTime;
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
@@ -11,11 +10,11 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
+use pocketmine\scheduler\Task;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\admin\AdminMenu;
-use shock95x\auctionhouse\task\MenuDelayTask;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
@@ -105,7 +104,20 @@ class MainMenu extends AHMenu {
 			return false;
 		}
 		if($action->getSlot() <= 44 && $itemClicked->getNamedTag()->hasTag("marketId")) {
-			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new MenuDelayTask($player, new ConfirmPurchaseMenu($this->getPlayer(), clone $itemClicked)), 10);
+			$player->removeWindow($action->getInventory());
+			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new class($player, clone $itemClicked) extends Task{
+				private $player;
+				private $item;
+
+				public function __construct(Player $player, Item $item) {
+					$this->player = $player;
+					$this->item = $item;
+				}
+
+				public function onRun(int $currentTick) {
+					new ConfirmPurchaseMenu($this->player, $this->item);
+				}
+			}, 10);
 		}
 		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
 	}

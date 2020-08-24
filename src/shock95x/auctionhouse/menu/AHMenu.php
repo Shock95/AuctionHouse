@@ -4,6 +4,7 @@ namespace shock95x\auctionhouse\menu;
 use muqsit\invmenu\inventory\InvMenuInventory;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\InvMenuHandler;
+use muqsit\invmenu\metadata\MenuMetadata;
 use muqsit\invmenu\session\PlayerManager;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
@@ -37,12 +38,17 @@ abstract class AHMenu extends InvMenu {
 		// workaround for recursive menus
 		if(PlayerManager::get($player)->getCurrentMenu() != null && !$this->newMenu) {
 			$menu = PlayerManager::get($player)->getCurrentMenu();
-			$menu->getInventory()->clearAll();
-			$this->inventory = $menu->getInventory();
-			$menu->setListener([$this, "handle"]);
+			// workaround for inventory bug
+			if($menu->getInventory()->getSize() < $type->getSize()) {
+				$player->removeWindow($menu->getInventory());
+				$this->createNewInventory($type);
+			} else {
+				$menu->getInventory()->clearAll();
+				$this->inventory = $menu->getInventory();
+				$menu->setListener([$this, "handle"]);
+			}
 		} else {
-			$this->inventory = $type->createInventory();
-			$this->setListener([$this, "handle"]);
+			$this->createNewInventory($type);
 		}
 		$this->player = $player;
 
@@ -53,6 +59,11 @@ abstract class AHMenu extends InvMenu {
 	}
 
 	abstract function renderItems();
+
+	public function createNewInventory(MenuMetadata $type) {
+		$this->inventory = $type->createInventory();
+		$this->setListener([$this, "handle"]);
+	}
 
 	public function handle(Player $player, Item $itemClicked, Item $itemClickedWith, SlotChangeAction $action): bool {
 		if($itemClicked->getNamedTag()->hasTag("pagination")) {

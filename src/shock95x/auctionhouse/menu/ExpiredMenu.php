@@ -1,7 +1,6 @@
 <?php
 namespace shock95x\auctionhouse\menu;
 
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\ByteTag;

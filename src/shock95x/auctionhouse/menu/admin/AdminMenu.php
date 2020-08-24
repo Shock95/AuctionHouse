@@ -8,11 +8,12 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
+use pocketmine\scheduler\Task;
 use pocketmine\utils\TextFormat;
+use shock95x\auctionhouse\auction\Listing;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\AHMenu;
-use shock95x\auctionhouse\task\MenuDelayTask;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
@@ -78,7 +79,20 @@ class AdminMenu extends AHMenu {
 				Locale::getMessage($player, "listing-gone");
 				return false;
 			}
-			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new MenuDelayTask($player, new ManageListingMenu($player, $listing)), 10);
+			$player->removeWindow($action->getInventory());
+			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new class($player, $listing) extends Task{
+				private $player;
+				private $listing;
+
+				public function __construct(Player $player, Listing $listing) {
+					$this->player = $player;
+					$this->listing = $listing;
+				}
+
+				public function onRun(int $currentTick) {
+					new ManageListingMenu($this->player, $this->listing);
+				}
+			}, 10);
 		}
 		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
 	}
