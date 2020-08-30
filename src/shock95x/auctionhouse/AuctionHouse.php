@@ -18,7 +18,7 @@ class AuctionHouse extends PluginBase {
 
 	/** @var EconomyProvider */
 	public $economyProvider;
-	/** @var AuctionHouse */
+	/** @var ?AuctionHouse */
 	public static $instance;
 	/** @var Database */
 	private $database;

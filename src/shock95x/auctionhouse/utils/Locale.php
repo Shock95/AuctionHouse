@@ -14,7 +14,6 @@ class Locale {
 
 	public static function init(AuctionHouse $plugin) {
 		self::loadLanguages($plugin->getDataFolder());
-
 		if(empty(self::$translation)) {
 			$plugin->getLogger()->error("No language file has been found, disabling plugin...");
 			$plugin->disablePlugin();

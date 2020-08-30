@@ -36,19 +36,21 @@ abstract class AHMenu extends InvMenu {
 		$this->pagination = $pagination;
 
 		// workaround for recursive menus
-		if(PlayerManager::get($player)->getCurrentMenu() != null && !$this->newMenu) {
+		if(PlayerManager::get($player) !== null) {
 			$menu = PlayerManager::get($player)->getCurrentMenu();
 			// workaround for inventory bug
-			if($menu->getInventory()->getSize() < $type->getSize()) {
-				$player->removeWindow($menu->getInventory());
-				$this->createNewInventory($type);
+			if($menu !== null) {
+				if($menu->getInventory()->getSize() < $type->getSize()) {
+					$player->removeWindow($menu->getInventory());
+					$this->createNewInventory($type);
+				} else {
+					$menu->getInventory()->clearAll();
+					$this->inventory = $menu->getInventory();
+					$menu->setListener([$this, "handle"]);
+				}
 			} else {
-				$menu->getInventory()->clearAll();
-				$this->inventory = $menu->getInventory();
-				$menu->setListener([$this, "handle"]);
+				$this->createNewInventory($type);
 			}
-		} else {
-			$this->createNewInventory($type);
 		}
 		$this->player = $player;
 
