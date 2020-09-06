@@ -90,7 +90,7 @@ class AdminMenu extends AHMenu {
 				}
 
 				public function onRun(int $currentTick) {
-					new ManageListingMenu($this->player, $this->listing);
+					if($this->player->isOnline()) new ManageListingMenu($this->player, $this->listing);
 				}
 			}, 10);
 		}

@@ -80,7 +80,7 @@ class PlayerListingMenu extends AHMenu {
 				}
 
 				public function onRun(int $currentTick) {
-					new ConfirmPurchaseMenu($this->player, $this->item);
+					if($this->player->isOnline()) new ConfirmPurchaseMenu($this->player, $this->item);
 				}
 			}, 10);
 		}
