@@ -2,24 +2,26 @@
 
 namespace shock95x\auctionhouse\economy;
 
+use pocketmine\Player;
+
 interface EconomyProvider {
 
 	/**
-	 * @param $player
-	 * @param int    $amount
+	 * @param string|Player $player
+	 * @param int|float $amount
 	 */
 	public function addMoney($player, int $amount): void;
 
 	/**
-	 * @param $player
-	 * @param int    $amount
+	 * @param string|Player $player
+	 * @param int|float $amount
 	 */
 	public function subtractMoney($player, int $amount): void;
 
 	/**
-	 * @param $player
+	 * @param string|Player $player
 	 *
-	 * @return int
+	 * @return int|float
 	 */
 	public function getMoney($player): int;
 

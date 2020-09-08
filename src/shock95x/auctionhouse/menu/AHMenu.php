@@ -39,7 +39,7 @@ abstract class AHMenu extends InvMenu {
 		if(PlayerManager::get($player) !== null) {
 			$menu = PlayerManager::get($player)->getCurrentMenu();
 			// workaround for inventory bug
-			if($menu !== null) {
+			if($menu !== null && $menu instanceof AHMenu) {
 				if($menu->getInventory()->getSize() < $type->getSize()) {
 					$player->removeWindow($menu->getInventory());
 					$this->createNewInventory($type);

@@ -41,12 +41,13 @@ class Locale {
 	 * Gets messages from lang files
 	 *
 	 * @param Player|null $sender
-	 * @param $key
+	 * @param string $key
 	 * @param bool $return
 	 * @param bool $prefix
-	 * @return mixed|string
+	 * 
+	 * @return string|string[]|bool
 	 */
-	public static function getMessage(?Player $sender, $key, bool $return = false, $prefix = true) {
+	public static function getMessage(?Player $sender, string $key, bool $return = false, $prefix = true) {
 		$locale = Settings::getDefaultLang();
 		if(isset(self::$translation[strtolower($sender->getLocale())])) {
 			$locale = $sender->getLocale();

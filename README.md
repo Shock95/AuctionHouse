@@ -19,7 +19,7 @@ AuctionHouse allows players to list their items for sale and purchase items that
 - And more coming soon!  
 ---  
 ## Download  
-Check the [releases tab](https://github.com/Shock95x/AuctionHouse/releases) or [PoggitCI](https://poggit.pmmp.io/ci/Shock95x/AuctionHouse/AuctionHouse/)  
+Download the plugin from [Poggit](https://poggit.pmmp.io/p/AuctionHouse) or [GitHub releases](https://github.com/Shock95x/AuctionHouse/releases)
   
 ---  
 ## Config  

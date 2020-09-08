@@ -2,6 +2,7 @@
 namespace shock95x\auctionhouse\economy;
 
 use onebone\economyapi\EconomyAPI;
+use pocketmine\Player;
 use ReflectionException;
 
 class EconomySProvider implements EconomyProvider {
@@ -17,18 +18,16 @@ class EconomySProvider implements EconomyProvider {
 	}
 
 	/**
-	 * @param $player
-	 * @param int $amount
-	 *
-	 * @throws ReflectionException
+	 * @param string|Player $player
+	 * @param int|float $amount
 	 */
 	public function addMoney($player, int $amount): void {
 		$this->economyAPI->addMoney($player, $amount);
 	}
 
 	/**
-	 * @param $player
-	 * @param int $amount
+	 * @param string|Player $player
+	 * @param int|float $amount
 	 *
 	 * @throws ReflectionException
 	 */
@@ -37,9 +36,9 @@ class EconomySProvider implements EconomyProvider {
 	}
 
 	/**
-	 * @param $player
+	 * @param string|Player $player
 	 *
-	 * @return int
+	 * @return int|float
 	 */
 	public function getMoney($player): int {
 		return $this->economyAPI->myMoney($player);
