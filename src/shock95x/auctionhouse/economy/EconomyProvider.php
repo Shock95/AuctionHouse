@@ -10,25 +10,26 @@ interface EconomyProvider {
 	 * @param string|Player $player
 	 * @param int|float $amount
 	 */
-	public function addMoney($player, int $amount): void;
+	public function addMoney($player, $amount): void;
 
 	/**
 	 * @param string|Player $player
 	 * @param int|float $amount
 	 */
-	public function subtractMoney($player, int $amount): void;
+	public function subtractMoney($player, $amount): void;
 
 	/**
 	 * @param string|Player $player
 	 *
 	 * @return int|float
 	 */
-	public function getMoney($player): int;
+	public function getMoney($player);
 
 	/**
 	 * Returns the monetary unit
 	 *
 	 * @return string
 	 */
-	public function getMonetaryUnit() : string;
+	public function getMonetaryUnit(): string;
+
 }

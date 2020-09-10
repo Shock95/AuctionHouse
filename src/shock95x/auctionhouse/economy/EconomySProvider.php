@@ -21,17 +21,15 @@ class EconomySProvider implements EconomyProvider {
 	 * @param string|Player $player
 	 * @param int|float $amount
 	 */
-	public function addMoney($player, int $amount): void {
+	public function addMoney($player, $amount): void {
 		$this->economyAPI->addMoney($player, $amount);
 	}
 
 	/**
 	 * @param string|Player $player
 	 * @param int|float $amount
-	 *
-	 * @throws ReflectionException
 	 */
-	public function subtractMoney($player, int $amount): void {
+	public function subtractMoney($player, $amount): void {
 		$this->economyAPI->reduceMoney($player, $amount);
 	}
 
@@ -40,7 +38,7 @@ class EconomySProvider implements EconomyProvider {
 	 *
 	 * @return int|float
 	 */
-	public function getMoney($player): int {
+	public function getMoney($player) {
 		return $this->economyAPI->myMoney($player);
 	}
 
