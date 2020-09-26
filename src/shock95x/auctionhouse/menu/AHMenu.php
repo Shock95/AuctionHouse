@@ -26,7 +26,7 @@ abstract class AHMenu extends InvMenu {
 	protected $pagination = false;
 	protected $newMenu = false;
 
-	/** @var InvMenuInventory  */
+	/** @var ?InvMenuInventory  */
 	protected $inventory;
 	
 	public function __construct(Player $player, bool $returnMain = false, bool $pagination = false) {
@@ -35,23 +35,21 @@ abstract class AHMenu extends InvMenu {
 		$this->returnMain = $returnMain;
 		$this->pagination = $pagination;
 
-		// workaround for recursive menus
+		// workaround for recursive menus & menu bug
 		if(PlayerManager::get($player) !== null) {
 			$menu = PlayerManager::get($player)->getCurrentMenu();
-			// workaround for inventory bug
 			if($menu !== null && $menu instanceof AHMenu) {
-				if($menu->getInventory()->getSize() < $type->getSize()) {
+				if($menu->newMenu) {
 					$player->removeWindow($menu->getInventory());
-					$this->createNewInventory($type);
 				} else {
 					$menu->getInventory()->clearAll();
 					$this->inventory = $menu->getInventory();
 					$menu->setListener([$this, "handle"]);
 				}
-			} else {
-				$this->createNewInventory($type);
 			}
 		}
+		if($this->inventory == null) $this->createNewInventory($type);
+
 		$this->player = $player;
 
 		$this->readonly();
@@ -123,7 +121,7 @@ abstract class AHMenu extends InvMenu {
 		return $this->player;
 	}
 
-	public function getInventory(): InvMenuInventory {
+	public function getInventory(): ?InvMenuInventory {
 		return $this->inventory;
 	}
 
