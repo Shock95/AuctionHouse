@@ -80,6 +80,7 @@ You can contribute to this project by creating a new language file and opening a
 ### Supported languages and contributors 
 - [Shock95x](https://github.com/Shock95x) (English)  
 - [No4NaMe](https://github.com/No4NaMe) (Russian)
+- [Unickorn](https://github.com/Unickorn) (German)
 - Chaosfelix4451#0157 (German)
 
 ## Credits / Virions Used

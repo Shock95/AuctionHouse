@@ -11,8 +11,13 @@ class Locale {
 
 	/** @var array */
 	public static $translation;
+	/** @var string[]  */
+	private static $supported = ["en_US", "de_DE"];
 
 	public static function init(AuctionHouse $plugin) {
+		foreach(self::$supported as $locale) {
+			ConfigUpdater::checkUpdate($plugin, new Config($plugin->getDataFolder() . "language/{$locale}.yml", Config::YAML), "lang-version", 2);
+		}
 		self::loadLanguages($plugin->getDataFolder());
 		if(empty(self::$translation)) {
 			$plugin->getLogger()->error("No language file has been found, disabling plugin...");

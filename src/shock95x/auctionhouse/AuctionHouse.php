@@ -39,9 +39,6 @@ class AuctionHouse extends PluginBase {
 			$this->saveResource($file, $replace);
 		}
 
-		$defaultLang = new Config($this->getDataFolder() . "language/en_US.yml", Config::YAML);
-		ConfigUpdater::checkUpdate($this, $defaultLang, "lang-version", 2);
-
 		Locale::init($this);
 
 		if(!InvMenuHandler::isRegistered()) InvMenuHandler::register($this);
