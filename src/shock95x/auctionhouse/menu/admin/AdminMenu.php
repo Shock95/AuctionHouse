@@ -1,17 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace shock95x\auctionhouse\menu\admin;
 
-use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
-use pocketmine\scheduler\Task;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\auction\Listing;
-use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
@@ -21,21 +18,20 @@ use shock95x\auctionhouse\utils\Utils;
 class AdminMenu extends AHMenu {
 	
 	public function __construct(Player $player, bool $returnMain = true, int $page = 1) {
-		$this->setName(Locale::getMessage($player, "admin-menu-name", true, false));
+		$this->setName(Locale::getMessage($player, "admin-menu-name"));
 		$this->page = $page;
 		parent::__construct($player, $returnMain, true);
 	}
 	
 	public function setItems(int $page, int $max, int $expiredCount, int $listingCount) {
-		$stats = Locale::getMessage($this->getPlayer(), "main-stats-admin", true, false);
+		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "main-stats-admin");
+		$stats->setLore(str_replace(["%page%", "%max%", "%expired%", "%total%"], [$page, $max, $expiredCount, $listingCount], $stats->getLore()))->getNamedTag()->setInt("pagination", 2);
+		$stats->setNamedTagEntry(new ListTag("ench"));
 
-		$this->getInventory()->setItem(49, Item::get($stats["id"])
-			->setNamedTag(new CompoundTag("", [new IntTag("pagination", 2), new ListTag("ench", [], NBT::TAG_Compound)]))
-			->setCustomName(TextFormat::RESET . $stats["name"])
-			->setLore(str_replace(["%page%", "%max%", "%expired%", "%total%"], [$page, $max, $expiredCount, $listingCount], preg_filter('/^/', TextFormat::RESET, $stats["lore"]))));
+		$this->getInventory()->setItem(49, $stats);
 	}
 	
-	public function renderItems() {
+	public function renderItems(): void {
         $total = count(DataHolder::getListings(true));
         $max = 0;
         for($i = 0; $i < $total; $i += 45) $max++;
@@ -48,18 +44,18 @@ class AdminMenu extends AHMenu {
         if($this->page > $max) {
             $this->page = 1;
             $this->renderItems();
-            return false;
+            return;
         }
         foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
 			if($auction->isExpired()) {
-				$status = Locale::getMessage($this->getPlayer(), "status-expired", true, false);
+				$status = Locale::getMessage($this->getPlayer(), "status-expired");
 			} else {
-				$status = Locale::getMessage($this->getPlayer(), "status-active", true, false);
+				$status = Locale::getMessage($this->getPlayer(), "status-active");
 			}
-			$listedItem = Locale::getMessage($this->getPlayer(), "listed-item-admin", true, false);
+			$listedItem = Locale::getMessage($this->getPlayer(), "listed-item-admin");
 			$item->setNamedTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore(str_replace(["%price%", "%seller%", "%status%"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $status], preg_filter('/^/', TextFormat::RESET, $listedItem)));
 
             $this->getInventory()->setItem($key, $item);
@@ -70,8 +66,8 @@ class AdminMenu extends AHMenu {
 		$this->setItems($this->page, $max, count(DataHolder::getExpiredListings()), $total);
 	}
 
-	public function handle(Player $player, Item $itemClicked, Item $itemClickedWith, SlotChangeAction $action): bool {
-		if($action->getSlot() <= 44 && $itemClicked->getNamedTag()->hasTag("marketId")) {
+	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
+		if($slot <= 44 && $itemClicked->getNamedTag()->hasTag("marketId")) {
 			$id = $itemClicked->getNamedTag()->getLong("marketId");
 			$listing = DataHolder::getListingById($id);
 
@@ -79,25 +75,13 @@ class AdminMenu extends AHMenu {
 				Locale::getMessage($player, "listing-gone");
 				return false;
 			}
-			$player->removeWindow($action->getInventory());
-			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new class($player, $listing) extends Task{
-				private $player;
-				private $listing;
-
-				public function __construct(Player $player, Listing $listing) {
-					$this->player = $player;
-					$this->listing = $listing;
-				}
-
-				public function onRun(int $currentTick) {
-					if($this->player->isOnline()) new ManageListingMenu($this->player, $this->listing);
-				}
-			}, 10);
+			$player->removeWindow($inventory);
+			new ManageListingMenu($player, $listing);
 		}
-		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
+		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 
-	public function show(Player $player) {
+	public function show(Player $player): void {
 		Utils::setViewingMenu($player, Utils::ADMIN_MENU);
 		parent::show($player);
 	}

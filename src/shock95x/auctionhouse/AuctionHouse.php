@@ -1,18 +1,22 @@
 <?php
+declare(strict_types=1);
+
 namespace shock95x\auctionhouse;
 
 use CortexPE\Commando\PacketHooker;
 use JackMD\UpdateNotifier\UpdateNotifier;
 use muqsit\invmenu\InvMenuHandler;
 use pocketmine\plugin\PluginBase;
-use pocketmine\utils\Config;
+use pocketmine\tile\Tile;
+use shock95x\auctionhouse\category\CategoryManager;
 use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\economy\EconomySProvider;
-use shock95x\auctionhouse\utils\ConfigUpdater;
+use shock95x\auctionhouse\utils\AHSign;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
+use shock95x\auctionhouse\utils\Utils;
 
 class AuctionHouse extends PluginBase {
 
@@ -23,13 +27,13 @@ class AuctionHouse extends PluginBase {
 	/** @var Database */
 	private $database;
 
-	public function onLoad() {
+	public function onLoad(): void {
 		$this->saveDefaultConfig();
 		UpdateNotifier::checkUpdate($this, $this->getDescription()->getName(), $this->getDescription()->getVersion());
-		ConfigUpdater::checkUpdate($this, $this->getConfig(), "config-version", 4);
+		Utils::checkConfig($this, $this->getConfig(), "config-version", 5);
 	}
 
-	public function onEnable() : void {
+	public function onEnable(): void {
 		self::$instance = $this;
 		$this->saveDefaultConfig();
 		Settings::init($this->getConfig());
@@ -40,11 +44,14 @@ class AuctionHouse extends PluginBase {
 		}
 
 		Locale::init($this);
+		CategoryManager::init();
 
 		if(!InvMenuHandler::isRegistered()) InvMenuHandler::register($this);
 		if(!PacketHooker::isRegistered()) PacketHooker::register($this);
 
-		$this->database = (new Database($this, $this->getConfig()))->connect();
+		Tile::registerTile(AHSign::class, ["AHSign", "auctionhouse:sign"]);
+
+		$this->database = (new Database($this->getConfig()))->connect();
 		$this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
 
 		if($this->getServer()->getPluginManager()->getPlugin("EconomyAPI") !== null) {
@@ -62,19 +69,19 @@ class AuctionHouse extends PluginBase {
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
 	}
 
-	public function onDisable() {
+	public function onDisable(): void {
 		if(isset($this->database)) {
             $this->database->close();
         }
 	}
 
-	public function reload() {
+	public function reload(): void {
 		Locale::init($this);
 		Settings::init($this->getConfig());
 		$this->getLogger()->info("Configuration files reloaded");
 	}
 
-	public function disablePlugin() {
+	public function disable(): void {
 		self::$instance = null;
 		$this->getServer()->getPluginManager()->disablePlugin($this);
 	}
@@ -82,28 +89,28 @@ class AuctionHouse extends PluginBase {
 	/**
 	 * @return AuctionHouse
 	 */
-	public static function getInstance() : AuctionHouse {
+	public static function getInstance(): self {
 		return self::$instance;
 	}
 
 	/**
 	 * @return Database
 	 */
-	public function getDatabase() : Database {
+	public function getDatabase(): Database {
 		return $this->database;
 	}
 
 	/**
 	 * @param EconomyProvider $provider
 	 */
-	public function setEconomyProvider(EconomyProvider $provider) {
+	public function setEconomyProvider(EconomyProvider $provider): void {
 		$this->economyProvider = $provider;
 	}
 
 	/**
 	 * @return EconomyProvider
 	 */
-	public function getEconomyProvider() : EconomyProvider {
+	public function getEconomyProvider(): EconomyProvider {
 		return $this->economyProvider;
 	}
 }

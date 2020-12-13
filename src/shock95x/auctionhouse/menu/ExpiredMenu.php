@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace shock95x\auctionhouse\menu;
 
-use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -15,19 +16,22 @@ use shock95x\auctionhouse\utils\Utils;
 class ExpiredMenu extends AHMenu {
 
 	public function __construct(Player $player, bool $returnMain = true, int $page = 1) {
-		$this->setName(Locale::getMessage($player, "expired-menu-name", true, false));
+		$this->setName(Locale::getMessage($player, "expired-menu-name"));
 		$this->page = $page;
 		parent::__construct($player, $returnMain, true);
 	}
 
 	public function setItems(int $page, int $max, int $total) : void {
-		$description = Locale::getMessage($this->getPlayer(), "expired-description", true, false);
-		$stats = Locale::getMessage($this->getPlayer(), "expired-stats", true, false);
-		$this->getInventory()->setItem(53, Item::get($description["id"])->setCustomName(TextFormat::RESET . $description["name"])->setLore(preg_filter('/^/', TextFormat::RESET, $description["lore"])));
-		$this->getInventory()->setItem(49, Item::get($stats["id"])->setNamedTag(new CompoundTag("", [new ByteTag("getAll", 1)]))->setCustomName(TextFormat::RESET . $stats["name"])->setLore(str_replace(["%page%", "%max%", "%total%"], [$page, $max, $total], preg_filter('/^/', TextFormat::RESET, $stats["lore"]))));
+		$info = Utils::getButtonItem($this->getPlayer(), "info", "main-description");
+
+		$stats = Utils::getButtonItem($this->getPlayer(), "return_all", "expired-stats");
+		$stats->setLore(str_replace(["%page%", "%max%", "%total%"], [$page, $max, $total], $stats->getLore()))->getNamedTag()->setInt("return_all", 1);
+
+		$this->getInventory()->setItem(53, $info);
+		$this->getInventory()->setItem(49, $stats);
 	}
 
-	public function renderItems() {
+	public function renderItems(): void {
         $total = count(DataHolder::getListingsByPlayer($this->getPlayer(), true));
         $max = 0;
         for($i = 0; $i < $total; $i += 45) $max++;
@@ -35,19 +39,19 @@ class ExpiredMenu extends AHMenu {
 
         $this->page < 1 ? $this->page = 1 : $this->page;
         $start = ($this->page - 1) * 45;
-        $listings = array_slice( DataHolder::getListingsByPlayer($this->getPlayer(), true), $start, 45);
+        $listings = array_slice(DataHolder::getListingsByPlayer($this->getPlayer(), true), $start, 45);
 
         if($this->page > $max) {
             $this->page = 1;
             $this->renderItems();
-            return false;
+            return;
         }
         foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
 			$tag->setLong("marketId", $auction->getMarketId());
 
-			$expiredItem = Locale::getMessage($this->getPlayer(), "expired-item", true, false);
+			$expiredItem = Locale::getMessage($this->getPlayer(), "expired-item");
 
 			$lore = str_replace(["%price%"], [$auction->getPrice(true, Settings::formatPrice())], preg_filter('/^/', TextFormat::RESET, $expiredItem));
 			$lore = Settings::allowLore() ? array_merge($item->getLore(), $lore) : $lore;
@@ -60,29 +64,56 @@ class ExpiredMenu extends AHMenu {
             $this->getInventory()->setItem($i, Item::get(Item::AIR));
         }
 		$this->setItems($this->page, $max, $total);
-		return true;
 	}
 
-	public function handle(Player $player, Item $itemClicked, Item $itemClickedWith, SlotChangeAction $action) : bool {
-		$inventory = $action->getInventory();
-		if($action->getSlot() <= 44 && $itemClicked->getNamedTag()->hasTag("marketId") && $itemClicked->getId() !== Item::AIR) {
-			$marketId = $itemClicked->getNamedTag()->getLong("marketId");
-			$auction = DataHolder::getListingById($marketId);
-			if($auction == null || $auction->getSeller(true) != $player->getRawUniqueId()) {
-				return false;
-			}
-			$item = $auction->getItem();
-			if($player->getInventory()->canAddItem($item) && $auction->getSeller(true) == $player->getRawUniqueId()) {
-				DataHolder::removeAuction($auction);
-				$inventory->setItem($action->getSlot(), Item::get(Item::AIR));
-				$player->getInventory()->addItem($item);
-				$player->sendMessage(str_replace(["@item", "@amount"], [$item->getName(), $item->getCount()], Locale::getMessage($player, "returned-item", true)));
+	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
+		if($slot <= 44 && $itemClicked->getId() !== Item::AIR) {
+			if($itemClicked->getNamedTag()->hasTag("marketId")) {
+				$marketId = $itemClicked->getNamedTag()->getLong("marketId");
+				$auction = DataHolder::getListingById($marketId);
+				if($auction == null || $auction->getSeller(true) != $player->getRawUniqueId()) {
+					return false;
+				}
+				$item = $auction->getItem();
+				if($player->getInventory()->canAddItem($item)) {
+					DataHolder::removeAuction($auction);
+					$inventory->remove($itemClicked);
+					$player->getInventory()->addItem($item);
+					$player->sendMessage(str_replace(["@item", "@amount"], [$item->getName(), $item->getCount()], Locale::getMessage($player, "returned-item", true)));
+				}
 			}
 		}
-		return parent::handle($player, $itemClicked, $itemClickedWith, $action);
+		$listingCount = count(DataHolder::getListingsByPlayer($player, true));
+		if($itemClicked->getNamedTag()->hasTag("return_all")) {
+			if($this->getEmptySlots($player->getInventory()) < $listingCount) {
+				$player->sendMessage(Locale::getMessage($player, "inventory-full", true));
+				return false;
+			}
+			foreach(DataHolder::getListingsByPlayer($player, true) as $listing) {
+				if ($player->getInventory()->canAddItem($listing->getItem())) {
+					DataHolder::removeAuction($listing);
+					$player->getInventory()->addItem($listing->getItem());
+				}
+			}
+			for($i = 0; $i < 45; $i++) {
+				$inventory->setItem($i, Item::get(Item::AIR));
+			}
+		}
+		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 
-	public function show(Player $player) {
+	public function getEmptySlots(Inventory $inventory): int {
+		$count = 0;
+		$contents = $inventory->getContents();
+		for($i = 0; $i < $inventory->getSize(); $i++) {
+			if(!isset($contents[$i])) {
+				$count++;
+			}
+		}
+		return $count;
+	}
+
+	public function show(Player $player): void {
 		Utils::setViewingMenu($player, Utils::EXPIRED_MENU);
 		parent::show($player);
 	}

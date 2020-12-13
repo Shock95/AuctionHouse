@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace shock95x\auctionhouse\commands\subcommand;
 
 use CortexPE\Commando\args\RawStringArgument;
@@ -27,11 +29,11 @@ class ListingsCommand extends BaseSubCommand {
 		$player = strtolower($args["player"]);
 
 		if(strtolower($sender->getName()) == $player) {
-			Locale::getMessage($sender, "player-listings-usage");
+			Locale::sendMessage($sender, "player-listings-usage");
 			return;
 		}
 		if(empty(DataHolder::getListingsByUsername($player))) {
-			Locale::getMessage($sender, "player-not-found");
+			Locale::sendMessage($sender, "player-not-found");
 			return;
 		}
 		new PlayerListingMenu($sender, $args["player"]);

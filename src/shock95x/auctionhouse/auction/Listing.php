@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace shock95x\auctionhouse\auction;
 
 use pocketmine\item\Item;
@@ -29,13 +31,19 @@ class Listing {
 		return $this->item;
 	}
 
+	/**
+	 * @param bool $monetaryUnit
+	 * @param bool $formatted
+	 *
+	 * @return int|string
+	 */
 	public function getPrice(bool $monetaryUnit = false, bool $formatted = false) {
 		$price = $this->price;
     	if($formatted) {
     		$price = number_format($price);
 	    }
     	if($monetaryUnit) {
-    		$price = Settings::getMonetaryUnit() . $price;
+    		$price = Settings::getMonetaryUnit() . strval($price);
 	    }
     	return $price;
 	}

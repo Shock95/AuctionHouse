@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace shock95x\auctionhouse\utils;
 
@@ -12,26 +13,27 @@ class Locale {
 	/** @var array */
 	public static $translation;
 	/** @var string[]  */
-	private static $supported = ["en_US", "de_DE"];
+	private static $supported = ["en_US"];
 
 	public static function init(AuctionHouse $plugin) {
 		foreach(self::$supported as $locale) {
-			ConfigUpdater::checkUpdate($plugin, new Config($plugin->getDataFolder() . "language/{$locale}.yml", Config::YAML), "lang-version", 2);
+			$config = new Config($plugin->getDataFolder() . "language/{$locale}.yml", Config::YAML);
+			Utils::checkConfig($plugin, $config, "lang-version", 3);
 		}
 		self::loadLanguages($plugin->getDataFolder());
 		if(empty(self::$translation)) {
 			$plugin->getLogger()->error("No language file has been found, disabling plugin...");
-			$plugin->disablePlugin();
+			$plugin->disable();
 			return;
 		}
 		if(!isset(self::$translation[strtolower(Settings::getDefaultLang())])) {
 			$plugin->getLogger()->error("Default language file could not be found, disabling plugin...");
-			$plugin->disablePlugin();
+			$plugin->disable();
 			return;
 		}
 	}
 	
-	public static function loadLanguages(String $dataFolder) {
+	public static function loadLanguages(String $dataFolder): void {
 		foreach(glob($dataFolder . "language/*.yml") as $file) {
 			$locale = new Config($file, Config::YAML);
 			$localeCode = basename($file, ".yml");
@@ -43,27 +45,29 @@ class Locale {
 	}
 
 	/**
-	 * Gets messages from lang files
-	 *
-	 * @param Player|null $sender
+	 * @param Player $player
 	 * @param string $key
-	 * @param bool $return
 	 * @param bool $prefix
-	 * 
-	 * @return string|string[]|bool
 	 */
-	public static function getMessage(?Player $sender, string $key, bool $return = false, $prefix = true) {
+	public static function sendMessage(Player $player, string $key, bool $prefix = true): void {
+		$player->sendMessage((string) self::getMessage($player, $key, $prefix));
+	}
+
+	/**
+	 * @param Player $player
+	 * @param string $key
+	 * @param bool $prefix
+	 * @return string|string[]
+	 */
+	public static function getMessage(Player $player, string $key, bool $prefix = false) {
 		$locale = Settings::getDefaultLang();
-		if(isset(self::$translation[strtolower($sender->getLocale())])) {
-			$locale = $sender->getLocale();
+		if(isset(self::$translation[strtolower($player->getLocale())])) {
+			$locale = $player->getLocale();
 		}
 		if(!isset(self::$translation[strtolower($locale)][$key])) {
 			Server::getInstance()->getLogger()->warning("Key '" . $key . "' could not be found in the '" . $locale . "' language file, add this key to the language file or update the file by deleting it and restarting the server.");
-			return false;
+			return "";
 		}
-		$message = $prefix ? Utils::prefixMessage(self::$translation[strtolower($locale)][$key]) : self::$translation[strtolower($locale)][$key];
-		if($return) return $message;
-		if($sender != null) $sender->sendMessage($message);
-		return "";
+		return $prefix ? Utils::prefixMessage(self::$translation[strtolower($locale)][$key]) : self::$translation[strtolower($locale)][$key];
 	}
 }

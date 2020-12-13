@@ -1,6 +1,6 @@
 ---
 # DO NOT EDIT THIS VALUE, INTERNAL USE ONLY.
-config-version: 4
+config-version: 5
 
 # Sets the prefix for this plugin.
 prefix: "[&l&6Auction House&r]"
@@ -14,19 +14,43 @@ default-language: en_US
 expire-interval: 48
 # Sets the price it costs to list an item on the auction house.
 listing-price: 0
+# Sets a cooldown between listing items in seconds
+listing-cooldown: 0
 # Allows or blocks players in creative mode from selling items.
 creative-sale: false
-# The maximum amount of listings a player can have.
-max-items: 45
+# Maximum amount of listings a player can have by default
+max-listings: 45
 # Shows item lore on the auction house
 show-lore: true
+# Days to automatically delete expired listings (-1 to disable)
+expired-duration: 15
 # Formats price with commas (ex. 1,000,000)
 price-formatted: true
 # Items that cannot be listed on the auction. Refer to https://minecraftitemids.com/ or https://minecraft-ids.grahamedgecombe.com/ for a list of item ids.
 blacklist:
-  - '1000' # Example items, these items dont exist in MC, but you should use ones that do if you want.
-  - '1001:12'
-  - '12333:4'
+  - '1000' # Example items
+  - '1234:5'
+  - 'minecraft:air'
+
+# AH sign triggers
+sign-triggers:
+  - "[AuctionHouse]"
+  - "[AH]"
+
+# Menu button items
+buttons:
+  stats: "minecraft:chest"
+  back: "minecraft:paper"
+  previous: "minecraft:paper"
+  next: "minecraft:paper"
+  info: "minecraft:book"
+  howto: "minecraft:emerald"
+  return_all: "minecraft:redstone_block"
+  player_listings: "minecraft:diamond"
+  expired_listings: "minecraft:poisonous_potato"
+  admin_menu: "minecraft:redstone"
+  confirm_purchase: "minecraft:stained_glass_pane:5"
+  cancel_purchase: "minecraft:stained_glass_pane:14"
 
 ### DATABASE SETTINGS ###
 database:

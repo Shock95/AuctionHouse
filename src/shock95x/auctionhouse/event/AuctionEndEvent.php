@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace shock95x\auctionhouse\event;
 
 use pocketmine\event\Event;
@@ -15,8 +17,9 @@ class AuctionEndEvent extends Event {
 	const CANCELLED = 0;
 	const EXPIRED = 1;
 	const PURCHASED = 2;
-	const ADMIN_PURGED = 3;
-	const ADMIN_REMOVED = 4;
+	const EXPIRED_PURGED = 3;
+	const ADMIN_PURGED = 4;
+	const ADMIN_REMOVED = 5;
 
 	public function __construct(Listing $listing, int $type, Player $purchaser = null) {
 		$this->listing = $listing;

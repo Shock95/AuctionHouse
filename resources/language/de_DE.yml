@@ -72,7 +72,6 @@ expired-item:
     - "&7-------------------------"
 view-listed-items:
     # %selling% = Number of active listings
-    id: 264
     name: "&6Items die du Verkaufst:"
     lore:
         - "&aKlicke hier um eine liste deiner Items zu sehen"
@@ -81,18 +80,15 @@ view-listed-items:
         - "&9Verkauft: &e%selling%"
 view-expired-items:
     # %expired% = Number of Expired / Cancelled Items
-    id: 394
     name: "&6Abholen: Abgelaufender/Abbgebrochende Angebote"
     lore:
         - "&r&aKlicke um eine list der Abgelaufenden Items zu erhalten und einzusammeln"
         - "&aItems die Abgelaufenoder abbgebrochen wurden."
         - ""
         - "&9Items zum einsammeln: &e%expired%"
-        
-        
+
 # Admin Menu
 view-admin-menu:
-    id: 331
     name: "&e&k----- &r&l&c Admin-Menü &r&e&k-----"
     lore:
         - "&r&aKlickt hier, um das Admin-Menü anzuzeigen"
@@ -101,7 +97,6 @@ main-stats-admin:
     # %max% = Max page
     # %expired% = Expired listing count
     # %total% = Total listing count
-    id: "152"
     name: "&l&cAdmin-Menü"
     lore:
         - "&aSeite %page%/%max%"
@@ -130,27 +125,22 @@ delete-item: "&cKlickt hier um das Angebot und das Item zu löschen"
 
 # Pagination items
 previous-page:
-    id: "339"
     name: "&a<- Haupt Seite"
     lore:
         - "Gehe zum Start"
 next-page:
-    id: "339"
     name: "&aNächste seite ->"
     lore:
         - "Gehe zur nächsten seite"
 back-button:
-    id: "339"
     name: "&6Zurück"
     lore:
 sell-description:
-    id: "388"
     name: "&6Verkauf von Items"
     lore:
         - "&aUm ein Item zum verkauf anzubieten:"
         - "&aHalte das Item in derine hand und schreibe; &b/ah sell <preis>|in den Chat&a."
 main-description:
-    id: "340"
     name: "&6Was ist das Hier?"
     lore:
         - "&aDas hier ist ein verkaufshaus!"
@@ -164,14 +154,12 @@ main-stats:
     # %page% = Current page
     # %max% = Max page
     # %total% = Total listing count
-    id: "54"
     name: "&l&6Verkaufs Haus"
     lore:
         - "&aSeite %page%/%max%"
         - "&7Anzahl der Items; &b%total% &7"
         - "Klicke um die seite neu zu Laden"
 listings-description:
-    id: "340"
     name: "&6Was ist das?"
     lore:
         - "&aDas ist eine liste all deiner Angebote"
@@ -183,13 +171,11 @@ listings-stats:
     # %page% = Current page
     # %max% = Max page
     # %total% = Total listing count
-    id: "54"
     name: "&l&6Liste"
     lore:
         - "&aSeite %page%/%max%"
         - "&7Items &b%total% &7"
 expired-description:
-    id: "340"
     name: "&6Was ist das?"
     lore:
         - "&aDiese seite zeigt dir all deine:"
@@ -203,7 +189,6 @@ expired-stats:
     # %page% = Current page
     # %max% = Max page
     # %total% = Total listing count
-    id: "152"
     name: "&l&6Abgelaufen"
     lore:
         - "&aSeite: %page%/%max%"
@@ -212,7 +197,7 @@ purchase-confirm:
     name: "&aKauf durchführen"
 purchase-cancel:
     name: "&cKauf abbrechen"
-purchaseItem:
+purchase-item:
     lore:
         - ""
         - "&9Preis: &e$%price%"

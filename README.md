@@ -10,8 +10,8 @@ AuctionHouse allows players to list their items for sale and purchase items that
 >- Chest GUI  
 >- Config (See below)  
 >- Multi-lang support  
->- Custom Events  
->- Cancel Listings
+>- Custom events  
+>- Cancel listings
 >- Economy plugin support (EconomyAPI as of now)  
 >- MySQL and SQLite database support  
 >- Customizable messages  
@@ -23,8 +23,15 @@ Download the plugin from [Poggit](https://poggit.pmmp.io/p/AuctionHouse) or [Git
   
 ---  
 ## Config  
+
+<details>
+  <summary>Click to open</summary>
+
 ```yaml  
 ---  
+# DO NOT EDIT THIS VALUE, INTERNAL USE ONLY.
+config-version: 5
+
 # Sets the prefix for this plugin.
 prefix: "[&l&6Auction House&r]"
 # Minimum price required to create a listing
@@ -35,23 +42,49 @@ max-price: -1
 default-language: en_US
 # Sets the amount of hours a listing is active before being automatically cancelled and expired.
 expire-interval: 48
-# Sets the price it costs to list one item on the auction house.
+# Sets the price it costs to list an item on the auction house.
 listing-price: 0
+# Sets a cooldown between listing items in seconds
+listing-cooldown: 0
 # Allows or blocks players in creative mode from selling items.
 creative-sale: false
-# The maximum amount of listings a player can have.
-max-items: 45
+# Maximum amount of listings a player can have by default
+max-listings: 45
 # Shows item lore on the auction house
 show-lore: true
+# Days to automatically delete expired listings (-1 to disable)
+expired-duration: 15
 # Formats price with commas (ex. 1,000,000)
 price-formatted: true
 # Items that cannot be listed on the auction. Refer to https://minecraftitemids.com/ or https://minecraft-ids.grahamedgecombe.com/ for a list of item ids.
 blacklist:
-  - '1000' # Example items, these items dont exist in MC, but you should use ones that do if you want.
-  - '1001:12'
-  - '12333:4'
-...  
+- '1000' # Example items
+- '1234:5'
+- 'minecraft:air'
+
+# AH sign triggers
+sign-triggers:
+- "[AuctionHouse]"
+- "[AH]"
+
+# Menu button items
+buttons:
+stats: "minecraft:chest"
+back: "minecraft:paper"
+previous: "minecraft:paper"
+next: "minecraft:paper"
+info: "minecraft:book"
+howto: "minecraft:emerald"
+return_all: "minecraft:redstone_block"
+player_listings: "minecraft:diamond"
+expired_listings: "minecraft:poisonous_potato"
+admin_menu: "minecraft:redstone"
+confirm_purchase: "minecraft:stained_glass_pane:5"
+cancel_purchase: "minecraft:stained_glass_pane:14"
+...
 ```  
+</details>
+
 ---  
 ## Commands  
   
@@ -62,6 +95,7 @@ blacklist:
 | /ah sell **[price]** | Allows player to list items in their hand on the auction house. **[price]** is the amount that the player is listing the item to sell for     |  
 | /ah listings | Shows all active listings of the player |  
 | /ah listings **[player]**| Shows all active listings of a specific player |  
+| /ah categories | Opens category menu |  
 | /ah admin | Opens the AuctionHouse admin menu (OP Command) |  
 | /ah reload | Allows player to reload configuration files (OP command) |  
 | /ah about | Shows AuctionHouse version the server is running |  
@@ -88,5 +122,4 @@ You can contribute to this project by creating a new language file and opening a
 - [libasynql](https://github.com/poggit/libasynql) (SOFe)
 - [await-generator](https://github.com/SOF3/await-generator) (SOFe)
 - [Commando](https://github.com/CortexPE/Commando) (CortexPE)
-- [ConfigUpdater](https://github.com/JackMD/ConfigUpdater) (JackMD)
 - [UpdateNotifier](https://github.com/JackMD/UpdateNotifier) (JackMD)

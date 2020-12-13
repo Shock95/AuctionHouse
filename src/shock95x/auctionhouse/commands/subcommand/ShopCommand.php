@@ -1,8 +1,7 @@
 <?php
-
+declare(strict_types=1);
 
 namespace shock95x\auctionhouse\commands\subcommand;
-
 
 use CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
