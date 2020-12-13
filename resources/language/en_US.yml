@@ -10,17 +10,14 @@ listings-menu-name: "&2Active Listings"
 expired-menu-name: "&cCancelled / Expired Listings"
 purchase-menu-name: "Confirm Purchase"
 admin-menu-name: "&l&cAdmin Menu"
-category-menu-name: "&l&6Categories"
+category-menu-name: "&l&6Category Menu"
 manage-listing-name: "&l&eManage Listing"
 player-listing: "&2{player}'s &6Listings"
 
 # Chat messages
-item-purchased: "&eItem &6purchased&e!"
-buyer-purchased: "&6%buyer% &epurchased your auction for &6$%price%&e!"
 item-listed: "&2You have listed &d@item &r&d(x@amount) &2for &d@price. Type &e/ah listings &dto view all your listings"
 cancelled-item: "&eYou have &6cancelled &ean auction. Return cancelled and expired items at &6/ah expired&e."
 cancelled-purchase: "&cYou have cancelled this purchase"
-admin-removed: "&eListing removed."
 purchased-item: "&2You have bought &d@item &r&d(x@amount) &2for &d@price"               #@player, @item, @price, @amount
 seller-message: "&e@player &bpurchased @item (x@amount) from you for &d@price!"         #@player, @item, @price, @amount
 returned-item: "&2You have removed &d@item &r&d(x@amount) &2from the auction house."                     #@item, @amount
@@ -56,7 +53,6 @@ listed-item:
     - "&7-------------------------"
 your-listed-item:
     # %price% = Price of listing
-    # %time% = Time until listing expires
     # {H} = Hours | {M} = Minutes
     - "&7-------------------------"
     - "&cClick here to remove listing."

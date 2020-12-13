@@ -86,7 +86,7 @@ class ExpiredMenu extends AHMenu {
 		$listingCount = count(DataHolder::getListingsByPlayer($player, true));
 		if($itemClicked->getNamedTag()->hasTag("return_all")) {
 			if($this->getEmptySlots($player->getInventory()) < $listingCount) {
-				$player->sendMessage(Locale::getMessage($player, "inventory-full", true));
+				Locale::sendMessage($player, "inventory-full");
 				return false;
 			}
 			foreach(DataHolder::getListingsByPlayer($player, true) as $listing) {

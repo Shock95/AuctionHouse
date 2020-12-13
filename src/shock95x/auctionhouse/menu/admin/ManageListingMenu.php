@@ -83,6 +83,11 @@ class ManageListingMenu extends AHMenu {
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 
+	public function onClose(Player $player): void {
+		parent::onClose($player);
+		new AdminMenu($player, false);
+	}
+
 	public function show(Player $player): void {
 		Utils::setViewingMenu($player, Utils::MANAGE_LISTING_MENU);
 		parent::show($player);

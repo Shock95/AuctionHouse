@@ -6,52 +6,57 @@ menu-name: "&l&6Аукционный дом"
 listings-menu-name: "&6Активные списки"
 expired-menu-name: "&6Отменен / Истекшие списки"
 purchase-menu-name: "Подтвердите покупку"
+# admin-menu-name: "&l&cAdmin Menu"
+# category-menu-name: "&l&6Category Menu"
+# manage-listing-name: "&l&eManage Listing"
+# player-listing: "&2{player}'s &6Listings"
 
 # Chat messages
-item-purchased: "&eТовар Куплен&e!"
-buyer-purchased: "&6%покупатель% &eприобрёл ваш предмет за &6$%price%&e!"
 item-listed: "&2Вы перечислили &d@item &r&d(x@amount) &2за &d@price. Тип &e/ah listings &dпросмотреть все ваши аукционы"
 cancelled-item: "&eВы &6Отменили &eаукцион. Возврат отмененных и просроченных товаров по адресу &6/ah expired&e."
 cancelled-purchase: "&cВы отменили эту покупку"
-admin-removed: "&eСписок удален."
 purchased-item: "&2Вы купили &d@item &r&d(x@amount) &2за &d@price"               #@player, @item, @price, @amount
 seller-message: "&e@Игрок приобрел @item (x@amount) ваш предмет за &d@price!"         #@player, @item, @price, @amount
 returned-item: "&2Вы удалили &d@item &r&d(x@amount) &2 из аукционного дома."                     #@item, @amount
 
 # Error messages
 in-creative: "&cВы не можете продавать предметы в творческом режиме."
-max-listings: "&cВы не можете иметь более 45 активных аукционов."
+max-listings: "&cВы не можете иметь более @max активных аукционов."              #@max
 invalid-price: "&cНеверная цена."
-no_empty: "&cВаш инвентарь пуст."
 not-enough-space: "Недостаточно места в инвентаре"
 self-purchase: "&cВы не можете купить свои собственные вещи на аукционе!"
-item-gone: "Этого предмета больше не существует"
 no-item: "&cВы должны держать предмет в руке!"
 cannot-afford: "&6У вас недостаточно денег, чтобы купить этот предмет."
 item-blacklisted: "&cЭтот предмет не может быть выставлен на аукцион!"
 invalid-balance: "&cУ вас недостаточно денег, чтобы выставить предмет на аукцион."
 listing-gone: "&cЭтого списка больше не существует."
+# price-range: "&cInvalid price range"                                                                         #@min, @max
+# in-cooldown: "&cYou are currently in cooldown, please wait &b@M minute(s) &cand &b@S second(s)&c."               #@M, @S
+# in-cooldown: "&cYou are currently in cooldown, please wait &b@M minute(s) &cand &b@S second(s)&c."               #@M, @S
+# player-not-found: "&cThis player has no active listings."
+# player-listings-usage: "&cView your listings with /ah listings"
+# inventory-full: "&cYour inventory is full, remove some items to claim your listings."
 
 # Items in the menu UI
 listed-item:
     # %price% = Цена листинга
     # %seller% = Имя продавца
-    # %time% = Время до истечения срока листинга
+    # {H} = Hours | {M} = Minutes
     - "&7-------------------------"
     - "&aНажмите здесь, чтобы купить."
     - ""
     - "&9Цена: &e$%price%"
     - "&9Продавец: &e%seller%"
-    - "&9Истекать: &e%time%"
+    - "&9Истекать: &e{H}:{M}"
     - "&7-------------------------"
 your-listed-item:
     # %price% = Цена аукциона
-    # %time% = Время до истечения срока аукциона
+    # {H} = Hours | {M} = Minutes
     - "&7-------------------------"
     - "&cНажмите здесь, чтобы отменить."
     - ""
     - "&9Цена: &e$%price%"
-    - "&9Истекает: &e%time%"
+    - "&9Истекает: &e{H}:{M}"
     - "&7-------------------------"
 view-listed-items:
     # %selling% = Количество активных аукционов
@@ -69,14 +74,54 @@ view-expired-items:
       - "&aЭлементы, которые вы отменили или просрочели."
       - ""
       - "&9Предметы для сбора: &e%expired%"
+
+# Admin Menu
+# view-admin-menu:
+#     name: "&e&k----- &r&l&c Admin Menu &r&e&k-----"
+#     lore:
+#         - "&r&aClick here to view the admin menu."
+#         #- "&aYou can remove specific items here."
+# main-stats-admin:
+#     # %page% = Current page
+#     # %max% = Max page
+#     # %expired% = Expired listing count
+#     # %total% = Total listing count
+#     name: "&l&cAdmin Menu"
+#     lore:
+#         - "&aPage %page%/%max%"
+#         - "&7Total of &b%total% &7items"
+#         - "&c(&b%expired% &cexpired items)"
+#         - "Click to refresh page"
+# listed-item-admin:
+#     # %price% = Price of listing
+#     # %seller% = Username of seller
+#     # %status% = Status of the listing (Active/Expired)
+#     - "&7-------------------------"
+#     - "&6Click here to edit listing."
+#     - ""
+#     - "&9Price: &e%price%"
+#     - "&9Seller: &e%seller%"
+#     - "&9Status: %status%"
+#     - "&7-------------------------"
+#
+# status-active: "&aActive"
+# status-expired: "&cExpired"
+# selected-listing-name: "&l&cManage Listing"
+
+# duplicate-item: "&aClick here to duplicate item to inventory"
+# listing-expired: "&eClick here to make listing &cexpired"
+# listing-active: "&eClick here to make listing &aactive"
+# delete-item: "&cClick here to delete item and listing"
+
+# Pagination items
 previous-page:
     name: "&a<- Предыдущая страница"
     lore:
-        - "Перейти на предыдущую страницу"
+        - "&7Перейти на предыдущую страницу"
 next-page:
     name: "&aСледующая Страница ->"
     lore:
-        - "Перейти на следующую страницу"
+        - "&7Перейти на следующую страницу"
 back-button:
     name: "&6Назад"
     lore:
@@ -139,13 +184,34 @@ expired-stats:
     lore:
         - "&aСтраница %page%/%max%"
         - "&7Всего &b%total% &7предметов"
+
+# Category menu
+# category-stats:
+#     # %category% = Category
+#     # %page% = Current page
+#     # %max% = Max page
+#     # %total% = Total listing count
+#     name: "%category%"
+#     lore:
+#         - "&aPage %page%/%max%"
+#         - "&7Total of &b%total% &7listings"
+# category-list-stats:
+#     # %page% = Current page
+#     # %max% = Max page
+#     # %total% = Total listing count
+#     name: "&l&6Category Menu"
+#     lore:
+#         - "&aPage %page%/%max%"
+#         - "&7Total of &b%total% &7categories"
+
 purchase-confirm:
     name: "&aПодтвердите покупку"
 purchase-cancel:
     name: "&cОтменить покупку"
 purchase-item:
     lore:
-        - ""
+        - "&7-------------------------"
         - "&9Цена: &e$%price%"
         - "&9Продавец: &e%seller%"
+        - "&7-------------------------"
 ...
