@@ -49,7 +49,7 @@ listed-item:
     - ""
     - "&9Price: &e%price%"
     - "&9Seller: &e%seller%"
-    - "&9Expire: &e{H}:{M}"
+    - "&9Expire: &e{D}d {H}h {M}m"
     - "&7-------------------------"
 your-listed-item:
     # %price% = Price of listing
@@ -58,7 +58,7 @@ your-listed-item:
     - "&cClick here to remove listing."
     - ""
     - "&9Price: &e%price%"
-    - "&9Expire: &e{H}:{M}"
+    - "&9Expire: &e{D}d {H}h {M}m"
     - "&7-------------------------"
 expired-item:
     # %price% = Price of listing

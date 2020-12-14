@@ -57,7 +57,7 @@ class ListingsMenu extends AHMenu {
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
 			$listedItem = Locale::getMessage($this->getPlayer(), "your-listed-item");
 
-			$lore = str_replace(["%price%", "{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), ($endTime->days * 24 + $endTime->h), $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
+			$lore = str_replace(["%price%", "{D}", "{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
 			$lore = Settings::allowLore() ? array_merge($item->getLore(), $lore) : $lore;
 			$item->setNamedTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore($lore);
 

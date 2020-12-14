@@ -73,7 +73,7 @@ class MainMenu extends AHMenu {
 			$tag->setLong("marketId", $auction->getMarketId());
 
 			$listedItem = Locale::getMessage($this->getPlayer(), "listed-item");
-			$lore = str_replace(["%price%", "%seller%", "{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), ($endTime->days * 24 + $endTime->h),  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
+			$lore = str_replace(["%price%", "%seller%", "{D}","{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
 			$lore = Settings::allowLore() ? array_merge($item->getLore(), $lore) : $lore;
 
 			$item->setNamedTag($tag)->setCustomName(TextFormat::RESET . $item->getName())->setLore($lore);

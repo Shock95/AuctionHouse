@@ -7,6 +7,7 @@ use shock95x\auctionhouse\category\defaults\ArmorCategory;
 use shock95x\auctionhouse\category\defaults\BlockCategory;
 use shock95x\auctionhouse\category\defaults\EnchantedCategory;
 use shock95x\auctionhouse\category\defaults\FoodCategory;
+use shock95x\auctionhouse\category\defaults\PotionCategory;
 use shock95x\auctionhouse\category\defaults\ToolCategory;
 
 class CategoryManager {
@@ -28,5 +29,6 @@ class CategoryManager {
 		self::register(new FoodCategory());
 		self::register(new ToolCategory());
 		self::register(new EnchantedCategory());
+		self::register(new PotionCategory());
 	}
 }
