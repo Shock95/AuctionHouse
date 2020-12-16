@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\category\defaults;
 
-use pocketmine\block\Sapling;
 use pocketmine\item\Item;
-use pocketmine\item\ItemBlock;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\utils\TextFormat;

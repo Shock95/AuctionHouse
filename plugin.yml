@@ -6,33 +6,38 @@ author: Shock95x
 softdepend: [EconomyAPI, InvCrashFix]
 virions: ["InvMenu", "libasynql", "await-generator", "UpdateNotifier", "Commando"]
 permissions:
-    auctionhouse.command:
-        default: op
+    auctionhouse:
+        default: false
         children:
-            auctionhouse.command.shop:
-                default: true
-                description: Allows player to open the auction house menu.
-            auctionhouse.command.sell:
-                default: true
-                description: Allows player to list an item in the auction house.
-            auctionhouse.command.listings:
-                default: true
-                description: Allows player to view listings.
-            auctionhouse.command.expired:
-                default: true
-                description: Allows player to view expired listings.
-            auctionhouse.command.admin:
-                default: op
-                description: Opens the AuctionHouse admin menu.
-            auctionhouse.command.reload:
-                default: op
-                description: Allows player to reload configuration files.
-    auctionhouse.sign:
-        default: op
-        children:
-            auctionhouse.sign.shop:
-                default: op
-                description: Allows player to make AH shop sign
-            auctionhouse.sign.listings:
-                default: true
-                description: Allows player to make signs for their AH lisitngs
+            auctionhouse.command:
+                default: false
+                children:
+                    auctionhouse.command.shop:
+                        default: true
+                        description: Allows player to open the auction house menu.
+                    auctionhouse.command.sell:
+                        default: true
+                        description: Allows player to list an item in the auction house.
+                    auctionhouse.command.listings:
+                        default: true
+                        description: Allows player to view listings.
+                    auctionhouse.command.expired:
+                        default: true
+                        description: Allows player to view expired listings.
+                    auctionhouse.command.category:
+                        default: true
+                        description: Allows player to open the category menu.
+                    auctionhouse.command.admin:
+                        default: op
+                        description: Opens the AuctionHouse admin menu.
+                    auctionhouse.command.reload:
+                        default: op
+                        description: Allows player to reload configuration files.
+            auctionhouse.sign:
+                children:
+                    auctionhouse.sign.shop:
+                        default: op
+                        description: Allows player to make AH shop sign
+                    auctionhouse.sign.listings:
+                        default: true
+                        description: Allows player to make signs for their AH lisitngs

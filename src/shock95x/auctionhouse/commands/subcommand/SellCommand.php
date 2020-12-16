@@ -20,6 +20,7 @@ use shock95x\auctionhouse\utils\Utils;
 class SellCommand extends BaseSubCommand {
 
 	protected function prepare(): void {
+		$this->setPermission("auctionhouse.command.sell");
 		$this->registerArgument(0, new IntegerArgument("price"));
 	}
 

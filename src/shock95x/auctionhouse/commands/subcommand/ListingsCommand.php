@@ -15,6 +15,7 @@ use shock95x\auctionhouse\utils\Locale;
 class ListingsCommand extends BaseSubCommand {
 
 	protected function prepare(): void {
+		$this->setPermission("auctionhouse.command.listings");
 		$this->registerArgument(0, new RawStringArgument("player", true));
 	}
 
