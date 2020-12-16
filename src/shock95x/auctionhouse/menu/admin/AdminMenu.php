@@ -24,8 +24,8 @@ class AdminMenu extends AHMenu {
 	}
 	
 	public function setItems(int $page, int $max, int $expiredCount, int $listingCount) {
-		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "main-stats-admin");
-		$stats->setLore(str_replace(["%page%", "%max%", "%expired%", "%total%"], [$page, $max, $expiredCount, $listingCount], $stats->getLore()))->getNamedTag()->setInt("pagination", 2);
+		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "main-stats-admin", ["%page%", "%max%", "%expired%", "%total%"], [$page, $max, $expiredCount, $listingCount]);
+		$stats->getNamedTag()->setInt("pagination", 2);
 		$stats->setNamedTagEntry(new ListTag("ench"));
 
 		$this->getInventory()->setItem(49, $stats);

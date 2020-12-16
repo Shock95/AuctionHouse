@@ -33,9 +33,7 @@ class CategoryMenu extends AHMenu {
 	}
 
 	public function setItems(int $page, int $max, int $total) : void {
-		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "category-stats");
-		$stats->setCustomName(str_replace(["%category%"], [$this->category->getDisplayName()], $stats->getCustomName()));
-		$stats->setLore(str_replace(["%page%", "%max%", "%total%", "%category%"], [$page, $max, $total, $this->category->getDisplayName()], $stats->getLore()));
+		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "category-stats", ["%page%", "%max%", "%total%", "%category%"], [$page, $max, $total, $this->category->getDisplayName()]);
 		$this->getInventory()->setItem(49, $stats);
 	}
 

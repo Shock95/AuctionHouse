@@ -26,8 +26,7 @@ class ListingsMenu extends AHMenu {
 	public function setItems(int $page, int $max, int $total) : void {
 		$info = Utils::getButtonItem($this->getPlayer(), "info", "listings-description");
 
-		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "listings-stats");
-		$stats->setLore(str_replace(["%page%", "%max%", "%total%"], [$page, $max, $total], $stats->getLore()));
+		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "listings-stats", ["%page%", "%max%", "%total%"], [$page, $max, $total]);
 
 		$this->getInventory()->setItem(53, $info);
 		$this->getInventory()->setItem(49, $stats);

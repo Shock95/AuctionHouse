@@ -24,8 +24,8 @@ class ExpiredMenu extends AHMenu {
 	public function setItems(int $page, int $max, int $total) : void {
 		$info = Utils::getButtonItem($this->getPlayer(), "info", "main-description");
 
-		$stats = Utils::getButtonItem($this->getPlayer(), "return_all", "expired-stats");
-		$stats->setLore(str_replace(["%page%", "%max%", "%total%"], [$page, $max, $total], $stats->getLore()))->getNamedTag()->setInt("return_all", 1);
+		$stats = Utils::getButtonItem($this->getPlayer(), "return_all", "expired-stats", ["%page%", "%max%", "%total%"], [$page, $max, $total]);
+		$stats->getNamedTag()->setInt("return_all", 1);
 
 		$this->getInventory()->setItem(53, $info);
 		$this->getInventory()->setItem(49, $stats);

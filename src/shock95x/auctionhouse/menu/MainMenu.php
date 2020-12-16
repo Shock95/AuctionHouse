@@ -26,17 +26,17 @@ class MainMenu extends AHMenu {
 	}
 
 	public function setItems(int $page, int $max, int $total, int $selling, int $expiredNum): void {
-		$chest = Utils::getButtonItem($this->getPlayer(), "stats", "main-stats");
-		$chest->setLore(str_replace(["%page%", "%max%", "%total%"], [$page, $max, $total], $chest->getLore()))->getNamedTag()->setInt("pagination", 2);
+		$chest = Utils::getButtonItem($this->getPlayer(), "stats", "main-stats", ["%page%", "%max%", "%total%"], [$page, $max, $total]);
+		$chest->getNamedTag()->setInt("pagination", 2);
 
 		$info = Utils::getButtonItem($this->getPlayer(), "info", "main-description");
 		$howto = Utils::getButtonItem($this->getPlayer(), "howto", "sell-description");
 
-		$listings = Utils::getButtonItem($this->getPlayer(), "player_listings", "view-listed-items");
-		$listings->setLore(str_replace("%selling%", $selling, $listings->getLore()))->getNamedTag()->setInt("listings", 1);
+		$listings = Utils::getButtonItem($this->getPlayer(), "player_listings", "view-listed-items", ["%selling%"], [$selling]);
+		$listings->getNamedTag()->setInt("listings", 1);
 
-		$expired = Utils::getButtonItem($this->getPlayer(), "expired_listings", "view-expired-items");
-		$expired->setLore(str_replace("%expired%", $expiredNum, $expired->getLore()))->getNamedTag()->setByte("expired", 1);
+		$expired = Utils::getButtonItem($this->getPlayer(), "expired_listings", "view-expired-items", ["%expired%%"], [$expiredNum]);
+		$expired->getNamedTag()->setByte("expired", 1);
 
 		$array = [49 => $chest, 45 => $listings, 46 => $expired, 52 => $howto, 53 => $info];
 

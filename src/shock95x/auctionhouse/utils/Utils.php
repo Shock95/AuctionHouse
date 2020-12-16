@@ -65,13 +65,13 @@ class Utils {
 		return true;
 	}
 
-	public static function getButtonItem(Player $player, string $itemKey, string $messageKey): Item {
+	public static function getButtonItem(Player $player, string $itemKey, string $messageKey, array $searchArgs = [], array $replaceArgs = []): Item {
 		$item = Item::fromString(Settings::getButtons()[$itemKey]);
 		$message = Locale::getMessage($player, $messageKey);
 
-		$item->setCustomName(TextFormat::RESET . $message["name"]);
+		$item->setCustomName(TextFormat::RESET . str_replace($searchArgs, $replaceArgs, $message["name"]));
 		if(isset($message["lore"])) {
-			$item->setLore(preg_filter('/^/', TextFormat::RESET, $message["lore"]));
+			$item->setLore(preg_filter('/^/', TextFormat::RESET, str_replace($searchArgs, $replaceArgs, $message["lore"])));
 		}
 		return $item;
 	}
