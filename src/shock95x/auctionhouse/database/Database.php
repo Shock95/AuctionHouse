@@ -53,13 +53,6 @@ class Database {
 		return $this;
 	}
 
-
-
-	protected function asyncSelect(string $query, array $args = []): Generator {
-		$this->database->executeSelect($query, $args, yield, yield Await::REJECT);
-		return yield Await::ONCE;
-	}
-
 	/**
 	 * @param string $uuid
 	 * @param string $username

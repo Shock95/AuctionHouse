@@ -5,6 +5,7 @@ namespace shock95x\auctionhouse\commands\subcommand;
 
 use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseSubCommand;
+use CortexPE\Commando\exception\ArgumentOrderException;
 use DateTime;
 use pocketmine\command\CommandSender;
 use pocketmine\item\Item;
@@ -19,6 +20,9 @@ use shock95x\auctionhouse\utils\Utils;
 
 class SellCommand extends BaseSubCommand {
 
+	/**
+	 * @throws ArgumentOrderException
+	 */
 	protected function prepare(): void {
 		$this->setPermission("auctionhouse.command.sell");
 		$this->registerArgument(0, new IntegerArgument("price"));

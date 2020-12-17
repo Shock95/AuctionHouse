@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse;
 
+use CortexPE\Commando\exception\HookAlreadyRegistered;
 use CortexPE\Commando\PacketHooker;
 use JackMD\UpdateNotifier\UpdateNotifier;
 use muqsit\invmenu\InvMenuHandler;
 use pocketmine\plugin\PluginBase;
 use pocketmine\tile\Tile;
+use ReflectionException;
 use shock95x\auctionhouse\category\CategoryManager;
 use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\database\Database;
@@ -33,6 +35,10 @@ class AuctionHouse extends PluginBase {
 		Utils::checkConfig($this, $this->getConfig(), "config-version", 5);
 	}
 
+	/**
+	 * @throws HookAlreadyRegistered
+	 * @throws ReflectionException
+	 */
 	public function onEnable(): void {
 		self::$instance = $this;
 		$this->saveDefaultConfig();
