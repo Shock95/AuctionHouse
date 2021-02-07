@@ -1,6 +1,6 @@
 name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
-version: 1.3.0-PRERELEASE
+version: 1.3.0
 api: 3.0.0
 author: Shock95x
 softdepend: [EconomyAPI, InvCrashFix]
@@ -39,5 +39,5 @@ permissions:
                         default: op
                         description: Allows player to make AH shop sign
                     auctionhouse.sign.listings:
-                        default: true
+                        default: op
                         description: Allows player to make signs for their AH lisitngs

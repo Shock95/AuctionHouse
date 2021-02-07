@@ -28,6 +28,8 @@ class AuctionHouse extends PluginBase {
 	public static $instance;
 	/** @var Database */
 	private $database;
+	/** @var array  */
+	private $resources = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
 
 	public function onLoad(): void {
 		$this->saveDefaultConfig();
@@ -44,8 +46,7 @@ class AuctionHouse extends PluginBase {
 		$this->saveDefaultConfig();
 		Settings::init($this->getConfig());
 
-		$resources = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
-		foreach ($resources as $file => $replace) {
+		foreach($this->resources as $file => $replace) {
 			$this->saveResource($file, $replace);
 		}
 

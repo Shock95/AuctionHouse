@@ -35,7 +35,7 @@ class MainMenu extends AHMenu {
 		$listings = Utils::getButtonItem($this->getPlayer(), "player_listings", "view-listed-items", ["%selling%"], [$selling]);
 		$listings->getNamedTag()->setInt("listings", 1);
 
-		$expired = Utils::getButtonItem($this->getPlayer(), "expired_listings", "view-expired-items", ["%expired%%"], [$expiredNum]);
+		$expired = Utils::getButtonItem($this->getPlayer(), "expired_listings", "view-expired-items", ["%expired%"], [$expiredNum]);
 		$expired->getNamedTag()->setByte("expired", 1);
 
 		$array = [49 => $chest, 45 => $listings, 46 => $expired, 52 => $howto, 53 => $info];

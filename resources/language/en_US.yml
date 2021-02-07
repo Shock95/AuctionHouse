@@ -12,7 +12,7 @@ purchase-menu-name: "Confirm Purchase"
 admin-menu-name: "&l&cAdmin Menu"
 category-menu-name: "&l&6Category Menu"
 manage-listing-name: "&l&eManage Listing"
-player-listing: "&2{player}'s &6Listings"
+player-listing: "&b{player}'s &6Listings"
 
 # Chat messages
 item-listed: "&2You have listed &d@item &r&d(x@amount) &2for &d@price. Type &e/ah listings &dto view all your listings"
@@ -135,6 +135,7 @@ next-page:
 back-button:
     name: "&6Back"
     lore:
+
 sell-description:
     name: "&6How to sell an item"
     lore:
@@ -215,6 +216,7 @@ category-list-stats:
         - "&aPage %page%/%max%"
         - "&7Total of &b%total% &7categories"
 
+# Confirm purchase menu
 purchase-confirm:
     name: "&aConfirm Purchase"
 purchase-cancel:

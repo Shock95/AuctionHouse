@@ -8,12 +8,12 @@ use shock95x\auctionhouse\auction\Listing;
 
 interface Category {
 
-	public function sort(Listing $listing): bool;
+	public function sort(Listing $listing): bool; // Sort function for category
 
-	public function getName(): string;
+	public function getName(): string;  // Category name
 
-	public function getDisplayName(): string;
+	public function getDisplayName(): string; // Category display name (Formatted with color)
 
-	public function getMenuItem(): Item;
+	public function getMenuItem(): Item; // Category menu item
 
 }

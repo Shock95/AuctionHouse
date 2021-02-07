@@ -47,22 +47,24 @@ class EventListener implements Listener{
 			return;
 		}
 		if(in_array($event->getLine(0), Settings::getSignTriggers())) {
-			if($event->getLine(1) == "shop" && $player->hasPermission("auctionhouse.sign.shop")) {
-				$event->setCancelled();
-
-				$ahsign = new AHSign($block->getLevel(), AHSign::createTag($block, AHSign::TYPE_SHOP));
-				$ahsign->setLine(0, "[" . TextFormat::GOLD . "AuctionHouse" . TextFormat::RESET . "]");
-				$ahsign->setLine(2,  TextFormat::GREEN . "[Shop]");
-				$tile->close();
-				return;
-			}
-			if($player->hasPermission("auctionhouse.sign.listings")) {
+			if($player->hasPermission("auctionhouse.sign.listings") && $event->getLine(1) == "player") {
 				$event->setCancelled();
 
 				$ahsign = new AHSign($block->getLevel(), AHSign::createTag($block, AHSign::TYPE_PLAYER, $player->getName()));
 				$ahsign->setLine(0, "[" . TextFormat::GOLD . "AuctionHouse" . TextFormat::RESET . "]");
 				$ahsign->setLine(2,  TextFormat::AQUA .  $player->getName());
 				$tile->close();
+			} else if($player->hasPermission("auctionhouse.sign.shop")) {
+				$lines = $event->getLines();
+				$event->setCancelled();
+
+				$ahsign = new AHSign($block->getLevel(), AHSign::createTag($block, AHSign::TYPE_SHOP));
+				$ahsign->setLine(0, "[" . TextFormat::GOLD . "AuctionHouse" . TextFormat::RESET . "]");
+				$ahsign->setLine(1, $lines[1]);
+				$ahsign->setLine(2, $lines[2]);
+				$ahsign->setLine(3, $lines[3]);
+				$tile->close();
+				return;
 			}
 		}
 	}

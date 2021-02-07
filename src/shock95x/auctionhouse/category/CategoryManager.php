@@ -12,7 +12,7 @@ use shock95x\auctionhouse\category\defaults\ToolCategory;
 
 class CategoryManager {
 
-	/** @var array */
+	/** @var Category[] */
 	private static $categories;
 
 	public static function register(Category $class): void {
