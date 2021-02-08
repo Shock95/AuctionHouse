@@ -5,10 +5,10 @@ projects:
     icon: icon.png
     libs:
     - src: poggit/libasynql/libasynql
-      version: ^3.3.0
+      version: ^3.3.1
     - src: muqsit/InvMenu/InvMenu
       branch: master
-      version: ^3.1.1
+      version: ^4.0.1
     - src: SOF3/await-generator/await-generator
       version: ^2.2.0
     - src: JackMD/UpdateNotifier/UpdateNotifier

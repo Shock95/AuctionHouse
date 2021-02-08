@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace shock95x\auctionhouse\economy;
 
 use onebone\economyapi\EconomyAPI;
 use pocketmine\Player;
-use ReflectionException;
 
 class EconomySProvider implements EconomyProvider {
 

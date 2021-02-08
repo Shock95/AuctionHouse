@@ -20,13 +20,13 @@ SELECT * FROM auctions;
 -- #  }
 
 -- # { delete
--- #    :id string
+-- #    :id int
 DELETE FROM auctions
 WHERE id = :id;
 -- # }
 
 -- # { expired
--- #    :id string
+-- #    :id int
 -- #    :expired bool
 UPDATE auctions
 SET expired = :expired

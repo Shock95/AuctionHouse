@@ -1,66 +1,64 @@
 ---
 # DO NOT EDIT THIS VALUE, INTERNAL USE ONLY. #
-lang-version: 2
+lang-version: 3
 
 # Refer to https://minecraft.gamepedia.com/Formatting_codes for formatting codes, you can replace the '§' symbol with a '&'
 
-# The titles of the Auction House UI
+# AH Menu titles
 menu-name: "&l&6Auction House"
 listings-menu-name: "&2Active Listings"
 expired-menu-name: "&cCancelled / Expired Listings"
 purchase-menu-name: "Confirm Purchase"
 admin-menu-name: "&l&cAdmin Menu"
+category-menu-name: "&l&6Category Menu"
 manage-listing-name: "&l&eManage Listing"
-player-listing: "&2{player}'s &6Listings"
+player-listing: "&b{player}'s &6Listings"
 
 # Chat messages
-item-purchased: "&eItem &6purchased&e!"
-buyer-purchased: "&6%buyer% &epurchased your auction for &6$%price%&e!"
 item-listed: "&2You have listed &d@item &r&d(x@amount) &2for &d@price. Type &e/ah listings &dto view all your listings"
 cancelled-item: "&eYou have &6cancelled &ean auction. Return cancelled and expired items at &6/ah expired&e."
 cancelled-purchase: "&cYou have cancelled this purchase"
-admin-removed: "&eListing removed."
 purchased-item: "&2You have bought &d@item &r&d(x@amount) &2for &d@price"               #@player, @item, @price, @amount
 seller-message: "&e@player &bpurchased @item (x@amount) from you for &d@price!"         #@player, @item, @price, @amount
 returned-item: "&2You have removed &d@item &r&d(x@amount) &2from the auction house."                     #@item, @amount
 
 # Error messages
 in-creative: "&cYou cannot sell items while in creative mode."
-max-listings: "&cYou cannot have more than 45 active listings."
+max-listings: "&cYou cannot have more than @max active listings."                                                  #@max
 invalid-price: "&cInvalid price."
-no_empty: "&cYour inventory is empty."
-not-enough-space: "Not enough inventory space"
+not-enough-space: "&cYou do not have enough inventory space to buy this item"
 self-purchase: "&cYou cannot buy your own items on the auction house!"
-item-gone: "This item no longer exists"
 no-item: "&cYou must be holding an item in your hand!"
 cannot-afford: "&cYou do not have enough money to buy this item."
 item-blacklisted: "&cThat item is not allowed to be put on the auction house!"
 invalid-balance: "&cYou do not have enough money to list an auction."
 listing-gone: "&cThis listing no longer exists."
 price-range: "&cInvalid price range"                                                                         #@min, @max
+in-cooldown: "&cYou are currently in cooldown, please wait &b@M minute(s) &cand &b@S second(s)&c."               #@M, @S
 player-not-found: "&cThis player has no active listings."
 player-listings-usage: "&cView your listings with /ah listings"
+inventory-full: "&cYour inventory is full, remove some items to claim your listings."
 
 # Items in the menu UI
 listed-item:
     # %price% = Price of listing
     # %seller% = Username of seller
-    # %time% = Time until listing expires
+    # {H} = Hours | {M} = Minutes
     - "&7-------------------------"
     - "&aClick here to purchase."
     - ""
     - "&9Price: &e%price%"
     - "&9Seller: &e%seller%"
-    - "&9Expire: &e%time%"
+    - "&9Expire: &e{D}d {H}h {M}m"
     - "&7-------------------------"
 your-listed-item:
     # %price% = Price of listing
-    # %time% = Time until listing expires
+    # {H} = Hours | {M} = Minutes
     - "&7-------------------------"
     - "&cClick here to remove listing."
     - ""
     - "&9Price: &e%price%"
-    - "&9Expire: &e%time%"
+    - "&9Expire: &e{D}d {H}h {M}m"
     - "&7-------------------------"
 expired-item:
     # %price% = Price of listing
@@ -72,7 +70,6 @@ expired-item:
     - "&7-------------------------"
 view-listed-items:
     # %selling% = Number of active listings
-    id: 264
     name: "&6Items you're selling"
     lore:
         - "&aClick here to view all of the items you"
@@ -81,7 +78,6 @@ view-listed-items:
         - "&9Selling: &e%selling%"
 view-expired-items:
     # %expired% = Number of expired listings
-    id: 394
     name: "&6Collect Expired / Cancelled Items"
     lore:
       - "&r&aClick here to view and collect all of the"
@@ -91,7 +87,6 @@ view-expired-items:
 
 # Admin Menu
 view-admin-menu:
-    id: 331
     name: "&e&k----- &r&l&c Admin Menu &r&e&k-----"
     lore:
         - "&r&aClick here to view the admin menu."
@@ -101,7 +96,6 @@ main-stats-admin:
     # %max% = Max page
     # %expired% = Expired listing count
     # %total% = Total listing count
-    id: "152"
     name: "&l&cAdmin Menu"
     lore:
         - "&aPage %page%/%max%"
@@ -125,32 +119,29 @@ status-expired: "&cExpired"
 selected-listing-name: "&l&cManage Listing"
 
 duplicate-item: "&aClick here to duplicate item to inventory"
-remove-listing: "&eClick here to remove listing"
+listing-expired: "&eClick here to make listing &cexpired"
+listing-active: "&eClick here to make listing &aactive"
 delete-item: "&cClick here to delete item and listing"
 
 # Pagination items
 previous-page:
-    id: "339"
     name: "&a<- Previous Page"
     lore:
-        - "Go to the previous page"
+        - "&7Go to the previous page"
 next-page:
-    id: "339"
     name: "&aNext Page ->"
     lore:
-        - "Go to the next page"
+        - "&7Go to the next page"
 back-button:
-    id: "339"
     name: "&6Back"
     lore:
+
 sell-description:
-    id: "388"
     name: "&6How to sell an item"
     lore:
         - "&aTo list an item on the auction house, just hold"
         - "&athe item in your hand and type &b/ah sell <price>&a."
 main-description:
-    id: "340"
     name: "&6What is this page?"
     lore:
         - "&aThis is the auction house, here you can"
@@ -164,14 +155,12 @@ main-stats:
     # %page% = Current page
     # %max% = Max page
     # %total% = Total listing count
-    id: "54"
     name: "&l&6Auction House"
     lore:
         - "&aPage %page%/%max%"
         - "&7Total of &b%total% &7items"
         - "Click to refresh page"
 listings-description:
-    id: "340"
     name: "&6What is this Page?"
     lore:
         - "&aThese are your current listings, all of"
@@ -184,13 +173,11 @@ listings-stats:
     # %page% = Current page
     # %max% = Max page
     # %total% = Total listing count
-    id: "54"
     name: "&l&6Listings"
     lore:
         - "&aPage %page%/%max%"
         - "&7Total of &b%total% &7items"
 expired-description:
-    id: "340"
     name: "&6What is this page?"
     lore:
         - "&aThis page houses all of your cancelled and"
@@ -203,19 +190,41 @@ expired-description:
 expired-stats:
     # %page% = Current page
     # %max% = Max page
-    # %total% = Total listing count
-    id: "152"
+    # %total% = Number of categories
     name: "&l&6Expired"
     lore:
         - "&aPage %page%/%max%"
         - "&7Total of &b%total% &7items"
+        - "&3Click here to return all items"
+
+# Category menu
+category-stats:
+    # %category% = Category
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    name: "%category%"
+    lore:
+        - "&aPage %page%/%max%"
+        - "&7Total of &b%total% &7listings"
+category-list-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    name: "&l&6Category Menu"
+    lore:
+        - "&aPage %page%/%max%"
+        - "&7Total of &b%total% &7categories"
+
+# Confirm purchase menu
 purchase-confirm:
     name: "&aConfirm Purchase"
 purchase-cancel:
     name: "&cCancel Purchase"
-purchaseItem:
+purchase-item:
     lore:
-        - ""
+        - "&7-------------------------"
         - "&9Price: &e$%price%"
         - "&9Seller: &e%seller%"
+        - "&7-------------------------"
 ...
