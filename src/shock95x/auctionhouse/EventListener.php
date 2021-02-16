@@ -11,11 +11,11 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\tile\Sign;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\event\MenuCloseEvent;
+use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\menu\MainMenu;
 use shock95x\auctionhouse\menu\player\PlayerListingMenu;
 use shock95x\auctionhouse\utils\AHSign;
 use shock95x\auctionhouse\utils\Settings;
-use shock95x\auctionhouse\utils\Utils;
 
 class EventListener implements Listener{
 
@@ -34,8 +34,10 @@ class EventListener implements Listener{
 	public function onInventoryClose(InventoryCloseEvent $event): void {
 		$player = $event->getPlayer();
 		if($event->getInventory() instanceof InvMenuInventory) {
-			(new MenuCloseEvent($player, Utils::getViewingMenu($player)))->call();
-			Utils::setViewingMenu($event->getPlayer(), -1);
+			if(MenuManager::getViewingMenu($player) != -1) {
+				(new MenuCloseEvent($player, MenuManager::getViewingMenu($player)))->call();
+				MenuManager::setViewingMenu($event->getPlayer(), -1);
+			}
 		}
 	}
 

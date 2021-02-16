@@ -10,6 +10,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\DataHolder;
+use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\menu\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -71,7 +72,7 @@ class PlayerListingMenu extends AHMenu {
 	}
 
 	public function show(Player $player): void {
-		Utils::setViewingMenu($player, Utils::PLAYER_LISTINGS_MENU);
+		MenuManager::setViewingMenu($player, MenuManager::PLAYER_LISTINGS_MENU);
 		parent::show($player);
 	}
 }

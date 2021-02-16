@@ -108,7 +108,8 @@ cancel_purchase: "minecraft:stained_glass_pane:14"
 | ------------- | -------------- |  
 | [shock95x\auctionhouse\event\AuctionStartEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionStartEvent.php) | Called when an auction is started |  
 | [shock95x\auctionhouse\event\AuctionEndEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/AuctionEndEvent.php)   | Called when an auction has ended    |  
-| [shock95x\auctionhouse\event\ItemListedEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/ItemListedEvent.php)   | Called when an item is listed by player (cancellable) |  
+| [shock95x\auctionhouse\event\ItemListedEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/ItemListedEvent.php)   | Called when an item is listed by player (cancellable) | 
+| [shock95x\auctionhouse\event\ItemPurchasedEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/ItemPurchasedEvent.php)   | Called when an item is purchased by player (cancellable) |  
 | [shock95x\auctionhouse\event\MenuCloseEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/MenuCloseEvent.php) | Called when a menu is closed by player |  
   
 ## Contributing  

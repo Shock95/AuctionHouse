@@ -13,6 +13,8 @@ use shock95x\auctionhouse\auction\Listing;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\event\AuctionEndEvent;
+use shock95x\auctionhouse\event\ItemPurchasedEvent;
+use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
@@ -69,13 +71,13 @@ class ConfirmPurchaseMenu extends AHMenu {
 		}
 		$marketId = $itemClicked->getNamedTag()->getLong("purchase");
 		$auction = DataHolder::getListingById($marketId);
-		if($auction == null) {
+		if ($auction == null) {
 			Locale::sendMessage($player, "listing-gone");
 			return false;
 		}
 		$item = $auction->getItem();
 
-		if($auction->getSeller(true) == $player->getRawUniqueId()) {
+		if ($auction->getSeller(true) == $player->getRawUniqueId()) {
 			$player->removeWindow($inventory);
 			Locale::sendMessage($player, "self-purchase");
 			return false;
@@ -90,6 +92,12 @@ class ConfirmPurchaseMenu extends AHMenu {
 			Locale::sendMessage($player, "not-enough-space");
 			return false;
 		}
+		$event = new ItemPurchasedEvent($player, $auction);
+
+		$event->call();
+		if($event->isCancelled()) {
+			return false;
+		}
 		DataHolder::removeAuction($auction);
 		AuctionHouse::getInstance()->getEconomyProvider()->addMoney($auction->getSeller(), $auction->getPrice());
 		AuctionHouse::getInstance()->getEconomyProvider()->subtractMoney($player, $auction->getPrice());
@@ -98,7 +106,7 @@ class ConfirmPurchaseMenu extends AHMenu {
 		$pl = AuctionHouse::getInstance()->getServer()->getPlayerByRawUUID($auction->getSeller(true));
 		$player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::getMessage($player, "purchased-item", true)));
 
-		if($pl != null) {
+		if ($pl != null) {
 			Utils::sendSound($pl, LevelSoundEventPacket::SOUND_NOTE);
 			$pl->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$username, $item->getName(), $auction->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::getMessage($player, "seller-message", true)));
 		}
@@ -107,7 +115,7 @@ class ConfirmPurchaseMenu extends AHMenu {
 	}
 
 	public function show(Player $player): void {
-		Utils::setViewingMenu($player, Utils::CONFIRM_PURCHASE_MENU);
+		MenuManager::setViewingMenu($player, MenuManager::CONFIRM_PURCHASE_MENU);
 		parent::show($player);
 	}
 }

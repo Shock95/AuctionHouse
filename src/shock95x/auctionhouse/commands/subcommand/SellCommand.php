@@ -14,6 +14,7 @@ use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\event\ItemListedEvent;
+use shock95x\auctionhouse\manager\CooldownManager;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
@@ -64,13 +65,13 @@ class SellCommand extends BaseSubCommand {
 			return;
 		}
 		if(Settings::getListingCooldown() != 0) {
-			if(Utils::inCooldown($sender)) {
-				$cooldown = Utils::getCooldown($sender);
+			if(CooldownManager::inCooldown($sender)) {
+				$cooldown = CooldownManager::getCooldown($sender);
 				$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($cooldown));
 				$sender->sendMessage(str_replace(["@M", "@S"], [$endTime->i, $endTime->s], Locale::getMessage($sender, "in-cooldown", true)));
 				return;
 			} else {
-				Utils::setCooldown($sender);
+				CooldownManager::setCooldown($sender);
 			}
 		}
 		$event = new ItemListedEvent($sender, $item, $price);

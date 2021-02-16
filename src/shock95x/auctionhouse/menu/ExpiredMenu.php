@@ -9,6 +9,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\DataHolder;
+use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
@@ -114,7 +115,7 @@ class ExpiredMenu extends AHMenu {
 	}
 
 	public function show(Player $player): void {
-		Utils::setViewingMenu($player, Utils::EXPIRED_MENU);
+		MenuManager::setViewingMenu($player, MenuManager::EXPIRED_MENU);
 		parent::show($player);
 	}
 }

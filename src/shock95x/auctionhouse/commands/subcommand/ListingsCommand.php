@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\commands\subcommand;
 
-use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\exception\ArgumentOrderException;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
+use shock95x\auctionhouse\commands\arg\PlayerArgument;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\menu\ListingsMenu;
 use shock95x\auctionhouse\menu\player\PlayerListingMenu;
@@ -20,7 +20,7 @@ class ListingsCommand extends BaseSubCommand {
 	 */
 	protected function prepare(): void {
 		$this->setPermission("auctionhouse.command.listings");
-		$this->registerArgument(0, new RawStringArgument("player", true));
+		$this->registerArgument(0, new PlayerArgument("player", true));
 	}
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {

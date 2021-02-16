@@ -13,6 +13,7 @@ use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\auction\Listing;
 use shock95x\auctionhouse\category\Category;
 use shock95x\auctionhouse\database\DataHolder;
+use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\menu\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -92,7 +93,7 @@ class CategoryMenu extends AHMenu {
 	}
 
 	public function show(Player $player): void {
-		Utils::setViewingMenu($player, Utils::CATEGORY_MENU);
+		MenuManager::setViewingMenu($player, MenuManager::CATEGORY_MENU);
 		parent::show($player);
 	}
 }

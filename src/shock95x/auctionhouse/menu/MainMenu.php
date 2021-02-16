@@ -11,6 +11,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\DataHolder;
+use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\menu\admin\AdminMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -103,7 +104,7 @@ class MainMenu extends AHMenu {
 	}
 
 	public function show(Player $player): void {
-		Utils::setViewingMenu($player, Utils::AUCTION_MENU);
+		MenuManager::setViewingMenu($player, MenuManager::AUCTION_MENU);
 		parent::show($player);
 	}
 }

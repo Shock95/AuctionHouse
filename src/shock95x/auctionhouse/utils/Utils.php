@@ -13,24 +13,8 @@ use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\auction\Listing;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\task\CooldownTask;
 
 class Utils {
-
-	public const AUCTION_MENU = 0;
-	public const LISTINGS_MENU = 1;
-	public const EXPIRED_MENU = 2;
-	public const ADMIN_MENU = 3;
-	public const CONFIRM_PURCHASE_MENU = 4;
-	public const MANAGE_LISTING_MENU = 5;
-	public const PLAYER_LISTINGS_MENU = 6;
-	public const CATEGORY_MENU = 7;
-	public const CATEGORY_LIST_MENU = 6;
-
-	/** @var array */
-	private static $menuOpen;
-	/** @var array */
-	public static $cooldown;
 
 	public static function getEndTime(): int {
 		return time() + (Settings::getExpireInterval() * 3600);
@@ -45,17 +29,6 @@ class Utils {
 			return $item->equals($blacklistedItem, true, false);
 		}
 		return false;
-	}
-
-	public static function setViewingMenu(Player $player, int $menu): void {
-		self::$menuOpen[$player->getRawUniqueId()] = $menu;
-	}
-
-	public static function getViewingMenu(Player $player): int {
-		if(isset(self::$menuOpen[$player->getRawUniqueId()])) {
-			return self::$menuOpen[$player->getRawUniqueId()];
-		}
-		return -1;
 	}
 
 	public static function canAfford(Player $player, Listing $listing): bool {
@@ -98,30 +71,6 @@ class Utils {
 		$pk->position = $player->asVector3()->add(0, 10);
 		$pk->data = 0;
 		$player->dataPacket($pk);
-	}
-
-	public static function inCooldown(Player $player): bool {
-		return isset(self::$cooldown[$player->getRawUniqueId()]);
-	}
-
-	public static function setCooldown(Player $player): void {
-		if(!isset(self::$cooldown[$player->getRawUniqueId()])) {
-			self::$cooldown[$player->getRawUniqueId()] = time() + Settings::getListingCooldown();
-			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new CooldownTask($player->getRawUniqueId()), Settings::getListingCooldown() * 20);
-		}
-	}
-
-	public static function getCooldown(Player $player): int {
-		if(isset(self::$cooldown[$player->getRawUniqueId()])) {
-			return self::$cooldown[$player->getRawUniqueId()];
-		}
-		return 0;
-	}
-
-	public static function removeCooldown(string $uniqueId): void {
-		if(isset(self::$cooldown[$uniqueId])) {
-			unset(self::$cooldown[$uniqueId]);
-		}
 	}
 
 	public static function checkConfig(Plugin $plugin, Config $config, string $key, int $version): void {

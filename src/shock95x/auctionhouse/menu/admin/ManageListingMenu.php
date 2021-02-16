@@ -12,9 +12,9 @@ use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\auction\Listing;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\event\AuctionEndEvent;
+use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\menu\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
-use shock95x\auctionhouse\utils\Utils;
 
 class ManageListingMenu extends AHMenu {
 
@@ -89,7 +89,7 @@ class ManageListingMenu extends AHMenu {
 	}
 
 	public function show(Player $player): void {
-		Utils::setViewingMenu($player, Utils::MANAGE_LISTING_MENU);
+		MenuManager::setViewingMenu($player, MenuManager::MANAGE_LISTING_MENU);
 		parent::show($player);
 	}
 }

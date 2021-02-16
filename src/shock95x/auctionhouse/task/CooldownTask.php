@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace shock95x\auctionhouse\task;
 
 use pocketmine\scheduler\Task;
-use shock95x\auctionhouse\utils\Utils;
+use shock95x\auctionhouse\manager\CooldownManager;
 
 class CooldownTask extends Task {
 
@@ -15,6 +15,6 @@ class CooldownTask extends Task {
 	}
 
 	public function onRun(int $currentTick): void {
-		Utils::removeCooldown($this->uniqueId);
+		CooldownManager::removeCooldown($this->uniqueId);
 	}
 }
