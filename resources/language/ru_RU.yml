@@ -76,42 +76,42 @@ view-expired-items:
       - "&9Предметы для сбора: &e%expired%"
 
 # Admin Menu
-# view-admin-menu:
-#     name: "&e&k----- &r&l&c Admin Menu &r&e&k-----"
-#     lore:
-#         - "&r&aClick here to view the admin menu."
-#         #- "&aYou can remove specific items here."
-# main-stats-admin:
-#     # %page% = Current page
-#     # %max% = Max page
-#     # %expired% = Expired listing count
-#     # %total% = Total listing count
-#     name: "&l&cAdmin Menu"
-#     lore:
-#         - "&aPage %page%/%max%"
-#         - "&7Total of &b%total% &7items"
-#         - "&c(&b%expired% &cexpired items)"
-#         - "Click to refresh page"
-# listed-item-admin:
-#     # %price% = Price of listing
-#     # %seller% = Username of seller
-#     # %status% = Status of the listing (Active/Expired)
-#     - "&7-------------------------"
-#     - "&6Click here to edit listing."
-#     - ""
-#     - "&9Price: &e%price%"
-#     - "&9Seller: &e%seller%"
-#     - "&9Status: %status%"
-#     - "&7-------------------------"
-#
-# status-active: "&aActive"
-# status-expired: "&cExpired"
-# selected-listing-name: "&l&cManage Listing"
+ view-admin-menu:
+     name: "&e&k----- &r&l&c Админ Меню &r&e&k-----"
+     lore:
+         - "&r&aНажмите, чтобы перейти в админ-меню."
+         - "&aВ админ-меню вы можете удалить предметы с аукциона."
+ main-stats-admin:
+      # %page% = Текущая страница
+      # %max% = Всего страниц
+      # %expired% = Список истёкших предметов
+      # %total% = Всего предметов
+     name: "&l&cАдмин Меню"
+     lore:
+          - "&aСтраница %page%/%max%"
+          - "&7Всего &b%total% &7предметов"
+          - "&c(&b%expired% &cистёкших)"
+          - "Нажмите, чтобы перезагрузить страницу"
+  listed-item-admin:
+      # %price% = Цена товара
+      # %seller% = Ник продавца
+      # %status% = Статус товара(Активное/Истёкшие)
+      - "&7-------------------------"
+      - "&6Нажмите, чтобы отредактировать товар."
+      - ""
+      - "&9Цена: &e%price%"
+      - "&9Продавец: &e%seller%"
+      - "&9Статус: %status%"
+      - "&7-------------------------"
 
-# duplicate-item: "&aClick here to duplicate item to inventory"
-# listing-expired: "&eClick here to make listing &cexpired"
-# listing-active: "&eClick here to make listing &aactive"
-# delete-item: "&cClick here to delete item and listing"
+ status-active: "&aАктивное"
+ status-expired: "&cИстёкшие"
+ selected-listing-name: "&l&cУправление товаром"
+
+ duplicate-item: "&aНажмите, чтобы скопировать предмет в инвентарь"
+ listing-expired: "&eНажмите, чтобы сделать товар &cистёкшим"
+ listing-active: "&eНажмите, чтобы сделать товар &aактивным"
+ delete-item: "&cНажмите, чтобы удалить товар с аукциона"
 
 # Pagination items
 previous-page:
@@ -185,23 +185,23 @@ expired-stats:
         - "&7Всего &b%total% &7предметов"
 
 # Category menu
-# category-stats:
-#     # %category% = Category
-#     # %page% = Current page
-#     # %max% = Max page
-#     # %total% = Total listing count
-#     name: "%category%"
-#     lore:
-#         - "&aPage %page%/%max%"
-#         - "&7Total of &b%total% &7listings"
-# category-list-stats:
-#     # %page% = Current page
-#     # %max% = Max page
-#     # %total% = Total listing count
-#     name: "&l&6Category Menu"
-#     lore:
-#         - "&aPage %page%/%max%"
-#         - "&7Total of &b%total% &7categories"
+ category-stats:
+     # %category% = Категория
+     # %page% = Текущая страница
+     # %max% = Всего страниц
+     # %total% = Кол-во товаров
+     name: "%category%"
+     lore:
+         - "&aСтраница %page%/%max%"
+         - "&7Всего &b%total% &7listings товаров"
+ category-list-stats:
+     # %page% = Текущая страница
+     # %max% = Всего страниц
+     # %total% = Кол-во товаров
+     name: "&l&6Категории"
+     lore:
+         - "&aСтраница %page%/%max%"
+         - "&7Всего &b%total% &7категорий"
 
 purchase-confirm:
     name: "&aПодтвердите покупку"
