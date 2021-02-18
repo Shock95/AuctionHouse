@@ -13,7 +13,7 @@ purchase-menu-name: "Подтвердите покупку"
 
 # Chat messages
 item-listed: "&2Вы выставили &d@item &r&d(x@amount) &2 на продажу за &d@price. &eВведите /ah listings &dчтобы просмотреть все ваши товары"
-cancelled-item: "&eВы &6Отменили &eаукцион. Возврат отмененных и просроченных товаров по адресу &6/ah expired&e."
+cancelled-item: "&eВы &6сняли &eтовар с продажи. Чтобы вернуть предмет в инвентарь введите &6/ah expired&e."
 cancelled-purchase: "&cВы отменили эту покупку"
 purchased-item: "&2Вы купили &d@item &r&d(x@amount) &2за &d@price"               #@player, @item, @price, @amount
 seller-message: "&e@Игрок приобрел @item (x@amount) ваш предмет за &d@price!"         #@player, @item, @price, @amount
@@ -135,7 +135,6 @@ main-description:
     lore:
         - "&aЭто аукционный, здесь можно"
         - "&aпродавать и покупать предметы"
-
         - ""
         - "&aАукцион также отличный способ заработать"
         - "&aденьги от продажи других товаров"
@@ -161,8 +160,8 @@ listings-description:
 listings-stats:
     # %page% = Текущая страница
     # %max% = Последняя страница
-    # %total% = Общее количество объявлений
-    name: "&l&6Объявления"
+    # %total% = Общее количество товаров
+    name: "&l&6Товары на продаже"
     lore:
         - "&aСтраница %page%/%max%"
         - "&7Всего &b%total% &7предметов"
