@@ -116,6 +116,7 @@ cancel_purchase: "minecraft:stained_glass_pane:14"
 You can contribute to this project by creating a new language file and opening a PR!  
 ### Supported languages and contributors 
 - [Shock95x](https://github.com/Shock95x) (English)  
+- [ipad54](https://github.com/ipad54) (Russian)
 - [No4NaMe](https://github.com/No4NaMe) (Russian)
 - [Unickorn](https://github.com/Unickorn) (German)
 - Chaosfelix4451#0157 (German)
