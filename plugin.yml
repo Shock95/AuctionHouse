@@ -41,4 +41,4 @@ permissions:
                         description: Allows player to make AH shop sign
                     auctionhouse.sign.listings:
                         default: op
-                        description: Allows player to make signs for their AH lisitngs
+                        description: Allows player to make signs for their AH listings
