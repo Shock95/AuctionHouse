@@ -224,7 +224,7 @@ purchase-cancel:
 purchase-item:
     lore:
         - "&7-------------------------"
-        - "&9Price: &e$%price%"
+        - "&9Price: &e%price%"
         - "&9Seller: &e%seller%"
         - "&7-------------------------"
 ...
