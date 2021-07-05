@@ -38,8 +38,13 @@ class Locale {
 			$locale = new Config($file, Config::YAML);
 			$localeCode = basename($file, ".yml");
 			self::$translation[strtolower($localeCode)] = $locale->getAll();
+			unset(self::$translation[strtolower($localeCode)]["lang-version"]);
 			array_walk_recursive(self::$translation[strtolower($localeCode)], function (&$element) {
-				$element = str_replace("&", "\xc2\xa7", $element);
+				if($element === null){
+					$element = "";
+				}else{
+					$element = str_replace("&", "\xc2\xa7", (string)$element);
+				}
 			});
 		}
 	}
