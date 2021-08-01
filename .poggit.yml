@@ -11,7 +11,7 @@ projects:
       version: ^4.1.1
     - src: SOF3/await-generator/await-generator
       version: ^3.1.0
-    - src: JackMD/UpdateNotifier/UpdateNotifier
+    - src: ifera-mc/UpdateNotifier/UpdateNotifier
       version: ^2.1.0
     - src: CortexPE/Commando/Commando
       version: ^2.1.1
