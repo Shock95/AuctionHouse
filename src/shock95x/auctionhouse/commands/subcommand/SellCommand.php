@@ -78,9 +78,9 @@ class SellCommand extends BaseSubCommand {
 		$event->call();
 		if(!$event->isCancelled()) {
 			if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);
-			$sender->getInventory()->removeItem($item);
 			$listing = DataHolder::addListing($sender, $item, (int) $price);
 			$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::getMessage($sender, "item-listed", true)));
+			$sender->getInventory()->setItemInHand(Item::get(0,0,0));
 		}
 	}
 
