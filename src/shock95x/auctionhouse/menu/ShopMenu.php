@@ -22,7 +22,7 @@ class ShopMenu extends PagingMenu {
 
 	public function __construct(Player $player, int $page = 1) {
 		$this->setName(Locale::getMessage($player, "menu-name"));
-		parent::__construct($player, $page, true);
+		parent::__construct($player, $page, false);
 	}
 
 	public function renderButtons(int $page, int $max, int $total, int $selling, int $expiredNum): void {
