@@ -6,12 +6,12 @@ namespace shock95x\auctionhouse\category\defaults;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\auction\Listing;
+use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\category\Category;
 
 class ArmorCategory implements Category {
 
-	public function sort(Listing $listing): bool {
+	public function sort(AHListing $listing): bool {
 		return $listing->getItem() instanceof Armor;
 	}
 

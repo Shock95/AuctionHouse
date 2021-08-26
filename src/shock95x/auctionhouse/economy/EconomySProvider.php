@@ -8,45 +8,42 @@ use pocketmine\Player;
 
 class EconomySProvider implements EconomyProvider {
 
-	/** @var EconomyAPI */
-	protected $economyAPI;
+	protected ?EconomyAPI $economyAPI;
 
-	/**
-	 * EconomySProvider constructor.
-	 */
 	public function __construct() {
 		$this->economyAPI = EconomyAPI::getInstance();
 	}
 
 	/**
 	 * @param string|Player $player
-	 * @param int|float $amount
+	 * @param float $amount
 	 */
-	public function addMoney($player, $amount): void {
+	public function addMoney($player, float $amount): void {
 		$this->economyAPI->addMoney($player, $amount);
 	}
 
 	/**
 	 * @param string|Player $player
-	 * @param int|float $amount
+	 * @param float $amount
 	 */
-	public function subtractMoney($player, $amount): void {
+	public function subtractMoney($player, float $amount): void {
 		$this->economyAPI->reduceMoney($player, $amount);
 	}
 
 	/**
 	 * @param string|Player $player
 	 *
-	 * @return int|float
+	 * @return float
 	 */
-	public function getMoney($player) {
+	public function getMoney($player): float {
 		return $this->economyAPI->myMoney($player);
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getMonetaryUnit(): string {
 		return $this->economyAPI->getMonetaryUnit();
+	}
+
+	public static function getName(): string {
+		return "EconomyAPI";
 	}
 }

@@ -13,8 +13,8 @@ class AHSign extends Sign {
 	const TYPE_SHOP = "auctionhouse-menu";
 	const TYPE_PLAYER = "auctionhouse-player";
 
-	private $type = "";
-	private $value = "";
+	private string $type = "";
+	private string $value = "";
 
 	public function __construct(Level $level, CompoundTag $nbt) {
 		parent::__construct($level, $nbt);

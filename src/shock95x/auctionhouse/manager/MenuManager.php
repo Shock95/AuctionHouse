@@ -17,8 +17,7 @@ class MenuManager {
 	public const CATEGORY_MENU = 7;
 	public const CATEGORY_LIST_MENU = 8;
 
-	/** @var array */
-	private static $menuOpen;
+	private static array $menuOpen;
 
 	public static function setViewingMenu(Player $player, int $menu): void {
 		self::$menuOpen[$player->getRawUniqueId()] = $menu;
@@ -29,5 +28,11 @@ class MenuManager {
 			return self::$menuOpen[$player->getRawUniqueId()];
 		}
 		return -1;
+	}
+
+	public static function remove(Player $player) {
+		if(isset(self::$menuOpen[$player->getRawUniqueId()])) {
+			unset(self::$menuOpen[$player->getRawUniqueId()]);
+		}
 	}
 }

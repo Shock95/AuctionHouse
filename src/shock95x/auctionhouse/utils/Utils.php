@@ -3,15 +3,14 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\utils;
 
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\auction\Listing;
+use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\AuctionHouse;
 
 class Utils {
@@ -31,22 +30,16 @@ class Utils {
 		return false;
 	}
 
-	public static function canAfford(Player $player, Listing $listing): bool {
-		if(AuctionHouse::getInstance()->getEconomyProvider()->getMoney($player) < $listing->getPrice()) {
-			return false;
-		}
-		return true;
+	public static function canAfford(Player $player, AHListing $listing): bool {
+		return (AuctionHouse::getInstance()->getEconomyProvider()->getMoney($player) >= $listing->getPrice());
 	}
 
-	public static function getButtonItem(Player $player, string $itemKey, string $messageKey, array $searchArgs = [], array $replaceArgs = []): Item {
-		$item = Item::fromString(Settings::getButtons()[$itemKey]);
-		$message = Locale::getMessage($player, $messageKey);
-
-		$item->setCustomName(TextFormat::RESET . str_replace($searchArgs, $replaceArgs, $message["name"]));
-		if(isset($message["lore"])) {
-			$item->setLore(preg_filter('/^/', TextFormat::RESET, str_replace($searchArgs, $replaceArgs, $message["lore"])));
+	public static function getEmptySlotCount(Inventory $inventory): int {
+		$count = 0;
+		for($contents = $inventory->getContents(), $i = 0; $i < $inventory->getSize(); $i++) {
+			if(!isset($contents[$i])) $count++;
 		}
-		return $item;
+		return $count;
 	}
 
 	public static function getMaxListings(Player $player): int {
@@ -58,19 +51,15 @@ class Utils {
 		return Settings::getMaxListings();
 	}
 
-	public static function sendSound(Player $player, int $sound) {
-		$pk = new LevelSoundEventPacket();
-		$pk->position = $player->asVector3();
-		$pk->sound = $sound;
-		$player->dataPacket($pk);
-	}
+	public static function getButtonItem(Player $player, string $itemKey, string $messageKey, array $searchArgs = [], array $replaceArgs = []): Item {
+		$item = Item::fromString(Settings::getButtons()[$itemKey]);
+		$message = Locale::getMessage($player, $messageKey);
 
-	public static function sendLevelEvent(Player $player, int $evid) {
-		$pk = new LevelEventPacket();
-		$pk->evid = $evid;
-		$pk->position = $player->asVector3()->add(0, 10);
-		$pk->data = 0;
-		$player->dataPacket($pk);
+		$item->setCustomName(TextFormat::RESET . str_replace($searchArgs, $replaceArgs, $message["name"]));
+		if(isset($message["lore"])) {
+			if(is_array($message["lore"])) $item->setLore(preg_filter('/^/', TextFormat::RESET, str_replace($searchArgs, $replaceArgs, $message["lore"])));
+		}
+		return $item;
 	}
 
 	public static function checkConfig(Plugin $plugin, Config $config, string $key, int $version): void {
@@ -79,7 +68,6 @@ class Utils {
 			$info = pathinfo($path);
 
 			$oldFile = $info["filename"] . "_old." . $info["extension"];
-
 			rename($path, $info["dirname"] . "/" . $oldFile);
 
 			$configDir = str_replace($plugin->getDataFolder(), "", $path);

@@ -21,7 +21,7 @@ class ListingExpireTask extends Task {
 				$timeStamp = new DateTime();
 				$timeStamp->setTimestamp($listing->getEndTime());
 				if($timeStamp->diff(new DateTime())->days >= Settings::getExpiredDuration()) {
-					DataHolder::removeAuction($listing);
+					DataHolder::removeListing($listing);
 					(new AuctionEndEvent($listing, AuctionEndEvent::EXPIRED_PURGED))->call();
 				}
 			}

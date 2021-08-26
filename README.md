@@ -9,15 +9,16 @@ AuctionHouse allows players to list their items for sale and purchase items that
 ## Features  
 >- Chest GUI  
 >- Categories
+>- Admin menu
 >- Config (See below)  
 >- Multi-lang support  
 >- Custom events  
 >- Cancel listings
 >- Listing cooldown
->- Economy plugin support (EconomyAPI as of now)  
+>- Economy plugin support (EconomyAPI as of now)
 >- MySQL and SQLite database support  
->- Customizable messages  
->- Admin menu  
+>- Customizable messages
+
 - And more coming soon!  
 ---  
 ## Download  
@@ -97,7 +98,7 @@ cancel_purchase: "minecraft:stained_glass_pane:14"
 | /ah sell **[price]** | Allows player to list items in their hand on the auction house. **[price]** is the amount that the player is listing the item to sell for     |  
 | /ah listings | Shows all active listings of the player |  
 | /ah listings **[player]**| Shows all active listings of a specific player |  
-| /ah categories | Opens category menu |  
+| /ah category | Opens category menu |  
 | /ah admin | Opens the AuctionHouse admin menu (OP Command) |  
 | /ah reload | Allows player to reload configuration files (OP command) |  
 | /ah about | Shows AuctionHouse version the server is running |  

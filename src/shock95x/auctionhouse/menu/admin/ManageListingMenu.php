@@ -5,27 +5,27 @@ namespace shock95x\auctionhouse\menu\admin;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\auction\Listing;
+use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\manager\MenuManager;
-use shock95x\auctionhouse\menu\AHMenu;
+use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
+use shock95x\auctionhouse\utils\Utils;
 
 class ManageListingMenu extends AHMenu {
 
-	/** @var Listing  */
-	private $listing;
-	private $messages;
+	private AHListing $listing;
 
-	public function __construct(Player $player, Listing $listing) {
+	protected bool $newMenu = true;
+
+	public function __construct(Player $player, AHListing $listing) {
 		$this->setName(Locale::getMessage($player, "manage-listing-name"));
 		$this->listing = $listing;
-		$this->newMenu = true;
 		parent::__construct($player);
 	}
 
@@ -42,16 +42,15 @@ class ManageListingMenu extends AHMenu {
 		$add = Locale::getMessage($player, "listing-active");
 		$delete = Locale::getMessage($player, "delete-item");
 
-		$duplicateItem = Item::get(Item::EMERALD_BLOCK)->setNamedTag(new CompoundTag("", [new IntTag("duplicate", 1)]))->setCustomName(TextFormat::RESET . $duplicate);
-		$itemStatus = Item::get(Item::GOLD_BLOCK)->setNamedTag(new CompoundTag("", [new IntTag("status", 1)]));
-		$deleteItem = Item::get(Item::REDSTONE_BLOCK)->setNamedTag(new CompoundTag("", [new IntTag("delete", 1)]))->setCustomName(TextFormat::RESET . $delete);
+		$duplicateItem = Item::get(Item::EMERALD_BLOCK)->setNamedTag(new CompoundTag("", [new ByteTag("duplicate", 1)]))->setCustomName(TextFormat::RESET . $duplicate);
+		$itemStatus = Item::get(Item::GOLD_BLOCK)->setNamedTag(new CompoundTag("", [new ByteTag("status", 1)]));
+		$deleteItem = Item::get(Item::REDSTONE_BLOCK)->setNamedTag(new CompoundTag("", [new ByteTag("delete", 1)]))->setCustomName(TextFormat::RESET . $delete);
 
 		foreach([$duplicateItem, $itemStatus, $deleteItem] as $controlItem) {
-			$controlItem->getNamedTag()->setLong("marketId", $this->listing->getMarketId());
+			$controlItem->getNamedTag()->setLong("marketId", $this->listing->getId());
 		}
 
 		$this->listing->isExpired() ? $itemStatus->setCustomName(TextFormat::RESET . $add) : $itemStatus->setCustomName(TextFormat::RESET . $remove);
-		$this->messages = [$remove, $add];
 
 		$inventory->setItem(39, $duplicateItem);
 		$inventory->setItem(40, $itemStatus);
@@ -67,15 +66,16 @@ class ManageListingMenu extends AHMenu {
 		if($itemClicked->getNamedTag()->hasTag("status")) {
 			if($listing->isExpired()) {
 				$listing->setExpired(false);
-				$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . $this->messages[0]));
+				$listing->setEndTime(Utils::getEndTime());
+				$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::getMessage($player, "listing-expired")));
 			} else if (!$listing->isExpired()) {
 				$listing->setExpired();
 				(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
-				$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . $this->messages[1]));
+				$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::getMessage($player, "listing-active")));
 			}
 		}
 		if($itemClicked->getNamedTag()->hasTag("delete")) {
-			DataHolder::removeAuction($listing);
+			DataHolder::removeListing($listing);
 			(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_PURGED))->call();
 			new AdminMenu($player, false);
 			return true;

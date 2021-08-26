@@ -10,8 +10,7 @@ use shock95x\auctionhouse\utils\Settings;
 
 class CooldownManager {
 
-	/** @var array */
-	private static $cooldown;
+	private static array $cooldown;
 
 	public static function inCooldown(Player $player): bool {
 		return isset(self::$cooldown[$player->getRawUniqueId()]);

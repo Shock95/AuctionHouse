@@ -10,32 +10,30 @@ use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\auction\Listing;
+use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\category\Category;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\manager\MenuManager;
-use shock95x\auctionhouse\menu\AHMenu;
+use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 
-class CategoryMenu extends AHMenu {
+class CategoryMenu extends PagingMenu {
 
-	/** @var Listing[] */
+	/** @var AHListing[] */
 	private $listings;
 	/** @var Category  */
 	private $category;
 
 	public function __construct(Player $player, Category $category, int $page = 1) {
-		$this->setName($category->getName());
+		$this->setName($category->getDisplayName());
 		$this->setListings($category);
-		$this->page = $page;
 		$this->category = $category;
-
-		parent::__construct($player, true, true);
+		parent::__construct($player, $page, true);
 	}
 
-	public function setItems(int $page, int $max, int $total) : void {
+	public function renderButtons(int $page, int $max, int $total) : void {
 		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "category-stats", ["%page%", "%max%", "%total%", "%category%"], [$page, $max, $total, $this->category->getDisplayName()]);
 		$this->getInventory()->setItem(49, $stats);
 	}
@@ -46,20 +44,17 @@ class CategoryMenu extends AHMenu {
 		for($i = 0; $i < $total; $i += 45) $max++;
 		if($max == 0) $max = 1;
 
-		$this->page < 1 ? $this->page = 1 : $this->page;
+		$this->page > 1 ?: $this->page = 1;
 		$start = ($this->page - 1) * 45;
 		$listings = array_slice($this->getListings(), $start, 45);
 
-		if($this->page > $max) {
-			$this->page = 1;
-			$this->renderItems();
-			return;
-		}
+		if($this->checkLastPage($max)) return;
+
 		foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
-			$tag->setLong("marketId", $auction->getMarketId());
+			$tag->setLong("marketId", $auction->getId());
 
 			$listedItem = Locale::getMessage($this->getPlayer(), "listed-item");
 			$lore = str_replace(["%price%", "%seller%", "{D}", "{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
@@ -71,12 +66,12 @@ class CategoryMenu extends AHMenu {
 		for($i = count($listings); $i < 45; ++$i) {
 			$this->getInventory()->setItem($i, Item::get(Item::AIR));
 		}
-		$this->setItems($this->page, $max, $total);
+		$this->renderButtons($this->page, $max, $total);
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		if($itemClicked->getNamedTag()->hasTag("return")) {
-			new CategoryListMenu($player, false);
+			new CategoryListMenu($player);
 			return true;
 		}
 		$this->checkPurchase($slot, $itemClicked);

@@ -5,6 +5,7 @@ namespace shock95x\auctionhouse\commands\subcommand;
 
 use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseSubCommand;
+use CortexPE\Commando\constraint\InGameRequiredConstraint;
 use CortexPE\Commando\exception\ArgumentOrderException;
 use DateTime;
 use pocketmine\command\CommandSender;
@@ -27,14 +28,13 @@ class SellCommand extends BaseSubCommand {
 	protected function prepare(): void {
 		$this->setPermission("auctionhouse.command.sell");
 		$this->registerArgument(0, new IntegerArgument("price"));
+		$this->addConstraint(new InGameRequiredConstraint($this));
 	}
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
-		if(!$sender instanceof Player) {
-			return;
-		}
+		assert($sender instanceof Player);
 		$item = $sender->getInventory()->getItemInHand();
-		if($item == null || $item->getId() == Item::AIR) {
+		if($item->isNull()) {
 			Locale::sendMessage($sender, "no-item");
 			return;
 		}

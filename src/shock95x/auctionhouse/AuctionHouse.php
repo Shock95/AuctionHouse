@@ -22,14 +22,11 @@ use shock95x\auctionhouse\utils\Utils;
 
 class AuctionHouse extends PluginBase {
 
-	/** @var EconomyProvider */
-	public $economyProvider;
-	/** @var ?AuctionHouse */
-	public static $instance;
-	/** @var Database */
-	private $database;
-	/** @var array  */
-	private $resources = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
+	public static ?AuctionHouse $instance;
+	public ?EconomyProvider $economyProvider;
+	private Database $database;
+
+	private array $resources = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
 
 	public function onLoad(): void {
 		$this->saveDefaultConfig();
@@ -46,9 +43,8 @@ class AuctionHouse extends PluginBase {
 		$this->saveDefaultConfig();
 		Settings::init($this->getConfig());
 
-		foreach($this->resources as $file => $replace) {
+		foreach($this->resources as $file => $replace)
 			$this->saveResource($file, $replace);
-		}
 
 		Locale::init($this);
 		CategoryManager::init();
@@ -58,10 +54,12 @@ class AuctionHouse extends PluginBase {
 
 		Tile::registerTile(AHSign::class, ["AHSign", "auctionhouse:sign"]);
 
+		$plManager = $this->getServer()->getPluginManager();
 		$this->database = (new Database($this->getConfig()))->connect();
-		$this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
 
-		if($this->getServer()->getPluginManager()->getPlugin("EconomyAPI") !== null) {
+		$plManager->registerEvents(new EventListener($this), $this);
+
+		if($plManager->getPlugin(EconomySProvider::getName()) !== null) {
 			$this->setEconomyProvider(new EconomySProvider());
 		}
 		if(!isset($this->economyProvider)) {
@@ -70,22 +68,23 @@ class AuctionHouse extends PluginBase {
 			return;
 		}
 		Settings::setMonetaryUnit($this->getEconomyProvider()->getMonetaryUnit());
-		if($this->getServer()->getPluginManager()->getPlugin("InvCrashFix") == null) {
-			$this->getLogger()->warning("InvCrashFix is required to fix client crashes on 1.16, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
+		if($plManager->getPlugin("InvCrashFix") == null) {
+			$this->getLogger()->warning("InvCrashFix is required to fix inventory issues on 1.16 and above, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
 		}
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
 	}
 
 	public function onDisable(): void {
-		if(isset($this->database)) {
-            $this->database->close();
-        }
+		if(isset($this->database)) $this->database->close();
+	}
+
+	public static function getInstance(): self {
+		return self::$instance;
 	}
 
 	public function reload(): void {
 		Locale::init($this);
-		Settings::init($this->getConfig());
-		$this->getLogger()->info("Configuration files reloaded");
+		Settings::init($this->getConfig(), true);
 	}
 
 	public function disable(): void {
@@ -93,31 +92,15 @@ class AuctionHouse extends PluginBase {
 		$this->getServer()->getPluginManager()->disablePlugin($this);
 	}
 
-	/**
-	 * @return AuctionHouse
-	 */
-	public static function getInstance(): self {
-		return self::$instance;
-	}
-
-	/**
-	 * @return Database
-	 */
 	public function getDatabase(): Database {
 		return $this->database;
 	}
 
-	/**
-	 * @param EconomyProvider $provider
-	 */
 	public function setEconomyProvider(EconomyProvider $provider): void {
 		$this->economyProvider = $provider;
 	}
 
-	/**
-	 * @return EconomyProvider
-	 */
-	public function getEconomyProvider(): EconomyProvider {
+	public function getEconomyProvider(): ?EconomyProvider {
 		return $this->economyProvider;
 	}
 }

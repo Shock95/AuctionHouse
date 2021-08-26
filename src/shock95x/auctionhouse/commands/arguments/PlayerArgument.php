@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace shock95x\auctionhouse\commands\arg;
+namespace shock95x\auctionhouse\commands\arguments;
 
 use CortexPE\Commando\args\BaseArgument;
 use pocketmine\command\CommandSender;

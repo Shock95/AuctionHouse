@@ -9,22 +9,22 @@ interface EconomyProvider {
 
 	/**
 	 * @param string|Player $player
-	 * @param int|float $amount
+	 * @param float $amount
 	 */
-	public function addMoney($player, $amount): void;
+	public function addMoney($player, float $amount): void;
 
 	/**
 	 * @param string|Player $player
-	 * @param int|float $amount
+	 * @param float $amount
 	 */
-	public function subtractMoney($player, $amount): void;
+	public function subtractMoney($player, float $amount): void;
 
 	/**
 	 * @param string|Player $player
 	 *
-	 * @return int|float
+	 * @return float
 	 */
-	public function getMoney($player);
+	public function getMoney($player): float;
 
 	/**
 	 * Returns the monetary unit
@@ -33,4 +33,5 @@ interface EconomyProvider {
 	 */
 	public function getMonetaryUnit(): string;
 
+	public static function getName() : string;
 }

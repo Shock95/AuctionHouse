@@ -8,8 +8,8 @@ use pocketmine\Player;
 
 class MenuCloseEvent extends Event {
 
-	private $player;
-	private $type;
+	private Player $player;
+	private int $type;
 
 	public function __construct(Player $player, int $type) {
 		$this->player = $player;

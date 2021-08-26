@@ -10,44 +10,29 @@ use poggit\libasynql\DataConnector;
 use poggit\libasynql\libasynql;
 use poggit\libasynql\SqlError;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\utils\BinaryStringParser;
-use shock95x\auctionhouse\database\utils\BinaryStringParserInstance;
 use SOFe\AwaitGenerator\Await;
 
 class Database {
 
-	/** @var DataConnector */
-	private $database;
-	/** @var Config  */
-	private $config;
-	/** @var BinaryStringParserInstance */
-	private $parser;
-	/** @var DataHolder */
-	private $holder;
+	private DataConnector $connector;
+	private Config $config;
+	private DataHolder $holder;
 
-	/**
-	 * @param Config $config
-	 */
 	public function __construct(Config $config) {
 		$this->config = $config;
 	}
 
-	/**
-	 * @return Database
-	 */
 	public function connect(): self {
 		try {
-			$this->database = libasynql::create(AuctionHouse::getInstance(), $this->config->get("database"), [
+			$this->connector = libasynql::create(AuctionHouse::getInstance(), $this->config->get("database"), [
 				"sqlite" => "statements/sqlite.sql",
 				"mysql" => "statements/mysql.sql"
 			]);
-			$this->database->executeGeneric(Query::INIT);
+			$this->connector->executeGeneric(Query::INIT);
 		} catch(SqlError $error) {
 			Server::getInstance()->getLogger()->error($error->getMessage());
 		}
-		$this->database->waitAll();
-
-		$this->parser = BinaryStringParser::fromDatabase($this->config->get("database")["type"]);
+		$this->connector->waitAll();
 		$this->holder = new DataHolder($this);
 		$this->holder->loadListings();
 		return $this;
@@ -62,43 +47,39 @@ class Database {
 	 * @param bool $expired
 	 * @param int|null $id
 	 */
-	public function insert(string $uuid, string $username, int $price, string $nbt, int $endTime, bool $expired = false, $id = null): void {
-		$this->database->executeInsert(Query::INSERT, [
+	public function insert(string $uuid, string $username, int $price, string $nbt, int $endTime, bool $expired = false, ?int $id = null): void {
+		$this->connector->executeInsert(Query::INSERT, [
 			"uuid" => $uuid,
 			"username" => $username,
 			"price" => $price,
-			"nbt" => $this->parser->encode($nbt),
-			"id" => $id == null ? time() : $id,
+			"nbt" => $nbt,
+			"id" => $id ?? time(),
 			"end_time" => $endTime,
 			"expired" => $expired
 		]);
 	}
 
 	public function fetchAll(): Generator {
-		$this->database->executeSelect(Query::FETCH_ALL, [], yield, yield Await::REJECT);
+		$this->connector->executeSelect(Query::FETCH_ALL, [], yield, yield Await::REJECT);
 		return yield Await::ONCE;
 	}
 
 	public function setExpired(int $id, bool $expired = true): void {
-        $this->database->executeGeneric(Query::EXPIRED, ["id" => $id, "expired" => $expired]);
+        $this->connector->executeGeneric(Query::SET_EXPIRED, ["id" => $id, "expired" => $expired]);
     }
 
 	public function delete(int $id): void {
-		$this->database->executeGeneric(Query::DELETE, ["id" => $id]);
+		$this->connector->executeGeneric(Query::DELETE, ["id" => $id]);
 	}
 
 	public function close(): void {
-		if(isset($this->database)) {
-			$this->database->waitAll();
-			$this->database->close();
+		if(isset($this->connector)) {
+			$this->connector->waitAll();
+			$this->connector->close();
 		}
 	}
 
 	public function getConnector(): DataConnector {
-		return $this->database;
-	}
-
-	public function getParser(): BinaryStringParserInstance {
-		return $this->parser;
+		return $this->connector;
 	}
 }

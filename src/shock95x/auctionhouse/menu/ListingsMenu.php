@@ -12,19 +12,19 @@ use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\manager\MenuManager;
+use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 
-class ListingsMenu extends AHMenu {
+class ListingsMenu extends PagingMenu {
 
 	public function __construct(Player $player, bool $returnMain = true, int $page = 1) {
 		$this->setName(Locale::getMessage($player, "listings-menu-name"));
-		$this->page = $page;
-		parent::__construct($player, $returnMain, true);
+		parent::__construct($player, $page, $returnMain);
 	}
 
-	public function setItems(int $page, int $max, int $total) : void {
+	public function renderButtons(int $page, int $max, int $total) : void {
 		$info = Utils::getButtonItem($this->getPlayer(), "info", "listings-description");
 
 		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "listings-stats", ["%page%", "%max%", "%total%"], [$page, $max, $total]);
@@ -34,25 +34,22 @@ class ListingsMenu extends AHMenu {
 	}
 
 	public function renderItems(): void {
+		parent::renderItems();
         $total = count(DataHolder::getListingsByPlayer($this->getPlayer()));
         $max = 0;
         for($i = 0; $i < $total; $i += 45) $max++;
         if($max == 0) $max = 1;
 
-        $this->page < 1 ? $this->page = 1 : $this->page;
+		$this->page > 1 ?: $this->page = 1;
         $start = ($this->page - 1) * 45;
         $listings = array_slice(DataHolder::getListingsByPlayer($this->getPlayer()), $start, 45);
 
-        if($this->page > $max) {
-            $this->page = 1;
-            $this->renderItems();
-            return;
-        }
+        if($this->checkLastPage($max)) return;
 
         foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
-			$tag->setLong("marketId", $auction->getMarketId());
+			$tag->setLong("marketId", $auction->getId());
 
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
 			$listedItem = Locale::getMessage($this->getPlayer(), "your-listed-item");
@@ -66,7 +63,7 @@ class ListingsMenu extends AHMenu {
         for($i = count($listings); $i < 45; ++$i) {
 	        $this->getInventory()->setItem($i, Item::get(Item::AIR));
         }
-		$this->setItems($this->page, $max, $total);
+		$this->renderButtons($this->page, $max, $total);
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {

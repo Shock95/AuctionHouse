@@ -11,46 +11,43 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\manager\MenuManager;
-use shock95x\auctionhouse\menu\AHMenu;
+use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 
-class AdminMenu extends AHMenu {
+class AdminMenu extends PagingMenu {
 	
 	public function __construct(Player $player, bool $returnMain = true, int $page = 1) {
 		$this->setName(Locale::getMessage($player, "admin-menu-name"));
-		$this->page = $page;
-		parent::__construct($player, $returnMain, true);
+		parent::__construct($player, $page, true);
 	}
 	
-	public function setItems(int $page, int $max, int $expiredCount, int $listingCount) {
+	public function renderButtons(int $page, int $max, int $expiredCount, int $listingCount) {
 		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "main-stats-admin", ["%page%", "%max%", "%expired%", "%total%"], [$page, $max, $expiredCount, $listingCount]);
-		$stats->getNamedTag()->setInt("pagination", 2);
+		$stats->getNamedTag()->setByte("pagination", 2);
 		$stats->setNamedTagEntry(new ListTag("ench"));
 
 		$this->getInventory()->setItem(49, $stats);
 	}
 	
 	public function renderItems(): void {
+		parent::renderItems();
         $total = count(DataHolder::getListings(true));
         $max = 0;
         for($i = 0; $i < $total; $i += 45) $max++;
         if($max == 0) $max = 1;
 
-        $this->page < 1 ? $this->page = 1 : $this->page;
+		$this->page > 1 ?: $this->page = 1;
         $start = ($this->page - 1) * 45;
         $listings = array_slice(DataHolder::getListings(true), $start, 45);
 
-        if($this->page > $max) {
-            $this->page = 1;
-            $this->renderItems();
-            return;
-        }
+        if($this->checkLastPage($max)) return;
+
         foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
-			$tag->setLong("marketId", $auction->getMarketId());
+			$tag->setLong("marketId", $auction->getId());
 			if($auction->isExpired()) {
 				$status = Locale::getMessage($this->getPlayer(), "status-expired");
 			} else {
@@ -64,7 +61,7 @@ class AdminMenu extends AHMenu {
         for($i = count($listings); $i < 45; ++$i) {
             $this->getInventory()->setItem($i, Item::get(Item::AIR));
         }
-		$this->setItems($this->page, $max, count(DataHolder::getExpiredListings()), $total);
+		$this->renderButtons($this->page, $max, count(DataHolder::getExpiredListings()), $total);
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {

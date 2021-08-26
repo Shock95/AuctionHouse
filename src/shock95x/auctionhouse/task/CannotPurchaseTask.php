@@ -9,12 +9,9 @@ use pocketmine\scheduler\Task;
 
 class CannotPurchaseTask extends Task {
 
-	/** @var Inventory  */
-	private $inventory;
-	/** @var Item  */
-	private $item;
-	/** @var int  */
-	private $slot;
+	private Inventory $inventory;
+	private Item $item;
+	private int $slot;
 
 	public function __construct(Inventory $inventory, Item $item, int $slot) {
 		$this->inventory = $inventory;

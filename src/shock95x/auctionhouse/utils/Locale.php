@@ -10,10 +10,9 @@ use shock95x\auctionhouse\AuctionHouse;
 
 class Locale {
 
-	/** @var array */
-	public static $translation;
+	public static array $translation;
 	/** @var string[]  */
-	private static $supported = ["en_US"];
+	private static array $supported = ["en_US"];
 
 	public static function init(AuctionHouse $plugin) {
 		foreach(self::$supported as $locale) {
@@ -29,23 +28,19 @@ class Locale {
 		if(!isset(self::$translation[strtolower(Settings::getDefaultLang())])) {
 			$plugin->getLogger()->error("Default language file could not be found, disabling plugin...");
 			$plugin->disable();
-			return;
 		}
 	}
 	
 	public static function loadLanguages(String $dataFolder): void {
 		foreach(glob($dataFolder . "language/*.yml") as $file) {
-			$locale = new Config($file, Config::YAML);
+			$config = new Config($file, Config::YAML);
 			$localeCode = basename($file, ".yml");
-			self::$translation[strtolower($localeCode)] = $locale->getAll();
-			unset(self::$translation[strtolower($localeCode)]["lang-version"]);
+			self::$translation[strtolower($localeCode)] = $config->getAll();
 			array_walk_recursive(self::$translation[strtolower($localeCode)], function (&$element) {
-				if($element === null){
-					$element = "";
-				}else{
-					$element = str_replace("&", "\xc2\xa7", (string)$element);
-				}
+				$element ??= "";
+				$element = str_replace("&", "\xc2\xa7", $element);
 			});
+			unset(self::$translation[strtolower($localeCode)]["lang-version"]);
 		}
 	}
 

@@ -8,7 +8,7 @@ use shock95x\auctionhouse\manager\CooldownManager;
 
 class CooldownTask extends Task {
 
-	private $uniqueId;
+	private string $uniqueId;
 
 	public function __construct(string $uniqueId) {
 		$this->uniqueId = $uniqueId;

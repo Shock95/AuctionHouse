@@ -13,65 +13,64 @@ use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\DataHolder;
 use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\menu\admin\AdminMenu;
+use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 
-class MainMenu extends AHMenu {
+class ShopMenu extends PagingMenu {
 
 	public function __construct(Player $player, int $page = 1) {
 		$this->setName(Locale::getMessage($player, "menu-name"));
-		$this->page = $page;
-		$this->pagination = true;
-		parent::__construct($player, false, true);
+		parent::__construct($player, $page, true);
 	}
 
-	public function setItems(int $page, int $max, int $total, int $selling, int $expiredNum): void {
+	public function renderButtons(int $page, int $max, int $total, int $selling, int $expiredNum): void {
 		$chest = Utils::getButtonItem($this->getPlayer(), "stats", "main-stats", ["%page%", "%max%", "%total%"], [$page, $max, $total]);
-		$chest->getNamedTag()->setInt("pagination", 2);
+		$chest->getNamedTag()->setByte("pagination", 2);
 
 		$info = Utils::getButtonItem($this->getPlayer(), "info", "main-description");
 		$howto = Utils::getButtonItem($this->getPlayer(), "howto", "sell-description");
 
 		$listings = Utils::getButtonItem($this->getPlayer(), "player_listings", "view-listed-items", ["%selling%"], [$selling]);
-		$listings->getNamedTag()->setInt("listings", 1);
+		$listings->getNamedTag()->setByte("listings", 1);
 
 		$expired = Utils::getButtonItem($this->getPlayer(), "expired_listings", "view-expired-items", ["%expired%"], [$expiredNum]);
 		$expired->getNamedTag()->setByte("expired", 1);
 
-		$array = [49 => $chest, 45 => $listings, 46 => $expired, 52 => $howto, 53 => $info];
+		$items = [49 => $chest, 45 => $listings, 46 => $expired, 52 => $howto, 53 => $info];
 
 		if($this->getPlayer()->hasPermission("auctionhouse.command.admin")) {
 			$admin = Utils::getButtonItem($this->getPlayer(), "admin_menu", "view-admin-menu");
 			$admin->getNamedTag()->setByte("admin", 1);
 			$admin->setNamedTagEntry(new ListTag("ench"));
 
-			$array[47] = $admin; $array[51] = $admin;
+			$items[47] = $items[51] = $admin;
 		}
 
-		foreach ($array as $slot => $item) $this->getInventory()->setItem($slot, $item);
+		foreach ($items as $slot => $item) $this->getInventory()->setItem($slot, $item);
 	}
 
 	public function renderItems(): void {
+		parent::renderItems();
+
         $total = count(DataHolder::getListings());
         $max = 0;
         for($i = 0; $i < $total; $i += 45) $max++;
         if($max == 0) $max = 1;
 
-        $this->page < 1 ? $this->page = 1 : $this->page;
+		$this->page > 1 ?: $this->page = 1;
         $start = ($this->page - 1) * 45;
         $listings = array_slice(DataHolder::getListings(), $start, 45);
 
-        if($this->page > $max) {
-            $this->page = 1;
-            $this->renderItems();
-            return;
-        }
+		if($this->checkLastPage($max)) return;
+
         foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
+
 			$tag = $item->hasCompoundTag() ? $item->getNamedTag() : new CompoundTag();
-			$tag->setLong("marketId", $auction->getMarketId());
+			$tag->setLong("marketId", $auction->getId());
 
 			$listedItem = Locale::getMessage($this->getPlayer(), "listed-item");
 			$lore = str_replace(["%price%", "%seller%", "{D}","{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
@@ -83,7 +82,7 @@ class MainMenu extends AHMenu {
         for($i = count($listings); $i < 45; ++$i) {
             $this->getInventory()->setItem($i, Item::get(Item::AIR));
         }
-		$this->setItems($this->page, $max, $total, count(DataHolder::getListingsByPlayer($this->getPlayer())), count(DataHolder::getListingsByPlayer($this->getPlayer(), true)));
+		$this->renderButtons($this->page, $max, $total, count(DataHolder::getListingsByPlayer($this->getPlayer())), count(DataHolder::getListingsByPlayer($this->getPlayer(), true)));
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {

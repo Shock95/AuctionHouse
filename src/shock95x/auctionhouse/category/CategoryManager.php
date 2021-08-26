@@ -12,15 +12,23 @@ use shock95x\auctionhouse\category\defaults\ToolCategory;
 
 class CategoryManager {
 
-	/** @var Category[] */
-	private static $categories;
+	private static array $categoryList;
 
 	public static function register(Category $class): void {
-		self::$categories[] = $class;
+		self::$categoryList[] = $class;
 	}
 
 	public static function getCategories(): array {
-		return self::$categories;
+		return self::$categoryList;
+	}
+
+	public static function getCategoryByName(string $name): ?Category {
+		foreach (self::getCategories() as $category) {
+			if(strtolower($category->getName()) == $name) {
+				return $category;
+			}
+		}
+		return null;
 	}
 
 	public static function init(): void {

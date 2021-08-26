@@ -8,27 +8,26 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\tile\Sign;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\event\MenuCloseEvent;
 use shock95x\auctionhouse\manager\MenuManager;
-use shock95x\auctionhouse\menu\MainMenu;
 use shock95x\auctionhouse\menu\player\PlayerListingMenu;
+use shock95x\auctionhouse\menu\ShopMenu;
 use shock95x\auctionhouse\utils\AHSign;
 use shock95x\auctionhouse\utils\Settings;
 
-class EventListener implements Listener{
+class EventListener implements Listener {
 
-	/** @var AuctionHouse */
-	private $plugin;
+	private AuctionHouse $plugin;
 
-	/**
-	 * EventListener constructor.
-	 *
-	 * @param AuctionHouse $plugin
-	 */
 	public function __construct(AuctionHouse $plugin) {
 		$this->plugin = $plugin;
+	}
+
+	public function onPlayerQuit(PlayerQuitEvent $event) {
+		MenuManager::remove($event->getPlayer());
 	}
 
 	public function onInventoryClose(InventoryCloseEvent $event): void {
@@ -76,7 +75,7 @@ class EventListener implements Listener{
 		$tile = $event->getPlayer()->getLevel()->getTile($event->getBlock());
 		if($tile instanceof AHSign) {
 			if($tile->getType() == AHSign::TYPE_SHOP) {
-				new MainMenu($player);
+				new ShopMenu($player);
 			} else if($tile->getType() == AHSign::TYPE_PLAYER) {
 				new PlayerListingMenu($player, $tile->getValue());
 			}

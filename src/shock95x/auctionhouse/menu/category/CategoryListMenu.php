@@ -11,19 +11,18 @@ use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\category\Category;
 use shock95x\auctionhouse\category\CategoryManager;
 use shock95x\auctionhouse\manager\MenuManager;
-use shock95x\auctionhouse\menu\AHMenu;
+use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Utils;
 
-class CategoryListMenu extends AHMenu {
+class CategoryListMenu extends PagingMenu {
 
 	public function __construct(Player $player, bool $returnMain = true, int $page = 1) {
 		$this->setName(Locale::getMessage($player, "category-menu-name"));
-		$this->page = $page;
-		parent::__construct($player, $returnMain, true);
+		parent::__construct($player, $page, $returnMain);
 	}
 
-	public function setItems(int $page, int $max, int $total) : void {
+	public function renderButtons(int $page, int $max, int $total) : void {
 		$stats = Utils::getButtonItem($this->getPlayer(), "stats", "category-list-stats", ["%page%", "%max%", "%total%"], [$page, $max, $total]);
 		$this->getInventory()->setItem(49, $stats);
 	}
@@ -34,15 +33,12 @@ class CategoryListMenu extends AHMenu {
 		for($i = 0; $i < $total; $i += 45) $max++;
 		if($max == 0) $max = 1;
 
-		$this->page < 1 ? $this->page = 1 : $this->page;
+		$this->page > 1 ?: $this->page = 1;
 		$start = ($this->page - 1) * 45;
 		$categories = array_slice(CategoryManager::getCategories(), $start, 45);
 
-		if($this->page > $max) {
-			$this->page = 1;
-			$this->renderItems();
-			return;
-		}
+		if($this->checkLastPage($max)) return;
+
 		foreach($categories as $key => $category) {
 			if(!$category instanceof Category) {
 				return;
@@ -55,7 +51,7 @@ class CategoryListMenu extends AHMenu {
 			$item->setLore([TextFormat::RESET . TextFormat::GRAY . "Click to open category"]);
 			$this->getInventory()->setItem($key, $item);
 		}
-		$this->setItems($this->page, $max, $total);
+		$this->renderButtons($this->page, $max, $total);
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {

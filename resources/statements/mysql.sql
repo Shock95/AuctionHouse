@@ -3,8 +3,8 @@
 
 -- #  { init
 CREATE TABLE IF NOT EXISTS auctions(
-    uuid VARCHAR,
-    username VARCHAR,
+    uuid BLOB,
+    username VARCHAR(16),
     price INT,
     nbt BLOB,
     end_time INT,

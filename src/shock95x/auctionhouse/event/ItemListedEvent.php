@@ -10,9 +10,9 @@ use pocketmine\Player;
 
 class ItemListedEvent extends Event implements Cancellable {
 
-	private $item;
-	private $player;
-	private $price;
+	private Item $item;
+	private Player $player;
+	private int $price;
 
 	public function __construct(Player $player, Item $item, int $price) {
 		$this->item = $item;

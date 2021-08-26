@@ -1,11 +1,10 @@
 name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
-version: 1.3.1
+version: 1.3.2
 api: 3.0.0
 author: Shock95x
 softdepend: [EconomyAPI, InvCrashFix]
 virions: ["InvMenu", "libasynql", "await-generator", "UpdateNotifier", "Commando"]
-mcpe-protocol: [407, 408, 419, 422, 431, 440]
 permissions:
     auctionhouse:
         default: false
