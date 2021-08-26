@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace shock95x\auctionhouse;
 
 use muqsit\invmenu\inventory\InvMenuInventory;
+use muqsit\invmenu\InvMenu;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\Listener;
