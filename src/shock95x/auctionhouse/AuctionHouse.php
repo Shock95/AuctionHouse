@@ -5,6 +5,7 @@ namespace shock95x\auctionhouse;
 
 use CortexPE\Commando\exception\HookAlreadyRegistered;
 use CortexPE\Commando\PacketHooker;
+use CortexPE\Commando\BaseCommand;
 use JackMD\UpdateNotifier\UpdateNotifier;
 use muqsit\invmenu\InvMenuHandler;
 use pocketmine\plugin\PluginBase;
