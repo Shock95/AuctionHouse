@@ -9,7 +9,6 @@ use CortexPE\Commando\constraint\InGameRequiredConstraint;
 use CortexPE\Commando\exception\ArgumentOrderException;
 use DateTime;
 use pocketmine\command\CommandSender;
-use pocketmine\item\Item;
 use pocketmine\Player;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\DataHolder;
@@ -78,9 +77,10 @@ class SellCommand extends BaseSubCommand {
 		$event->call();
 		if(!$event->isCancelled()) {
 			if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);
-			$sender->getInventory()->removeItem($item);
+			$count = $item->getCount();
+			Utils::removeItem($sender, $item);
 			$listing = DataHolder::addListing($sender, $item, (int) $price);
-			$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::getMessage($sender, "item-listed", true)));
+			$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $count], Locale::getMessage($sender, "item-listed", true)));
 		}
 	}
 

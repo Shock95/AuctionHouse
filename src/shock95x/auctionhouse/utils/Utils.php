@@ -36,7 +36,7 @@ class Utils {
 
 	public static function getEmptySlotCount(Inventory $inventory): int {
 		$count = 0;
-		for($contents = $inventory->getContents(), $i = 0; $i < $inventory->getSize(); $i++) {
+		for($contents = $inventory->getContents(), $i = 0; $i < $inventory->getSize(); ++$i) {
 			if(!isset($contents[$i])) $count++;
 		}
 		return $count;
@@ -60,6 +60,22 @@ class Utils {
 			if(is_array($message["lore"])) $item->setLore(preg_filter('/^/', TextFormat::RESET, str_replace($searchArgs, $replaceArgs, $message["lore"])));
 		}
 		return $item;
+	}
+
+	public static function removeItem(Player $player, Item $slot) : bool {
+		$inventory = $player->getInventory();
+		for ($i = 0, $size = $inventory->getSize(); $i < $size; ++$i) {
+			$item = $inventory->getItem($i);
+			if ($item->isNull()) continue;
+
+			if ($slot->equals($item)) {
+				$amount = min($item->getCount(), $slot->getCount());
+				$slot->setCount($slot->getCount() - $amount);
+				$item->setCount($item->getCount() - $amount);
+				return $inventory->setItem($i, $item);
+			}
+		}
+		return false;
 	}
 
 	public static function checkConfig(Plugin $plugin, Config $config, string $key, int $version): void {
