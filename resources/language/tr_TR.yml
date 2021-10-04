@@ -1,0 +1,230 @@
+---
+# DO NOT EDIT THIS VALUE, INTERNAL USE ONLY. #
+lang-version: 3
+
+# Refer to https://minecraft.gamepedia.com/Formatting_codes for formatting codes, you can replace the '§' symbol with a '&'
+
+# AH Menu titles
+menu-name: "&l&6Müzayede Evi"
+listings-menu-name: "&2Aktif Listeler"
+expired-menu-name: "&cİptal Edilen / Süresi Dolmuş Listeler"
+purchase-menu-name: "Satın Alma İşlemini Onayla"
+admin-menu-name: "&l&cAdmin Menü"
+category-menu-name: "&l&6Kategori Menü"
+manage-listing-name: "&l&eListeyi Yönet"
+player-listing: "&b{player} Oyuncusunun &6Listesi"
+
+# Chat messages
+item-listed: "&d@item &r&d(@amount)x &2için &d@priceTL&2 verdiniz. Tüm girişlerinizi görüntülemek için &e/ah listings &2komutunu girin"
+cancelled-item: "&eAçık artırmayı &6iptal ettiniz. &eİptal edilen ve süresi dolmuş ürünlerin iadesi &6/ah expired komutunu girin."
+cancelled-purchase: "&cBu satın alma işlemini iptal ettiniz"
+purchased-item: "&2&d@item &r&d(@amount)x &2için &d@price TL'ye satın aldınız"               #@player, @item, @price, @amount
+seller-message: "&e@player &d@price TL karşılığında sizden @item (@amount)x satın aldı!"         #@player, @item, @price, @amount
+returned-item: "&d@item &d(@amount)x &2kadar müzayede evinden kaldırdınız."                     #@item, @amount
+
+# Error messages
+in-creative: "&cYaratıcı moddayken ürün satamazsınız."
+max-listings: "&c@max sayıdan fazla listeniz olamaz."                                                  #@max
+invalid-price: "&cGeçersiz fiyat."
+not-enough-space: "&cBu öğeyi satın almak için yeterli envanter alanınız yok"
+self-purchase: "&cMüzayede evinde kendi eşyalarınızı satın alamazsınız!"
+no-item: "&cElinizde bir eşya tutuyor olmalısınız!"
+cannot-afford: "&cBu öğeyi satın almak için yeterli paranız yok."
+item-blacklisted: "&cO eşyanın müzayede evine konmasına izin verilmiyor!"
+invalid-balance: "&cAçık artırma listelemek için yeterli paranız yok."
+listing-gone: "&cBu liste artık mevcut değil."
+price-range: "&cGeçersiz fiyat aralığı"                                                                         #@min, @max
+in-cooldown: "&cŞu anda bekleme süresindesiniz, lütfen &b@M &cdakika &b@S &csaniye bekleyin."               #@M, @S
+player-not-found: "&cBu oyuncunun aktif listesi yok."
+player-listings-usage: "&c/ah listings komutunu yürüterek listeleri görüntüle"
+inventory-full: "&cEnvanteriniz dolu, listelerinizi talep etmek için bazı öğelerinizi boşaltın"
+
+# Items in the menu UI
+listed-item:
+    # %price% = Price of listing
+    # %seller% = Username of seller
+    # {H} = Hours | {M} = Minutes
+    - "&7-------------------------"
+    - "&aSatın almak için tıkla."
+    - ""
+    - "&9Fiyat: &e%price%"
+    - "&9Satıcı: &e%seller%"
+    - "&9Sona Ermesine: &e{D}g {H}s {M}d"
+    - "&7-------------------------"
+your-listed-item:
+    # %price% = Price of listing
+    # {H} = Hours | {M} = Minutes
+    - "&7-------------------------"
+    - "&cListeyi kaldırmak için tıkla."
+    - ""
+    - "&9Fiyat: &e%price%"
+    - "&9Sona Ermesine: &e{D}g {H}s {M}d"
+    - "&7-------------------------"
+expired-item:
+    # %price% = Price of listing
+    - "&7-------------------------"
+    - "&aÖğeyi almak için tıkla."
+    - ""
+    - ""
+    - "&9Fiyat: &e%price%"
+    - "&7-------------------------"
+view-listed-items:
+    # %selling% = Number of active listings
+    name: "&6Sattığınız ürünler"
+    lore:
+        - "&aTüm öğeleri görüntülemek için tıklayın"
+        - "&aŞu anda açık artırmada satıyorlar."
+        - ""
+        - "&9Satış: &e%selling%"
+view-expired-items:
+    # %expired% = Number of expired listings
+    name: "&6Süresi Dolan / İptal Edilen Öğeler"
+    lore:
+      - "&r&aTüm ürünleri görüntüle ve topla"
+      - "&aİptal ettiğiniz veya süresi dolmuş ürünler."
+      - ""
+      - "&9Toplanmış öğeler: &e%expired%"
+
+# Admin Menu
+view-admin-menu:
+    name: "&e&k----- &r&l&c Admin Menü &r&e&k-----"
+    lore:
+        - "&r&aAdmin menüsünü görüntüle."
+        #- "&aBelirli öğeleri buradan kaldırabilirsiniz."
+main-stats-admin:
+    # %page% = Current page
+    # %max% = Max page
+    # %expired% = Expired listing count
+    # %total% = Total listing count
+    name: "&l&cAdmin Menü"
+    lore:
+        - "&aSayfa %page%/%max%"
+        - "&7Toplam &b%total% &7öğe"
+        - "&c(&b%expired% &csüresi dolmuş öğeler)"
+        - "Sayfayı yenile"
+listed-item-admin:
+    # %price% = Price of listing
+    # %seller% = Username of seller
+    # %status% = Status of the listing (Active/Expired)
+    - "&7-------------------------"
+    - "&6Listeyi düzenle."
+    - ""
+    - "&9Fiyat: &e%price%"
+    - "&9Satıcı: &e%seller%"
+    - "&9Durum: %status%"
+    - "&7-------------------------"
+
+status-active: "&aAktif"
+status-expired: "&cSüresi Dolmuş"
+selected-listing-name: "&l&cListeyi Yönet"
+
+duplicate-item: "&aÖğeyi envantere kopyala"
+listing-expired: "&eListelemenin &csüresinin dolmasını&e sağla"
+listing-active: "&eListelemenin &aaktif etmesini&e sağla"
+delete-item: "&cÖğeyi ve listeyi sil"
+
+# Pagination items
+previous-page:
+    name: "&a<- Önceki Sayfa"
+    lore:
+        - "&7Önceki sayfaya git"
+next-page:
+    name: "&aSonraki Sayfa ->"
+    lore:
+        - "&7Sonraki sayfaya git"
+back-button:
+    name: "&6Geri"
+    lore:
+
+sell-description:
+    name: "&6Bir öğe nasıl satılır?"
+    lore:
+        - "&aMüzayede evinde bir eşyayı listelemek için, sadece basılı tutun"
+        - "&aelinizdeki öğeyi satmak için &b/ah sell <price>&a komutunu girin."
+main-description:
+    name: "&6Bu Sayfada Nedir?"
+    lore:
+        - "&aBurası müzayede evi, burada işlem gerçekleştirebilirsiniz"
+        - "&asatış için öğeleri listele ve"
+        - "&adiğerlerinin satılık olarak listelediklerini satın al"
+        - ""
+        - "&aAçık artırma da yapmak için harika bir yoldur"
+        - "&adiğer çiftlik ürünleri satarak da para kazanabilirsin"
+        - "&oyuncular satın almakla ilgilenebilirler."
+main-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    name: "&l&6Müzayede Evi"
+    lore:
+        - "&aSayfa %page%/%max%"
+        - "&7Toplam &b%total% &7öğe"
+        - "Sayfayı yenile"
+listings-description:
+    name: "&6Bu Sayfada Nedir?"
+    lore:
+        - "&aBunlar mevcut listeleriniz, tümü"
+        - "&aşu anda listelediğiniz öğelerdir"
+        - "&amüzayede evinde burada görüntülenirler"
+        - ""
+        - "&aListenizi iptal edebilir ve görüntüleyebilirsiniz"
+        - "&aburada zaman aşımına uğrarlar."
+listings-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    name: "&l&6Listeler"
+    lore:
+        - "&aSayfa %page%/%max%"
+        - "&7Topla &b%total% &7items"
+expired-description:
+    name: "&6Bu Sayfada Nedir?"
+    lore:
+        - "&aBu sayfa, iptal ettiğiniz ve"
+        - "&abir liste iptal edildiğinde süresi dolmuş ürünlerdir"
+        - "&aveya süresi dolduğunda, bunu iade edilebilendir"
+        - "&aöğe bu menüden size geri dönerler."
+        - ""
+        - "&aSadece öğeye tıklayın ve"
+        - "&aenvanteriniz yeterli bir açık olduğundan emin olun."
+expired-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Number of categories
+    name: "&l&6Süresi Dolmuş"
+    lore:
+        - "&aSayfa %page%/%max%"
+        - "&7Toplam &b%total% &7öğe"
+        - "&3Tüm öğeleri iade et"
+
+# Category menu
+category-stats:
+    # %category% = Category
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    name: "%category%"
+    lore:
+        - "&aSayfa %page%/%max%"
+        - "&7Toplam &b%total% &7liste"
+category-list-stats:
+    # %page% = Current page
+    # %max% = Max page
+    # %total% = Total listing count
+    name: "&l&6Kategori Menü"
+    lore:
+        - "&aSayfa %page%/%max%"
+        - "&7Toplam &b%total% &7kategori"
+
+# Confirm purchase menu
+purchase-confirm:
+    name: "&aSatın Alma İşlemini Onayla"
+purchase-cancel:
+    name: "&cSatın Alımı İptal Et"
+purchase-item:
+    lore:
+        - "&7-------------------------"
+        - "&9Fiyat: &e%price%"
+        - "&9Satıcı: &e%seller%"
+        - "&7-------------------------"
+...
