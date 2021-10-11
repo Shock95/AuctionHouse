@@ -121,6 +121,7 @@ You can contribute to this project by creating a new language file and opening a
 - [No4NaMe](https://github.com/No4NaMe) (Russian)
 - [Unickorn](https://github.com/Unickorn) (German)
 - Chaosfelix4451#0157 (German)
+- [xAliTura01](https://github.com/xAliTura01) (Turkish)
 
 ## Credits / Virions Used
 - [InvMenu](https://github.com/Muqsit/InvMenu) (Muqsit)  
