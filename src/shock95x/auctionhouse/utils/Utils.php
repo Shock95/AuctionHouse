@@ -5,6 +5,7 @@ namespace shock95x\auctionhouse\utils;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
@@ -52,7 +53,7 @@ class Utils {
 	}
 
 	public static function getButtonItem(Player $player, string $itemKey, string $messageKey, array $searchArgs = [], array $replaceArgs = []): Item {
-		$item = Item::fromString(Settings::getButtons()[$itemKey]);
+		$item = ItemFactory::fromStringSingle(Settings::getButtons()[$itemKey]);
 		$message = Locale::getMessage($player, $messageKey);
 
 		$item->setCustomName(TextFormat::RESET . str_replace($searchArgs, $replaceArgs, $message["name"]));

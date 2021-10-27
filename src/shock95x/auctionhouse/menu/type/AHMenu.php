@@ -29,7 +29,7 @@ abstract class AHMenu extends InvMenu {
 	protected bool $newMenu = false;
 	protected bool $returnMain = false;
 
-	/** @var InvMenuInventory  */
+	/** @var ?InvMenuInventory  */
 	protected $inventory;
 
 	protected static string $inventoryType = InvMenu::TYPE_DOUBLE_CHEST;
@@ -46,8 +46,9 @@ abstract class AHMenu extends InvMenu {
 
 	private function initialize(): void {
 		// workaround for recursive menus & menu bug
-		if(!is_null($plManager = PlayerManager::get($this->getPlayer()))) {
-			$menu = $plManager->getCurrentMenu();
+		$manager = PlayerManager::get($this->getPlayer());
+		if($manager !== null) {
+			$menu = $manager->getCurrentMenu();
 			if($menu instanceof AHMenu) {
 				if($menu->newMenu) {
 					$this->getPlayer()->removeWindow($menu->getInventory());
@@ -59,8 +60,7 @@ abstract class AHMenu extends InvMenu {
 				}
 			}
 		}
-		if($this->inventory == null)
-			$this->inventory = $this->type->createInventory();
+		$this->inventory ??= $this->type->createInventory();
 
 		$this->setMenuListener($this);
 	}
@@ -83,7 +83,6 @@ abstract class AHMenu extends InvMenu {
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		if($itemClicked->getNamedTag()->hasTag("return")) {
 			new ShopMenu($player);
-			return true;
 		}
 		return true;
 	}
@@ -114,9 +113,5 @@ abstract class AHMenu extends InvMenu {
 
 	public function getPlayer(): Player {
 		return $this->player;
-	}
-
-	public function getInventory(): InvMenuInventory {
-		return $this->inventory;
 	}
 }
