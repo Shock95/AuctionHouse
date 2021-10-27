@@ -38,7 +38,7 @@ class Locale {
 			self::$translation[strtolower($localeCode)] = $config->getAll();
 			array_walk_recursive(self::$translation[strtolower($localeCode)], function (&$element) {
 				$element ??= "";
-				$element = str_replace("&", "\xc2\xa7", $element);
+				$element = str_replace("&", "\xc2\xa7", (string) $element);
 			});
 			unset(self::$translation[strtolower($localeCode)]["lang-version"]);
 		}
