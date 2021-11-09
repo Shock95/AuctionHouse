@@ -68,9 +68,6 @@ class AuctionHouse extends PluginBase {
 			return;
 		}
 		Settings::setMonetaryUnit($this->getEconomyProvider()->getMonetaryUnit());
-		if($plManager->getPlugin("InvCrashFix") == null) {
-			$this->getLogger()->warning("InvCrashFix is required to fix inventory issues on 1.16 and above, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
-		}
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
 	}
 
