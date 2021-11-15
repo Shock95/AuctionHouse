@@ -77,10 +77,10 @@ class SellCommand extends BaseSubCommand {
 		$event->call();
 		if(!$event->isCancelled()) {
 			if($listingPrice != 0) $this->getEconomy()->subtractMoney($sender, $listingPrice);
-			$oldItem = clone $item;
+			$count = $item->getCount();
 			Utils::removeItem($sender, $item);
-			$listing = DataHolder::addListing($sender, $oldItem, (int) $price);
-			$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $oldItem->getName(), $listing->getPrice(true, Settings::formatPrice()), $oldItem->getCount()], Locale::getMessage($sender, "item-listed", true)));
+			$listing = DataHolder::addListing($sender, $item->setCount($count), (int) $price);
+			$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $count], Locale::getMessage($sender, "item-listed", true)));
 		}
 	}
 

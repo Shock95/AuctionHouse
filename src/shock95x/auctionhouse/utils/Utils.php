@@ -73,7 +73,10 @@ class Utils {
 				$amount = min($item->getCount(), $slot->getCount());
 				$slot->setCount($slot->getCount() - $amount);
 				$item->setCount($item->getCount() - $amount);
-				return $inventory->setItem($i, $item);
+				$inventory->setItem($i, $item);
+				if($slot->getCount() <= 0){
+					return true;
+				}
 			}
 		}
 		return false;
