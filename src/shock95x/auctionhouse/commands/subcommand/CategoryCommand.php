@@ -7,12 +7,12 @@ use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\constraint\InGameRequiredConstraint;
 use CortexPE\Commando\exception\ArgumentOrderException;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
-use shock95x\auctionhouse\category\Category;
-use shock95x\auctionhouse\category\CategoryManager;
+use pocketmine\player\Player;
+use shock95x\auctionhouse\category\ICategory;
 use shock95x\auctionhouse\commands\arguments\CategoryArgument;
 use shock95x\auctionhouse\menu\category\CategoryListMenu;
 use shock95x\auctionhouse\menu\category\CategoryMenu;
+use shock95x\auctionhouse\menu\type\AHMenu;
 
 class CategoryCommand extends BaseSubCommand {
 
@@ -28,12 +28,12 @@ class CategoryCommand extends BaseSubCommand {
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		assert($sender instanceof Player);
 		if(!isset($args["name"])) {
-			new CategoryListMenu($sender, false);
+			AHMenu::open(new CategoryListMenu($sender, false));
 			return;
 		}
-		$category = CategoryManager::getCategoryByName($args["name"]);
-		if($category instanceof Category) {
-			new CategoryMenu($sender, $category);
+		$category = $args["name"];
+		if($category instanceof ICategory) {
+			AHMenu::open(new CategoryMenu($sender, $category));
 		}
 	}
 }

@@ -6,8 +6,9 @@ namespace shock95x\auctionhouse\commands\subcommand;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\constraint\InGameRequiredConstraint;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use shock95x\auctionhouse\menu\ShopMenu;
+use shock95x\auctionhouse\menu\type\AHMenu;
 
 class ShopCommand extends BaseSubCommand {
 
@@ -18,6 +19,6 @@ class ShopCommand extends BaseSubCommand {
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		assert($sender instanceof Player);
-		new ShopMenu($sender);
+		AHMenu::open(new ShopMenu($sender));
 	}
 }

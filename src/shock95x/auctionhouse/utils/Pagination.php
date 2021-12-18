@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\utils;
 
-class Pagination {
+final class Pagination {
 
 	const BACK = 0;
 	const NEXT = 1;

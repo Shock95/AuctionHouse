@@ -5,11 +5,12 @@ namespace shock95x\auctionhouse\category\defaults;
 
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AHListing;
-use shock95x\auctionhouse\category\Category;
+use shock95x\auctionhouse\category\ICategory;
 
-class ArmorCategory implements Category {
+class ArmorCategory implements ICategory {
 
 	public function sort(AHListing $listing): bool {
 		return $listing->getItem() instanceof Armor;
@@ -24,6 +25,6 @@ class ArmorCategory implements Category {
 	}
 
 	public function getMenuItem(): Item {
-		return Item::get(Item::DIAMOND_CHESTPLATE)->setCustomName(TextFormat::RESET . $this->getDisplayName());
+		return VanillaItems::DIAMOND_CHESTPLATE()->setCustomName(TextFormat::RESET . $this->getDisplayName());
 	}
 }

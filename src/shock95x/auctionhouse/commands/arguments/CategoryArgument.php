@@ -5,23 +5,21 @@ namespace shock95x\auctionhouse\commands\arguments;
 
 use CortexPE\Commando\args\StringEnumArgument;
 use pocketmine\command\CommandSender;
-use shock95x\auctionhouse\category\CategoryManager;
+use shock95x\auctionhouse\category\Category;
+use shock95x\auctionhouse\category\ICategory;
 
 class CategoryArgument extends StringEnumArgument {
 
 	public function getEnumValues(): array {
-		$values = [];
-		foreach (CategoryManager::getCategories() as $category) {
-			$values[] = strtolower($category->getName());
-		}
-		return $values;
+		$names = array_keys(Category::getAll());
+		return array_map('strtolower', $names);
 	}
 
 	public function getTypeName(): string {
 		return "name";
 	}
 
-	public function parse(string $argument, CommandSender $sender) {
-		return $argument;
+	public function parse(string $argument, CommandSender $sender): ICategory {
+		return Category::get($argument);
 	}
 }

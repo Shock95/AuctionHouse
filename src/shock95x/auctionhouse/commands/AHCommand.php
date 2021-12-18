@@ -5,7 +5,7 @@ namespace shock95x\auctionhouse\commands;
 
 use CortexPE\Commando\BaseCommand;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use shock95x\auctionhouse\commands\subcommand\AboutCommand;
 use shock95x\auctionhouse\commands\subcommand\AdminCommand;
 use shock95x\auctionhouse\commands\subcommand\CategoryCommand;
@@ -14,7 +14,9 @@ use shock95x\auctionhouse\commands\subcommand\ListingsCommand;
 use shock95x\auctionhouse\commands\subcommand\ReloadCommand;
 use shock95x\auctionhouse\commands\subcommand\SellCommand;
 use shock95x\auctionhouse\commands\subcommand\ShopCommand;
+use shock95x\auctionhouse\commands\subcommand\TestCommand;
 use shock95x\auctionhouse\menu\ShopMenu;
+use shock95x\auctionhouse\menu\type\AHMenu;
 
 class AHCommand extends BaseCommand {
 
@@ -31,7 +33,7 @@ class AHCommand extends BaseCommand {
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		if(count($args) == 0 && $sender instanceof Player) {
-			new ShopMenu($sender);
+			AHMenu::open(new ShopMenu($sender));
 		}
 	}
 }

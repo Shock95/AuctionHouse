@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace shock95x\auctionhouse\utils;
 
 use pocketmine\item\Item;
+use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
@@ -24,7 +26,6 @@ class Settings {
 	private static array $blacklist = [];
 	private static array $signTriggers = ["[AuctionHouse]", "[AH]"];
 	private static array $buttons = [];
-
 	private static string $monetaryUnit = "";
 
 	public static function init(Config $config, bool $reload = false) {
@@ -66,7 +67,7 @@ class Settings {
 		return self::$listingCooldown;
 	}
 
-	public static function getCreativeSale() : bool {
+	public static function allowCreativeSale() : bool {
 		return self::$creativeSale;
 	}
 
@@ -99,7 +100,9 @@ class Settings {
 	public static function getBlacklist(): array {
 		$array = [];
 		foreach (self::$blacklist as $item) {
-			$array[] = Item::fromString($item);
+			try {
+				$array[] = LegacyStringToItemParser::getInstance()->parse($item);
+			} catch(LegacyStringToItemParserException $exception) {}
 		}
 		return $array;
 	}

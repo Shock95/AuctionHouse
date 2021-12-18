@@ -4,23 +4,21 @@ declare(strict_types=1);
 namespace shock95x\auctionhouse\event;
 
 use pocketmine\event\Event;
-use pocketmine\Player;
+use pocketmine\player\Player;
+use shock95x\auctionhouse\menu\type\AHMenu;
 
 class MenuCloseEvent extends Event {
 
-	private Player $player;
-	private int $type;
-
-	public function __construct(Player $player, int $type) {
-		$this->player = $player;
-		$this->type = $type;
-	}
+	public function __construct(
+		private Player $player,
+		private AHMenu $menu
+	) {}
 
 	public function getPlayer() : Player {
 		return $this->player;
 	}
 
-	public function getType() : int {
-		return $this->type;
+	public function getMenu() : AHMenu {
+		return $this->menu;
 	}
 }

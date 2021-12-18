@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\utils;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 use shock95x\auctionhouse\AuctionHouse;
@@ -17,7 +17,7 @@ class Locale {
 	public static function init(AuctionHouse $plugin) {
 		foreach(self::$supported as $locale) {
 			$config = new Config($plugin->getDataFolder() . "language/{$locale}.yml", Config::YAML);
-			Utils::checkConfig($plugin, $config, "lang-version", 3);
+			Utils::checkConfig($plugin, $config, "lang-version", 4);
 		}
 		self::loadLanguages($plugin->getDataFolder());
 		if(empty(self::$translation)) {
@@ -36,10 +36,10 @@ class Locale {
 			$config = new Config($file, Config::YAML);
 			$localeCode = basename($file, ".yml");
 			self::$translation[strtolower($localeCode)] = $config->getAll();
-			array_walk_recursive(self::$translation[strtolower($localeCode)], function (&$element) {
-				$element ??= "";
-				$element = str_replace("&", "\xc2\xa7", (string) $element);
-			});
+
+			array_walk_recursive(self::$translation[strtolower($localeCode)],
+				fn (&$element) => $element = str_replace("&", "\xc2\xa7", (string) $element ??= ""));
+
 			unset(self::$translation[strtolower($localeCode)]["lang-version"]);
 		}
 	}
@@ -50,7 +50,7 @@ class Locale {
 	 * @param bool $prefix
 	 */
 	public static function sendMessage(Player $player, string $key, bool $prefix = true): void {
-		$player->sendMessage((string) self::getMessage($player, $key, $prefix));
+		$player->sendMessage((string) self::get($player, $key, $prefix));
 	}
 
 	/**
@@ -59,7 +59,7 @@ class Locale {
 	 * @param bool $prefix
 	 * @return string|string[]
 	 */
-	public static function getMessage(Player $player, string $key, bool $prefix = false) {
+	public static function get(Player $player, string $key, bool $prefix = false) {
 		$locale = Settings::getDefaultLang();
 		if(isset(self::$translation[strtolower($player->getLocale())])) {
 			$locale = $player->getLocale();

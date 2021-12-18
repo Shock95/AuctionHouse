@@ -2,24 +2,24 @@
 Feature-packed AuctionHouse plugin for PocketMine-MP  
    
 ## Overview  
-AuctionHouse allows players to list their items for sale and purchase items that others have listed for sale.  
+AuctionHouse allows players to list their items for sale and purchase items that others have listed for sale
   
 ![AuctionHouse](https://github.com/Shock95x/AuctionHouse/blob/master/img/auctionhouse.png)  
 ---  
 ## Features  
 >- Chest GUI  
+>- Admin tools
 >- Categories
->- Admin menu
->- Config (See below)  
->- Multi-lang support  
->- Custom events  
+>- Config (See below)
+>- Multi-lang support
 >- Cancel listings
 >- Listing cooldown
->- Economy plugin support (EconomyAPI as of now)
->- MySQL and SQLite database support  
+>- Custom events
+>- Economy plugin support
+>- MySQL and SQLite database support
+>- Custom listings limit per player (See permissions)
 >- Customizable messages
 
-- And more coming soon!  
 ---  
 ## Download  
 Download the plugin from [Poggit](https://poggit.pmmp.io/p/AuctionHouse) or [GitHub releases](https://github.com/Shock95x/AuctionHouse/releases)
@@ -128,4 +128,4 @@ You can contribute to this project by creating a new language file and opening a
 - [libasynql](https://github.com/poggit/libasynql) (SOFe)
 - [await-generator](https://github.com/SOF3/await-generator) (SOFe)
 - [Commando](https://github.com/CortexPE/Commando) (CortexPE)
-- [UpdateNotifier](https://github.com/JackMD/UpdateNotifier) (JackMD)
+- [UpdateNotifier](https://github.com/ifera-mc/UpdateNotifier) (Ifera)

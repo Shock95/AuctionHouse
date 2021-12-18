@@ -6,11 +6,12 @@ namespace shock95x\auctionhouse\category\defaults;
 use pocketmine\item\Item;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
+use pocketmine\item\VanillaItems;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AHListing;
-use shock95x\auctionhouse\category\Category;
+use shock95x\auctionhouse\category\ICategory;
 
-class PotionCategory implements Category {
+class PotionCategory implements ICategory {
 
 	public function sort(AHListing $listing): bool {
 		return $listing->getItem() instanceof Potion || $listing->getItem() instanceof SplashPotion;
@@ -25,6 +26,6 @@ class PotionCategory implements Category {
 	}
 
 	public function getMenuItem(): Item {
-		return Item::get(Item::POTION)->setCustomName(TextFormat::RESET . $this->getDisplayName());
+		return VanillaItems::WATER_POTION()->setCustomName(TextFormat::RESET . $this->getDisplayName());
 	}
 }

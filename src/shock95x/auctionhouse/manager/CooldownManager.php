@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\manager;
 
-use pocketmine\Player;
-use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\task\CooldownTask;
+use pocketmine\player\Player;
 use shock95x\auctionhouse\utils\Settings;
 
 class CooldownManager {
@@ -13,19 +11,20 @@ class CooldownManager {
 	private static array $cooldown;
 
 	public static function inCooldown(Player $player): bool {
-		return isset(self::$cooldown[$player->getRawUniqueId()]);
+		return isset(self::$cooldown[$player->getUniqueId()->toString()]);
 	}
 
-	public static function setCooldown(Player $player): void {
-		if (!isset(self::$cooldown[$player->getRawUniqueId()])) {
-			self::$cooldown[$player->getRawUniqueId()] = time() + Settings::getListingCooldown();
-			AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new CooldownTask($player->getRawUniqueId()), Settings::getListingCooldown() * 20);
+	public static function setCooldown(Player $player): bool {
+		if (!isset(self::$cooldown[$player->getUniqueId()->toString()])) {
+			self::$cooldown[$player->getUniqueId()->toString()] = time() + Settings::getListingCooldown();
+			return true;
 		}
+		return false;
 	}
 
 	public static function getCooldown(Player $player): int {
-		if (isset(self::$cooldown[$player->getRawUniqueId()])) {
-			return self::$cooldown[$player->getRawUniqueId()];
+		if (isset(self::$cooldown[$player->getUniqueId()->toString()])) {
+			return self::$cooldown[$player->getUniqueId()->toString()];
 		}
 		return 0;
 	}

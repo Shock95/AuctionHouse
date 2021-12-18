@@ -5,11 +5,13 @@ namespace shock95x\auctionhouse\category\defaults;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AHListing;
-use shock95x\auctionhouse\category\Category;
+use shock95x\auctionhouse\category\ICategory;
 
-class BlockCategory implements Category {
+class BlockCategory implements ICategory {
 
 	public function sort(AHListing $listing): bool {
 		return $listing->getItem() instanceof ItemBlock;
@@ -24,6 +26,6 @@ class BlockCategory implements Category {
 	}
 
 	public function getMenuItem(): Item {
-		return Item::get(Item::BRICK_BLOCK)->setCustomName(TextFormat::RESET . $this->getDisplayName());
+		return ItemFactory::getInstance()->get(ItemIds::BRICK_BLOCK)->setCustomName(TextFormat::RESET . $this->getDisplayName());
 	}
 }

@@ -7,15 +7,19 @@ use CortexPE\Commando\exception\HookAlreadyRegistered;
 use CortexPE\Commando\PacketHooker;
 use JackMD\UpdateNotifier\UpdateNotifier;
 use muqsit\invmenu\InvMenuHandler;
+use pocketmine\block\tile\TileFactory;
+use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\plugin\PluginBase;
-use pocketmine\tile\Tile;
-use ReflectionException;
-use shock95x\auctionhouse\category\CategoryManager;
+use pocketmine\scheduler\ClosureTask;
 use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\database\Database;
+use shock95x\auctionhouse\database\legacy\LegacyConverter;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\economy\EconomySProvider;
-use shock95x\auctionhouse\utils\AHSign;
+use shock95x\auctionhouse\task\CheckLegacyTask;
+use shock95x\auctionhouse\tile\AHSign;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
@@ -23,59 +27,60 @@ use shock95x\auctionhouse\utils\Utils;
 class AuctionHouse extends PluginBase {
 
 	public static ?AuctionHouse $instance;
-	public ?EconomyProvider $economyProvider;
+	private ?EconomyProvider $economyProvider;
 	private Database $database;
 
-	private array $resources = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
+	public const FAKE_ENCH_ID = -1;
+	private const RESOURCES = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
 
 	public function onLoad(): void {
 		$this->saveDefaultConfig();
-		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
+		foreach(self::RESOURCES as $file => $replace) $this->saveResource($file, $replace);
+		EnchantmentIdMap::getInstance()->register(self::FAKE_ENCH_ID, new Enchantment("", -1, 1, ItemFlags::ALL, ItemFlags::NONE));
 		Utils::checkConfig($this, $this->getConfig(), "config-version", 5);
 	}
 
 	/**
 	 * @throws HookAlreadyRegistered
-	 * @throws ReflectionException
 	 */
 	public function onEnable(): void {
 		self::$instance = $this;
-		$this->saveDefaultConfig();
 		Settings::init($this->getConfig());
-
-		foreach($this->resources as $file => $replace)
-			$this->saveResource($file, $replace);
-
 		Locale::init($this);
-		CategoryManager::init();
 
 		if(!InvMenuHandler::isRegistered()) InvMenuHandler::register($this);
 		if(!PacketHooker::isRegistered()) PacketHooker::register($this);
 
-		Tile::registerTile(AHSign::class, ["AHSign", "auctionhouse:sign"]);
+		TileFactory::getInstance()->register(AHSign::class, ["AHSign", "auctionhouse:sign"]);
+		EnchantmentIdMap::getInstance()->register(self::FAKE_ENCH_ID, new Enchantment("Glow", 1, ItemFlags::ALL, ItemFlags::NONE, 1));
 
-		$plManager = $this->getServer()->getPluginManager();
-		$this->database = (new Database($this->getConfig()))->connect();
+		$pluginManager = $this->getServer()->getPluginManager();
 
-		$plManager->registerEvents(new EventListener($this), $this);
+		$this->database = new Database($this, $this->getConfig());
+		$this->database->connect();
 
-		if($plManager->getPlugin(EconomySProvider::getName()) !== null) {
+		LegacyConverter::getInstance()->init($this->database);
+
+		$pluginManager->registerEvents(new EventListener($this), $this);
+
+		if($pluginManager->getPlugin(EconomySProvider::getName()) !== null) {
 			$this->setEconomyProvider(new EconomySProvider());
 		}
-		if(!isset($this->economyProvider)) {
-			$this->getLogger()->notice("No economy plugin has been found, disabling plugin...");
-			$this->getServer()->getPluginManager()->disablePlugin($this);
-			return;
-		}
-		Settings::setMonetaryUnit($this->getEconomyProvider()->getMonetaryUnit());
-		if($plManager->getPlugin("InvCrashFix") == null) {
-			$this->getLogger()->warning("InvCrashFix is required to fix inventory issues on 1.16 and above, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
-		}
+		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function() {
+			if($this->economyProvider == null) {
+				$this->getLogger()->notice("Could not detect an economy provider, disabling plugin...");
+				$this->disable();
+				return;
+			}
+			Settings::setMonetaryUnit($this->economyProvider->getMonetaryUnit());
+		}), 1);
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
+		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
+		$this->getScheduler()->scheduleDelayedTask(new CheckLegacyTask($this), 1);
 	}
 
 	public function onDisable(): void {
-		if(isset($this->database)) $this->database->close();
+		$this->database?->close();
 	}
 
 	public static function getInstance(): self {

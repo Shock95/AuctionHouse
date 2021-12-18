@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace shock95x\auctionhouse\economy;
 
 use onebone\economyapi\EconomyAPI;
-use pocketmine\Player;
+use pocketmine\player\Player;
+
 
 class EconomySProvider implements EconomyProvider {
 
@@ -14,29 +15,16 @@ class EconomySProvider implements EconomyProvider {
 		$this->economyAPI = EconomyAPI::getInstance();
 	}
 
-	/**
-	 * @param string|Player $player
-	 * @param float $amount
-	 */
-	public function addMoney($player, float $amount): void {
-		$this->economyAPI->addMoney($player, $amount);
+	public function addMoney(string|Player $player, float $amount, ?callable $callback = null): void {
+		$callback ? $callback($this->economyAPI->addMoney($player, $amount)) : $this->economyAPI->addMoney($player, $amount);
 	}
 
-	/**
-	 * @param string|Player $player
-	 * @param float $amount
-	 */
-	public function subtractMoney($player, float $amount): void {
-		$this->economyAPI->reduceMoney($player, $amount);
+	public function subtractMoney(string|Player $player, float $amount, ?callable $callback = null): void {
+		$callback ? $callback($this->economyAPI->reduceMoney($player, $amount)) : $this->economyAPI->reduceMoney($player, $amount);
 	}
 
-	/**
-	 * @param string|Player $player
-	 *
-	 * @return float
-	 */
-	public function getMoney($player): float {
-		return $this->economyAPI->myMoney($player);
+	public function getMoney(string|Player $player, callable $callback): void {
+		$callback($this->economyAPI->myMoney($player));
 	}
 
 	public function getMonetaryUnit(): string {

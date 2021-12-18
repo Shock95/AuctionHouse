@@ -8,23 +8,16 @@ use shock95x\auctionhouse\utils\Settings;
 
 class AHListing {
 
-	private int $id;
-	private string $uuid;
-	private int $price;
-	private string $username;
-	private int $endTime;
-	private bool $expired;
-    private Item $item;
-
-    public function __construct(int $id, string $uuid, int $price, string $username, int $endTime, bool $expired, Item $item) {
-        $this->id = $id;
-        $this->uuid = $uuid;
-        $this->price = $price;
-        $this->username = $username;
-        $this->endTime = $endTime;
-        $this->expired = $expired;
-        $this->item = $item;
-    }
+	public function __construct(
+		private int $id,
+		private string $uuid,
+		private int $price,
+		private string $username,
+		private int $created,
+		private int $endTime,
+		private bool $expired,
+		private Item $item,
+	) {}
 
 	public function getId(): int {
 		return $this->id;
@@ -34,13 +27,7 @@ class AHListing {
 		return $this->item;
 	}
 
-	/**
-	 * @param bool $monetaryUnit
-	 * @param bool $formatted
-	 *
-	 * @return int|string
-	 */
-	public function getPrice(bool $monetaryUnit = false, bool $formatted = false) {
+	public function getPrice(bool $monetaryUnit = false, bool $formatted = false): int|string {
 		$price = $this->price;
     	if($formatted) $price = number_format($price);
     	if($monetaryUnit) $price = Settings::getMonetaryUnit() . strval($price);
@@ -55,6 +42,10 @@ class AHListing {
 		return $this->uuid;
 	}
 
+	public function getCreatedTime(): int {
+		return $this->created;
+	}
+
 	public function setEndTime(int $time): void {
 		$this->endTime = $time;
 	}
@@ -67,7 +58,7 @@ class AHListing {
 		$this->expired = $expired;
 	}
 
-	public function isExpired(): bool{
+	public function isExpired(): bool {
 		return $this->expired;
 	}
 }

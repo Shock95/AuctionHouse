@@ -4,17 +4,12 @@ declare(strict_types=1);
 namespace shock95x\auctionhouse\event;
 
 use pocketmine\event\Event;
-use pocketmine\IPlayer;
-use pocketmine\Player;
+use pocketmine\player\IPlayer;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use shock95x\auctionhouse\AHListing;
 
 class AuctionEndEvent extends Event {
-
-	private AHListing $listing;
-	private ?Player $purchaser;
-
-	private int $type;
 
 	const CANCELLED = 0;
 	const EXPIRED = 1;
@@ -23,11 +18,11 @@ class AuctionEndEvent extends Event {
 	const ADMIN_PURGED = 4;
 	const ADMIN_REMOVED = 5;
 
-	public function __construct(AHListing $listing, int $type, ?Player $purchaser = null) {
-		$this->listing = $listing;
-		$this->type = $type;
-		$this->purchaser = $purchaser;
-	}
+	public function __construct(
+		private AHListing $listing,
+		private int $type,
+		private ?Player $purchaser = null
+	) {}
 
 	public function getListing() : AHListing {
 		return $this->listing;

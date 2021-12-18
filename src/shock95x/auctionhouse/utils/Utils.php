@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\utils;
 
+
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\Player;
+use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\AHListing;
-use shock95x\auctionhouse\AuctionHouse;
 
 class Utils {
 
@@ -29,10 +28,6 @@ class Utils {
 			return $item->equals($blacklistedItem, true, false);
 		}
 		return false;
-	}
-
-	public static function canAfford(Player $player, AHListing $listing): bool {
-		return (AuctionHouse::getInstance()->getEconomyProvider()->getMoney($player) >= $listing->getPrice());
 	}
 
 	public static function getEmptySlotCount(Inventory $inventory): int {
@@ -53,8 +48,8 @@ class Utils {
 	}
 
 	public static function getButtonItem(Player $player, string $itemKey, string $messageKey, array $searchArgs = [], array $replaceArgs = []): Item {
-		$item = ItemFactory::fromStringSingle(Settings::getButtons()[$itemKey]);
-		$message = Locale::getMessage($player, $messageKey);
+		$item = LegacyStringToItemParser::getInstance()->parse(Settings::getButtons()[$itemKey]);
+		$message = Locale::get($player, $messageKey);
 
 		$item->setCustomName(TextFormat::RESET . str_replace($searchArgs, $replaceArgs, $message["name"]));
 		if(isset($message["lore"])) {
@@ -73,7 +68,8 @@ class Utils {
 				$amount = min($item->getCount(), $slot->getCount());
 				$slot->setCount($slot->getCount() - $amount);
 				$item->setCount($item->getCount() - $amount);
-				return $inventory->setItem($i, $item);
+				$inventory->setItem($i, $item);
+				return true;
 			}
 		}
 		return false;
@@ -92,7 +88,7 @@ class Utils {
 			$plugin->saveResource($configDir);
 			$message = "Your {$info["basename"]} file is outdated. Your old {$info["basename"]} has been saved as $oldFile and a new {$info["basename"]} file has been created. Please update accordingly.";
 
-			$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function(int $currentTick) use ($plugin, $message): void{
+			$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use ($plugin, $message): void{
 				$plugin->getLogger()->critical($message);
 			}), 1); // should display once the server is done loading
 		}

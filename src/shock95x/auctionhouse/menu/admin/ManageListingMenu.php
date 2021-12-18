@@ -5,91 +5,74 @@ namespace shock95x\auctionhouse\menu\admin;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AHListing;
-use shock95x\auctionhouse\database\DataHolder;
+use shock95x\auctionhouse\database\storage\DataStorage;
 use shock95x\auctionhouse\event\AuctionEndEvent;
-use shock95x\auctionhouse\manager\MenuManager;
 use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Utils;
 
 class ManageListingMenu extends AHMenu {
 
-	private AHListing $listing;
-
-	protected bool $newMenu = true;
+	const INDEX_DUPLICATE = 39;
+	const INDEX_STATUS = 40;
+	const INDEX_DELETE = 41;
 
 	public function __construct(Player $player, AHListing $listing) {
-		$this->setName(Locale::getMessage($player, "manage-listing-name"));
-		$this->listing = $listing;
+		$this->setName(Locale::get($player, "manage-listing-name"));
+		$this->setListings([$listing]);
 		parent::__construct($player);
 	}
 
-	public function renderItems(): void {
-		$item = $this->listing->getItem();
-		$player = $this->getPlayer();
-		$inventory = $this->getInventory();
+	public function renderButtons(): void {
+		parent::renderButtons();
+		$listing = $this->getListings()[0];
 
-		$inventory->setItem(22, $item);
+		$duplicateItem = ItemFactory::getInstance()->get(ItemIDs::EMERALD_BLOCK)->setCustomName(TextFormat::RESET . Locale::get($this->player, "duplicate-item"));
+		$listingStatus = ItemFactory::getInstance()->get(ItemIDs::GOLD_BLOCK)->setCustomName(TextFormat::RESET .  Locale::get($this->player, $listing->isExpired() ? "listing-active" : "listing-expired"));
+		$deleteItem = ItemFactory::getInstance()->get(ItemIDs::REDSTONE_BLOCK)->setCustomName(TextFormat::RESET . Locale::get($this->player, "delete-item"));
 
-		$duplicate = Locale::getMessage($player, "duplicate-item");
-		$remove = Locale::getMessage($player, "listing-expired");
+		$this->inventory->setItem(self::INDEX_DUPLICATE, $duplicateItem);
+		$this->inventory->setItem(self::INDEX_STATUS, $listingStatus);
+		$this->inventory->setItem(self::INDEX_DELETE, $deleteItem);
+	}
 
-		$add = Locale::getMessage($player, "listing-active");
-		$delete = Locale::getMessage($player, "delete-item");
-
-		$duplicateItem = Item::get(Item::EMERALD_BLOCK)->setNamedTag(new CompoundTag("", [new ByteTag("duplicate", 1)]))->setCustomName(TextFormat::RESET . $duplicate);
-		$itemStatus = Item::get(Item::GOLD_BLOCK)->setNamedTag(new CompoundTag("", [new ByteTag("status", 1)]));
-		$deleteItem = Item::get(Item::REDSTONE_BLOCK)->setNamedTag(new CompoundTag("", [new ByteTag("delete", 1)]))->setCustomName(TextFormat::RESET . $delete);
-
-		foreach([$duplicateItem, $itemStatus, $deleteItem] as $controlItem) {
-			$controlItem->getNamedTag()->setLong("marketId", $this->listing->getId());
-		}
-
-		$this->listing->isExpired() ? $itemStatus->setCustomName(TextFormat::RESET . $add) : $itemStatus->setCustomName(TextFormat::RESET . $remove);
-
-		$inventory->setItem(39, $duplicateItem);
-		$inventory->setItem(40, $itemStatus);
-		$inventory->setItem(41, $deleteItem);
+	public function renderListings(): void {
+		$listing = $this->getListings()[0];
+		$this->inventory->setItem(22, $listing->getItem());
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
-		$listing = $this->listing;
-		if($itemClicked->getNamedTag()->hasTag("duplicate")) {
-			$player->getInventory()->addItem($listing->getItem());
-			return true;
-		}
-		if($itemClicked->getNamedTag()->hasTag("status")) {
-			if($listing->isExpired()) {
-				$listing->setExpired(false);
-				$listing->setEndTime(Utils::getEndTime());
-				$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::getMessage($player, "listing-expired")));
-			} else if (!$listing->isExpired()) {
-				$listing->setExpired();
-				(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
-				$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::getMessage($player, "listing-active")));
-			}
-		}
-		if($itemClicked->getNamedTag()->hasTag("delete")) {
-			DataHolder::removeListing($listing);
-			(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_PURGED))->call();
-			new AdminMenu($player, false);
-			return true;
+		$listing = $this->getListings()[0];
+		switch ($slot) {
+			case self::INDEX_DUPLICATE:
+				$player->getInventory()->addItem($listing->getItem());
+				break;
+			case self::INDEX_STATUS:
+				if($listing->isExpired()) {
+					$listing->setExpired(false);
+					$listing->setEndTime(Utils::getEndTime());
+					$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::get($player, "listing-expired")));
+				} else {
+					$listing->setExpired();
+					(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
+					$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::get($player, "listing-active")));
+				}
+				break;
+			case self::INDEX_DELETE:
+				DataStorage::getInstance()->removeListing($listing);
+				(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_PURGED))->call();
+				self::open(new AdminMenu($player, false));
+				break;
 		}
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 
 	public function onClose(Player $player): void {
 		parent::onClose($player);
-		new AdminMenu($player, false);
-	}
-
-	public function show(Player $player): void {
-		MenuManager::setViewingMenu($player, MenuManager::MANAGE_LISTING_MENU);
-		parent::show($player);
 	}
 }

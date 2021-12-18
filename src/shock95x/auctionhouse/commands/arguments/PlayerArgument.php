@@ -13,19 +13,19 @@ class PlayerArgument extends BaseArgument {
 		parent::__construct($name, $optional);
 	}
 
-	public function getNetworkType() : int {
+	public function getNetworkType(): int {
 		return AvailableCommandsPacket::ARG_TYPE_TARGET;
 	}
 
-	public function getTypeName() : string {
+	public function getTypeName(): string {
 		return "target";
 	}
 
-	public function canParse(string $testString, CommandSender $sender) : bool {
+	public function canParse(string $testString, CommandSender $sender): bool {
 		return true;
 	}
 
-	public function parse(string $argument, CommandSender $sender) {
+	public function parse(string $argument, CommandSender $sender): string {
 		return $argument;
 	}
 }
