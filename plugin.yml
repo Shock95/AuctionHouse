@@ -3,7 +3,7 @@ main: shock95x\auctionhouse\AuctionHouse
 version: 2.0.0
 api: 4.0.0
 author: Shock95x
-softdepend: [InvCrashFix, EconomyAPI, BedrockEconomy]
+softdepend: [InvCrashFix, BedrockEconomy]
 virions: ["InvMenu", "libasynql", "await-generator", "UpdateNotifier", "Commando"]
 permissions:
     auctionhouse.command.shop:
