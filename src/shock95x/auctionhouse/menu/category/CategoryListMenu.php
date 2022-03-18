@@ -38,7 +38,7 @@ class CategoryListMenu extends PagingMenu {
 			$item->setLore([TextFormat::RESET . TextFormat::GRAY . "Click to open category"]);
 			$this->getInventory()->setItem($index, $item);
 		}
-		$stats = Utils::getButtonItem($this->player, "stats", "category-list-stats", ["%page%", "%max%", "%total%"], [$this->page, $this->pages, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "category-list-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
 		$this->getInventory()->setItem(49, $stats);
 	}
 

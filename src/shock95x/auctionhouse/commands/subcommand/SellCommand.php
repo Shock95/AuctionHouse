@@ -62,18 +62,18 @@ class SellCommand extends BaseSubCommand {
 			}
 			$listingCount = yield DataStorage::getInstance()->getActiveCountByPlayer($sender, yield) => Await::ONCE;
 			if($listingCount >= (Utils::getMaxListings($sender))) {
-				$sender->sendMessage(str_replace(["@max"], [Utils::getMaxListings($sender)], Locale::get($sender, "max-listings", true)));
+				$sender->sendMessage(str_ireplace(["{MAX}"], [Utils::getMaxListings($sender)], Locale::get($sender, "max-listings", true)));
 				return;
 			}
 			if($price < Settings::getMinPrice() || ($price > Settings::getMaxPrice() && Settings::getMaxPrice() != -1)) {
-				$sender->sendMessage(str_replace(["@min", "@max"], [Settings::getMinPrice(), Settings::getMaxPrice()], Locale::get($sender, "price-range", true)));
+				$sender->sendMessage(str_ireplace(["{MIN}", "{MAX}"], [Settings::getMinPrice(), Settings::getMaxPrice()], Locale::get($sender, "price-range", true)));
 				return;
 			}
 			if(Settings::getListingCooldown() != 0) {
 				if(CooldownManager::inCooldown($sender)) {
 					$cooldown = CooldownManager::getCooldown($sender);
 					$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($cooldown));
-					$sender->sendMessage(str_replace(["@M", "@S"], [$endTime->i, $endTime->s], Locale::get($sender, "in-cooldown", true)));
+					$sender->sendMessage(str_ireplace(["{M}", "{S}"], [$endTime->i, $endTime->s], Locale::get($sender, "in-cooldown", true)));
 					return;
 				}
 				if(CooldownManager::setCooldown($sender)) {
@@ -90,7 +90,7 @@ class SellCommand extends BaseSubCommand {
 			$count = $item->getCount();
 			Utils::removeItem($sender, $item);
 			$listing = yield DataStorage::getInstance()->createListing($sender, $item->setCount($count), (int) $price, yield) => Await::ONCE;
-			$sender->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $count], Locale::get($sender, "item-listed", true)));
+			$sender->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $count], Locale::get($sender, "item-listed", true)));
 		});
 	}
 

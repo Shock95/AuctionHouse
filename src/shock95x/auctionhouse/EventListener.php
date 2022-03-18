@@ -16,8 +16,6 @@ use shock95x\auctionhouse\utils\Settings;
 
 class EventListener implements Listener {
 
-	public function __construct(private AuctionHouse $plugin) {}
-
 	public function onSignChange(SignChangeEvent $event): void {
 		$player = $event->getPlayer();
 		$block = $event->getBlock();

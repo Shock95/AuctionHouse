@@ -87,13 +87,13 @@ class DataStorage {
 		});
 	}
 
-	public function getListingCount(callable $callback): void {
+	public function getTotalListingCount(callable $callback): void {
 		$this->database->getConnector()->executeSelect(Query::COUNT_ALL, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
 		});
 	}
 
-	public function getActiveCount(callable $callback) {
+	public function getActiveListingCount(callable $callback) {
 		$this->database->getConnector()->executeSelect(Query::COUNT_ACTIVE, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
 		});

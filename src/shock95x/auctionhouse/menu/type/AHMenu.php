@@ -6,10 +6,11 @@ namespace shock95x\auctionhouse\menu\type;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\InvMenuHandler;
 use muqsit\invmenu\session\InvMenuInfo;
-use muqsit\invmenu\transaction\InvMenuTransaction;
+use muqsit\invmenu\transaction\DeterministicInvMenuTransaction;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\TextFormat;
@@ -43,7 +44,7 @@ abstract class AHMenu extends InvMenu {
 		$this->player = $player;
 		$this->returnMain = $returnMain;
 
-		$this->setListener(InvMenu::readonly(function(InvMenuTransaction $transaction) {
+		$this->setListener(InvMenu::readonly(function(DeterministicInvMenuTransaction $transaction) {
 			$this->player->getWorld()->addSound($this->player->getPosition(), new ClickSound(), [$this->player]);
 			$this->handle($transaction->getPlayer(), $transaction->getItemClicked(), $transaction->getAction()->getInventory(), $transaction->getAction()->getSlot());
 		}));
@@ -62,7 +63,11 @@ abstract class AHMenu extends InvMenu {
 		}
 	}
 
-	public function renderListings(): void {}
+	public function renderListings(): void {
+		for($i = count($this->listings); $i < 45; ++$i) {
+			$this->getInventory()->setItem($i, VanillaItems::AIR());
+		}
+	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		if($this->returnMain && $slot == self::INDEX_RETURN) {
@@ -74,11 +79,13 @@ abstract class AHMenu extends InvMenu {
 	protected function openListing(int $slot, Item $itemClicked): bool {
 		if($slot <= 44 && isset($this->getListings()[$slot])) {
 			Await::f2c(function () use ($itemClicked, $slot) {
+				$plugin = AuctionHouse::getInstance();
 				$listing = $this->getListings()[$slot];
-				$balance = yield AuctionHouse::getInstance()->getEconomyProvider()->getMoney($this->player, yield) => Await::ONCE;
+				$balance = yield $plugin->getEconomyProvider()->getMoney($this->player, yield) => Await::ONCE;
 				if($balance < $listing->getPrice()) {
+					if($itemClicked->getId() == -161) return;
 					$this->getInventory()->setItem($slot, ItemFactory::getInstance()->get(-161)->setCustomName(TextFormat::RESET . Locale::get($this->player, "cannot-afford")));
-					AuctionHouse::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($itemClicked, $slot) {
+					$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($itemClicked, $slot) {
 						$this->inventory?->setItem($slot, $itemClicked);
 					}), 40);
 				} else {
@@ -115,16 +122,13 @@ abstract class AHMenu extends InvMenu {
 
 	public static function open(self $menu, bool $newWindow = true): void {
 		$session = InvMenuHandler::getPlayerManager()->get($menu->player);
-		if($session->getCurrent() == null) {
-			$menu->send($menu->player);
-			return;
-		}
 		$currentMenu = $session->getCurrent()?->menu;
-		if($newWindow && $currentMenu instanceof AHMenu) {
-			$currentMenu->player->removeCurrentWindow();
+		if($session->getCurrent() == null || ($newWindow && $currentMenu instanceof AHMenu)) {
 			$menu->send($menu->player);
 			return;
 		}
-		$session->setCurrentMenu(new InvMenuInfo($menu, $session->getCurrent()->graphic));
+		$currentMenu->getInventory()->clearAll();
+		$currentMenu->setInventory($menu->getInventory());
+		$currentMenu->setListener($menu->listener);
 	}
 }

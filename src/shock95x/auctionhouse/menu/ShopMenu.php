@@ -22,7 +22,7 @@ use SOFe\AwaitGenerator\Await;
 
 class ShopMenu extends PagingMenu {
 
-	const INDEX_MAIN = 49;
+	const INDEX_STATS = 49;
 	const INDEX_LISTINGS = 45;
 	const INDEX_EXPIRED = 46;
 	const INDEX_ADMIN = [47, 51];
@@ -41,23 +41,21 @@ class ShopMenu extends PagingMenu {
 			$this->setListings(yield $storage->getActiveListings(yield, (45 * $this->page) - 45) => Await::ONCE);
 			$this->selling = yield $storage->getActiveCountByPlayer($this->player, yield) => Await::ONCE;
 			$this->expired = yield $storage->getExpiredCountByPlayer($this->player, yield) => Await::ONCE;
-			$this->total = yield $storage->getActiveCount(yield) => Await::ONCE;
+			$this->total = yield $storage->getActiveListingCount(yield) => Await::ONCE;
 			$this->pages = (int) ceil($this->total / 45);
-		}, function () use ($storage) {
-			parent::init($storage);
-		});
+		}, fn() => parent::init($storage));
 	}
 
 	public function renderButtons(): void {
 		parent::renderButtons();
-		$chest = Utils::getButtonItem($this->player, "stats", "main-stats", ["%page%", "%max%", "%total%"], [$this->page, $this->pages, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "main-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
 		$howto = Utils::getButtonItem($this->player, "howto", "sell-description");
 		$info = Utils::getButtonItem($this->player, "info", "main-description");
-		$listings = Utils::getButtonItem($this->player, "player_listings", "view-listed-items", ["%selling%"], [$this->selling]);
-		$expired = Utils::getButtonItem($this->player, "expired_listings", "view-expired-items", ["%expired%"], [$this->expired]);
+		$listings = Utils::getButtonItem($this->player, "player_listings", "view-listed-items", ["{SELLING}"], [$this->selling]);
+		$expired = Utils::getButtonItem($this->player, "expired_listings", "view-expired-items", ["{EXPIRED}"], [$this->expired]);
 
 		$items = [
-			self::INDEX_MAIN => $chest,
+			self::INDEX_STATS => $stats,
 			self::INDEX_LISTINGS => $listings,
 			self::INDEX_EXPIRED => $expired,
 			52 => $howto,
@@ -78,14 +76,12 @@ class ShopMenu extends PagingMenu {
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getEndTime()));
 
 			$listedItem = Locale::get($this->player, "listed-item");
-			$lore = str_replace(["%price%", "%seller%", "{D}","{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
+			$lore = str_ireplace(["{PRICE}", "{SELLER}", "{D}","{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
 			$lore = Settings::allowLore() ? [...$item->getLore(), ...$lore] : $lore;
 			$item->setLore($lore);
 			$this->getInventory()->setItem($index, $item);
 		}
-        for($i = count($this->getListings()); $i < 45; ++$i) {
-            $this->getInventory()->setItem($i, ItemFactory::air());
-        }
+		parent::renderListings();
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {

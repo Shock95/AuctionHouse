@@ -34,14 +34,12 @@ class CategoryMenu extends PagingMenu {
 			$this->setListings(yield $storage->getListings(yield, 0, PHP_INT_MAX) => Await::ONCE);
 			$this->total = count($this->getListings());
 			$this->pages = (int) ceil($this->total / 45);
-		}, function () use ($storage) {
-			parent::init($storage);
-		});
+		}, fn() => parent::init($storage));
 	}
 
 	public function renderButtons(): void {
 		parent::renderButtons();
-		$stats = Utils::getButtonItem($this->player, "stats", "category-stats", ["%page%", "%max%", "%total%", "%category%"], [$this->page, $this->pages, $this->total, $this->category->getDisplayName()]);
+		$stats = Utils::getButtonItem($this->player, "stats", "category-stats", ["{PAGE}", "{MAX}", "{TOTAL}", "{CATEGORY}"], [$this->page, $this->pages, $this->total, $this->category->getDisplayName()]);
 		$this->getInventory()->setItem(self::INDEX_REFRESH, $stats);
 	}
 
@@ -52,15 +50,13 @@ class CategoryMenu extends PagingMenu {
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
 
 			$listedItem = Locale::get($this->player, "listed-item");
-			$lore = str_replace(["%price%", "%seller%", "{D}", "{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
+			$lore = str_ireplace(["{PRICE}", "{SELLER}", "{D}", "{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
 			$lore = Settings::allowLore() ? [...$item->getLore(), ...$lore] : $lore;
 
 			$item->setLore($lore);
 			$this->getInventory()->setItem($key, $item);
 		}
-		for($i = count($listings); $i < 45; ++$i) {
-			$this->getInventory()->setItem($i, ItemFactory::air());
-		}
+		parent::renderListings();
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {

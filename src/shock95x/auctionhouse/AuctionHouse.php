@@ -13,9 +13,11 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
+use pocketmine\utils\SingletonTrait;
 use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\database\legacy\LegacyConverter;
+use shock95x\auctionhouse\economy\BedrockEconomyProvider;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\economy\EconomySProvider;
 use shock95x\auctionhouse\task\CheckLegacyTask;
@@ -26,16 +28,18 @@ use shock95x\auctionhouse\utils\Utils;
 
 class AuctionHouse extends PluginBase {
 
-	public static ?AuctionHouse $instance;
-	private ?EconomyProvider $economyProvider;
+	use SingletonTrait;
+
 	private Database $database;
+	private ?EconomyProvider $economyProvider = null;
 
 	public const FAKE_ENCH_ID = -1;
 	private const RESOURCES = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
 
 	public function onLoad(): void {
+		self::setInstance($this);
 		$this->saveDefaultConfig();
-		foreach(self::RESOURCES as $file => $replace) $this->saveResource($file, $replace);
+		foreach(self::RESOURCES as $file => $r) $this->saveResource($file, $r);
 		EnchantmentIdMap::getInstance()->register(self::FAKE_ENCH_ID, new Enchantment("", -1, 1, ItemFlags::ALL, ItemFlags::NONE));
 		Utils::checkConfig($this, $this->getConfig(), "config-version", 5);
 	}
@@ -44,7 +48,6 @@ class AuctionHouse extends PluginBase {
 	 * @throws HookAlreadyRegistered
 	 */
 	public function onEnable(): void {
-		self::$instance = $this;
 		Settings::init($this->getConfig());
 		Locale::init($this);
 
@@ -61,30 +64,32 @@ class AuctionHouse extends PluginBase {
 
 		LegacyConverter::getInstance()->init($this->database);
 
-		$pluginManager->registerEvents(new EventListener($this), $this);
+		$pluginManager->registerEvents(new EventListener(), $this);
 
 		if($pluginManager->getPlugin(EconomySProvider::getName()) !== null) {
 			$this->setEconomyProvider(new EconomySProvider());
+		} else if ($pluginManager->getPlugin(BedrockEconomyProvider::getName()) !== null) {
+			$this->setEconomyProvider(new BedrockEconomyProvider());
 		}
 		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function() {
 			if($this->economyProvider == null) {
-				$this->getLogger()->notice("Could not detect an economy provider, disabling plugin...");
+				$this->getLogger()->notice("No economy provider found, disabling plugin...");
 				$this->disable();
 				return;
 			}
 			Settings::setMonetaryUnit($this->economyProvider->getMonetaryUnit());
 		}), 1);
-		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
 		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
+		if($pluginManager->getPlugin("InvCrashFix") == null) {
+			$this->getLogger()->warning("InvCrashFix is required to fix menu issues on PM4, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
+		}
+		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
 		$this->getScheduler()->scheduleDelayedTask(new CheckLegacyTask($this), 1);
 	}
 
 	public function onDisable(): void {
+		self::reset();
 		$this->database?->close();
-	}
-
-	public static function getInstance(): self {
-		return self::$instance;
 	}
 
 	public function reload(): void {
@@ -93,7 +98,6 @@ class AuctionHouse extends PluginBase {
 	}
 
 	public function disable(): void {
-		self::$instance = null;
 		$this->getServer()->getPluginManager()->disablePlugin($this);
 	}
 

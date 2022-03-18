@@ -3,6 +3,7 @@ namespace shock95x\auctionhouse\task;
 
 use DateTime;
 use pocketmine\scheduler\Task;
+use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\database\storage\DataStorage;
 use shock95x\auctionhouse\event\AuctionEndEvent;
@@ -17,12 +18,12 @@ class ListingExpireTask extends Task {
 		Await::f2c(function () {
 			$time = new DateTime();
 			$dataStorage = DataStorage::getInstance();
-			$listings = $this->createListingsFromRows(yield $this->database->asyncSelectRaw("SELECT * from auctions WHERE :time >= end_time AND expired = FALSE;", ["time" => time()]));
+			$listings = $this->createListingsFromRows(yield $this->database->asyncSelectRaw("SELECT * from listings WHERE :time >= end_time AND expired = FALSE;", ["time" => time()]));
 			foreach ($listings as $listing) {
 				yield $dataStorage->setExpired($listing, yield) => Await::ONCE;
 				(new AuctionEndEvent($listing, AuctionEndEvent::EXPIRED))->call();
 			}
-			$listings = $this->createListingsFromRows(yield $this->database->asyncSelectRaw("SELECT * from auctions WHERE expired = TRUE;"));
+			$listings = $this->createListingsFromRows(yield $this->database->asyncSelectRaw("SELECT * from listings WHERE expired = TRUE;"));
 			foreach ($listings as $listing) {
 				$time->setTimestamp($listing->getEndTime());
 				if($time->diff(new DateTime())->days >= Settings::getExpiredDuration()) {
@@ -33,11 +34,15 @@ class ListingExpireTask extends Task {
 		});
 	}
 
-	private function createListingsFromRows(array $listings): array {
-		$array = [];
-		foreach ($listings as $rows) {
-			$array[] = $this->database->createListingFromRows($rows);
+	/**
+	 * @param array $rows
+	 * @return AHListing[]
+	 */
+	private function createListingsFromRows(array $rows): array {
+		$listings = [];
+		foreach ($rows as $row) {
+			$listings[] = $this->database->createListingFromRows($row);
 		}
-		return $array;
+		return $listings;
 	}
 }

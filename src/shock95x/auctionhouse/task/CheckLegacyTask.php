@@ -14,9 +14,7 @@ class CheckLegacyTask extends Task {
 	public function onRun(): void {
 		Await::f2c(function () {
 			if(yield LegacyConverter::getInstance()->isLegacy()) {
-				$this->plugin->getLogger()->info("Old database format detected, converting...");
-				yield LegacyConverter::getInstance()->convert();
-				$this->plugin->getLogger()->info("Conversion complete!");
+				$this->plugin->getLogger()->notice("Old database format detected! Run '/ah convert' to update");
 			}
 		});
 	}

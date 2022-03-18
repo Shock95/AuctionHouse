@@ -23,8 +23,8 @@ use SOFe\AwaitGenerator\Await;
 
 class ConfirmPurchaseMenu extends AHMenu {
 
-	const CONFIRM_INDEX = [9, 10, 11, 12];
-	const CANCEL_INDEX = [14, 15, 16, 17];
+	const INDEX_CONFIRM = [9, 10, 11, 12];
+	const INDEX_CANCEL = [14, 15, 16, 17];
 
 	protected static string $inventoryType = InvMenu::TYPE_CHEST;
 
@@ -35,11 +35,11 @@ class ConfirmPurchaseMenu extends AHMenu {
 	}
 
 	public function renderButtons(): void {
-		foreach (self::CONFIRM_INDEX as $x) {
+		foreach (self::INDEX_CONFIRM as $x) {
 			$confirmItem = Utils::getButtonItem($this->player, "confirm_purchase", "purchase-confirm");
 			$this->getInventory()->setItem($x, $confirmItem);
 		}
-		foreach (self::CANCEL_INDEX as $x) {
+		foreach (self::INDEX_CANCEL as $x) {
 			$cancelItem = Utils::getButtonItem($this->player, "cancel_purchase", "purchase-cancel");
 			$this->getInventory()->setItem($x, $cancelItem);
 		}
@@ -52,25 +52,25 @@ class ConfirmPurchaseMenu extends AHMenu {
 		$item = clone $listing->getItem();
 
 		$info =  Locale::get($this->player, "purchase-item");
-		$lore = str_replace(["%price%", "%seller%"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller()], preg_filter('/^/', TextFormat::RESET, $info["lore"]));
+		$lore = str_ireplace(["{PRICE}", "{SELLER}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller()], preg_filter('/^/', TextFormat::RESET, $info["lore"]));
 		$lore = Settings::allowLore() ? [...$item->getLore(), ...$lore] : $lore;
 
 		$this->getInventory()->setItem(13, $item->setLore($lore));
 	}
 	
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
-		if(in_array($slot, self::CANCEL_INDEX)) {
+		if(in_array($slot, self::INDEX_CANCEL)) {
 			$player->removeCurrentWindow();
 			Locale::sendMessage($player, "cancelled-purchase");
 			return false;
 		}
-		if (!in_array($slot, self::CONFIRM_INDEX)) return false;
+		if (!in_array($slot, self::INDEX_CONFIRM)) return false;
 
 		Await::f2c(function () use ($player) {
 			$storage = DataStorage::getInstance();
 			/** @var ?AHListing $listing */
 			$listing = yield $storage->getListingById($this->getListings()[0]?->getId(), yield) => Await::ONCE;
-			if($listing == null || $listing?->isExpired()) {
+			if($listing == null || $listing->isExpired()) {
 				Locale::sendMessage($player, "listing-gone");
 				return;
 			}
@@ -96,20 +96,26 @@ class ConfirmPurchaseMenu extends AHMenu {
 			$event->call();
 			if($event->isCancelled()) return;
 
-			$listing->setExpired();
 			$storage->removeListing($listing);
 
-			yield $economy->addMoney($listing->getSeller(), $listing->getPrice(), yield) => Await::ONCE;
-			yield $economy->subtractMoney($player, $listing->getPrice(), yield) => Await::ONCE;
-
-			$player->getInventory()->addItem($item);
-
+			$res = yield $economy->subtractMoney($player, $listing->getPrice(), yield) => Await::ONCE;
+			if(!$res) {
+				Locale::sendMessage($player, "purchase-economy-error");
+				return;
+			}
+			$res = yield $economy->addMoney($listing->getSeller(), $listing->getPrice(), yield) => Await::ONCE;
+			if(!$res) {
+				$economy->addMoney($player, $listing->getPrice());
+				Locale::sendMessage($player, "purchase-economy-error");
+				return;
+			}
 			$player->removeCurrentWindow();
-			$player->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "purchased-item", true)));
+			$player->getInventory()->addItem($item);
+			$player->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "purchased-item", true)));
 
 			$seller = AuctionHouse::getInstance()->getServer()->getPlayerByUUID(Uuid::fromString($listing->getSellerUUID()));
 			$seller?->getWorld()->addSound($seller?->getPosition(), new FizzSound(), [$seller]);
-			$seller?->sendMessage(str_replace(["@player", "@item", "@price", "@amount"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "seller-message", true)));
+			$seller?->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "seller-message", true)));
 			(new AuctionEndEvent($listing, AuctionEndEvent::PURCHASED, $player))->call();
 		});
 		return true;

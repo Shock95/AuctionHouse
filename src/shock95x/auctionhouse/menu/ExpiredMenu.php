@@ -6,6 +6,7 @@ namespace shock95x\auctionhouse\menu;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\storage\DataStorage;
@@ -32,15 +33,13 @@ class ExpiredMenu extends PagingMenu {
 			$this->setListings(yield $storage->getExpiredListingsByPlayer(yield, $this->player, (45 * $this->page) - 45) => Await::ONCE);
 			$this->total = yield $storage->getExpiredCountByPlayer($this->player, yield) => Await::ONCE;
 			$this->pages = (int) ceil($this->total / 45);
-		}, function () use ($storage) {
-			parent::init($storage);
-		});
+		}, fn() => parent::init($storage));
 	}
 
 	public function renderButtons() : void {
 		parent::renderButtons();
 
-		$stats = Utils::getButtonItem($this->player, "return_all", "expired-stats", ["%page%", "%max%", "%total%"], [$this->page, $this->page, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "return_all", "expired-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->page, $this->total]);
 
 		$this->getInventory()->setItem(53, Utils::getButtonItem($this->player, "info", "main-description"));
 		$this->getInventory()->setItem(49, $stats);
@@ -52,15 +51,13 @@ class ExpiredMenu extends PagingMenu {
 
 			$expiredItem = Locale::get($this->player, "expired-item");
 
-			$lore = str_replace(["%price%"], [$listing->getPrice(true, Settings::formatPrice())], preg_filter('/^/', TextFormat::RESET, $expiredItem));
+			$lore = str_ireplace(["{PRICE}"], [$listing->getPrice(true, Settings::formatPrice())], preg_filter('/^/', TextFormat::RESET, $expiredItem));
 			$lore = Settings::allowLore() ? [...$item->getLore(), ...$lore] : $lore;
 			$item->setLore($lore);
 
             $this->getInventory()->setItem($index, $item);
         }
-        for($i = count($this->getListings()); $i < 45; ++$i) {
-            $this->getInventory()->setItem($i, ItemFactory::air());
-        }
+       	parent::renderListings();
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
@@ -75,9 +72,9 @@ class ExpiredMenu extends PagingMenu {
 				$item = $listing->getItem();
 				if($player->getInventory()->canAddItem($item)) {
 					$storage->removeListing($listing);
-					$inventory->setItem($slot, ItemFactory::air());
+					$inventory->setItem($slot, VanillaItems::AIR());
 					$player->getInventory()->addItem($item);
-					$player->sendMessage(str_replace(["@item", "@amount"], [$item->getName(), $item->getCount()], Locale::get($player, "returned-item", true)));
+					$player->sendMessage(str_ireplace(["{ITEM}", "{AMOUNT}"], [$item->getName(), $item->getCount()], Locale::get($player, "returned-item", true)));
 				}
 			}
 			if($slot == self::INDEX_RETURN_ALL) {
@@ -88,7 +85,7 @@ class ExpiredMenu extends PagingMenu {
 				foreach ($this->getListings() as $index => $expired) {
 					if ($player->getInventory()->canAddItem($expired->getItem())) {
 						$storage->removeListing($expired);
-						$inventory->setItem($index, ItemFactory::air());
+						$inventory->setItem($index, VanillaItems::AIR());
 						$player->getInventory()->addItem($expired->getItem());
 					}
 				}

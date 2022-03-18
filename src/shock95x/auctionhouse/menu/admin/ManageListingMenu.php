@@ -18,9 +18,9 @@ use shock95x\auctionhouse\utils\Utils;
 
 class ManageListingMenu extends AHMenu {
 
-	const INDEX_DUPLICATE = 39;
+	const INDEX_DUPLICATE = 38;
 	const INDEX_STATUS = 40;
-	const INDEX_DELETE = 41;
+	const INDEX_DELETE = 42;
 
 	public function __construct(Player $player, AHListing $listing) {
 		$this->setName(Locale::get($player, "manage-listing-name"));
@@ -31,9 +31,10 @@ class ManageListingMenu extends AHMenu {
 	public function renderButtons(): void {
 		parent::renderButtons();
 		$listing = $this->getListings()[0];
-
 		$duplicateItem = ItemFactory::getInstance()->get(ItemIDs::EMERALD_BLOCK)->setCustomName(TextFormat::RESET . Locale::get($this->player, "duplicate-item"));
-		$listingStatus = ItemFactory::getInstance()->get(ItemIDs::GOLD_BLOCK)->setCustomName(TextFormat::RESET .  Locale::get($this->player, $listing->isExpired() ? "listing-active" : "listing-expired"));
+		$status =  Locale::get($this->player, $listing->isExpired() ? "status-expired" : "status-active");
+		$listingStatus = ItemFactory::getInstance()->get(ItemIDs::GOLD_BLOCK)
+			->setCustomName(str_ireplace("{STATUS}", $status, implode("\n", preg_filter('/^/', TextFormat::RESET, Locale::get($this->player, "listing-status")))));
 		$deleteItem = ItemFactory::getInstance()->get(ItemIDs::REDSTONE_BLOCK)->setCustomName(TextFormat::RESET . Locale::get($this->player, "delete-item"));
 
 		$this->inventory->setItem(self::INDEX_DUPLICATE, $duplicateItem);
@@ -42,8 +43,7 @@ class ManageListingMenu extends AHMenu {
 	}
 
 	public function renderListings(): void {
-		$listing = $this->getListings()[0];
-		$this->inventory->setItem(22, $listing->getItem());
+		$this->inventory->setItem(22, $this->getListings()[0]->getItem());
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
@@ -55,13 +55,13 @@ class ManageListingMenu extends AHMenu {
 			case self::INDEX_STATUS:
 				if($listing->isExpired()) {
 					$listing->setExpired(false);
+					DataStorage::getInstance()->setExpired($listing, value: false);
 					$listing->setEndTime(Utils::getEndTime());
-					$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::get($player, "listing-expired")));
 				} else {
 					$listing->setExpired();
 					(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
-					$inventory->setItem($slot, $itemClicked->setCustomName(TextFormat::RESET . Locale::get($player, "listing-active")));
 				}
+				$this->renderButtons();
 				break;
 			case self::INDEX_DELETE:
 				DataStorage::getInstance()->removeListing($listing);

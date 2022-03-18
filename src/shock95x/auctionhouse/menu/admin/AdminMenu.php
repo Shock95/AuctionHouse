@@ -33,16 +33,14 @@ class AdminMenu extends PagingMenu {
 		Await::f2c(function () use ($storage) {
 			$this->setListings(yield $storage->getListings(yield, (45 * $this->page) - 45) => Await::ONCE);
 			$this->expired = yield $storage->getExpiredCount(yield) => Await::ONCE;
-			$this->total = yield $storage->getListingCount(yield) => Await::ONCE;
+			$this->total = yield $storage->getTotalListingCount(yield) => Await::ONCE;
 			$this->pages = (int) ceil($this->total / 45);
-		}, function () use ($storage) {
-			parent::init($storage);
-		});
+		}, fn() => parent::init($storage));
 	}
 	
 	public function renderButtons(): void {
 		parent::renderButtons();
-		$stats = Utils::getButtonItem($this->player, "stats", "main-stats-admin", ["%page%", "%max%", "%expired%", "%total%"], [$this->page, $this->pages, $this->expired, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "main-stats-admin", ["{PAGE}", "{MAX}", "{EXPIRED}", "{TOTAL}"], [$this->page, $this->pages, $this->expired, $this->total]);
 		$stats->addEnchantment(new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId(AuctionHouse::FAKE_ENCH_ID)));
 		$this->getInventory()->setItem(self::INDEX_REFRESH, $stats);
 	}
@@ -52,13 +50,11 @@ class AdminMenu extends PagingMenu {
 			$item = clone $listing->getItem();
 			$status =  Locale::get($this->player, $listing->isExpired() ? "status-expired" : "status-active");
 			$listedItem = Locale::get($this->player, "listed-item-admin");
-			$item->setLore(str_replace(["%price%", "%seller%", "%status%"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $status], preg_filter('/^/', TextFormat::RESET, $listedItem)));
+			$item->setLore(str_ireplace(["{PRICE}", "{SELLER}", "{STATUS}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $status], preg_filter('/^/', TextFormat::RESET, $listedItem)));
 
             $this->getInventory()->setItem($index, $item);
 		}
-        for($i = count($this->getListings()); $i < 45; ++$i) {
-            $this->getInventory()->setItem($i, ItemFactory::air());
-        }
+       	parent::renderListings();
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {

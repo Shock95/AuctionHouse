@@ -16,11 +16,13 @@ class EconomySProvider implements EconomyProvider {
 	}
 
 	public function addMoney(string|Player $player, float $amount, ?callable $callback = null): void {
-		$callback ? $callback($this->economyAPI->addMoney($player, $amount)) : $this->economyAPI->addMoney($player, $amount);
+		$ret = $this->economyAPI->addMoney($player, $amount);
+		if($callback) $callback($ret > 0);
 	}
 
 	public function subtractMoney(string|Player $player, float $amount, ?callable $callback = null): void {
-		$callback ? $callback($this->economyAPI->reduceMoney($player, $amount)) : $this->economyAPI->reduceMoney($player, $amount);
+		$ret = $this->economyAPI->reduceMoney($player, $amount);
+		if($callback) $callback($ret > 0);
 	}
 
 	public function getMoney(string|Player $player, callable $callback): void {

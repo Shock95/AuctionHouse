@@ -12,16 +12,16 @@ purchase-menu-name: 'Подтвердите покупку'
 # player-listing: "&2{player}'s &6Listings"
 
 # Chat messages
-item-listed: '&2Вы выставили &d@item &r&d(x@amount) &2 на продажу за &d@price. &eВведите /ah listings &dчтобы просмотреть все ваши товары'
+item-listed: '&2Вы выставили &d{ITEM} &r&d(x{AMOUNT}) &2 на продажу за &d{PRICE}. &eВведите /ah listings &dчтобы просмотреть все ваши товары'
 cancelled-item: '&eВы &6сняли &eтовар с продажи. Чтобы вернуть предмет в инвентарь введите &6/ah expired&e.'
 cancelled-purchase: '&cВы отменили эту покупку'
-purchased-item: '&2Вы купили &d@item &r&d(x@amount) &2за &d@price' #@player, @item, @price, @amount
-seller-message: '&e@Игрок приобрел @item (x@amount) ваш предмет за &d@price!' #@player, @item, @price, @amount
-returned-item: '&2Вы успешно сняли &d@item &r&d(x@amount) &2 с продажи.' #@item, @amount
+purchased-item: '&2Вы купили &d{ITEM} &r&d(x{AMOUNT}) &2за &d{PRICE}' #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
+seller-message: '&e@Игрок приобрел {ITEM} (x{AMOUNT}) ваш предмет за &d{PRICE}!' #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
+returned-item: '&2Вы успешно сняли &d{ITEM} &r&d(x{AMOUNT}) &2 с продажи.' #{ITEM}, {AMOUNT}
 
 # Error messages
 in-creative: '&cВы не можете продавать предметы в творческом режиме.'
-max-listings: '&cВы не можете иметь более @max активных товаров.' #@max
+max-listings: '&cВы не можете иметь более {MAX} активных товаров.' #{MAX}
 invalid-price: '&cНеккоректная цена.'
 not-enough-space: 'Недостаточно места в инвентаре'
 self-purchase: '&cВы не можете купить свои предметы на аукционе!'
@@ -30,50 +30,50 @@ cannot-afford: '&6У вас недостаточно денег, чтобы ку
 item-blacklisted: '&cЭтот предмет не может быть выставлен на аукцион!'
 invalid-balance: '&cУ вас недостаточно денег, чтобы выставить предмет на аукцион.'
 listing-gone: '&cЭтого товара больше не существует, вероятно его уже купили.'
-# price-range: "&cInvalid price range"                                                                         #@min, @max
-# in-cooldown: "&cYou are currently in cooldown, please wait &b@M minute(s) &cand &b@S second(s)&c."               #@M, @S
-# in-cooldown: "&cYou are currently in cooldown, please wait &b@M minute(s) &cand &b@S second(s)&c."               #@M, @S
+# price-range: "&cInvalid price range"                                                                         #{MIN}, {MAX}
+# in-cooldown: "&cYou are currently in cooldown, please wait &b{M} minute(s) &cand &b{S} second(s)&c."               #{M}, {S}
+# in-cooldown: "&cYou are currently in cooldown, please wait &b{M} minute(s) &cand &b{S} second(s)&c."               #{M}, {S}
 # player-not-found: "&cThis player has no active listings."
 # player-listings-usage: "&cView your listings with /ah listings"
 # inventory-full: "&cYour inventory is full, remove some items to claim your listings."
 
 # Items in the menu UI
 listed-item:
-    # %price% = Цена
-    # %seller% = Продавец
+    # {PRICE} = Цена
+    # {SELLER} = Продавец
     # {H} = Hours | {M} = Minutes
     - '&7-------------------------'
     - '&aНажмите, чтобы купить.'
     - ''
-    - '&9Цена: &e$%price%'
-    - '&9Продавец: &e%seller%'
+    - '&9Цена: &e${PRICE}'
+    - '&9Продавец: &e{SELLER}'
     - '&9Истекает через: &e{H}:{M}'
     - '&7-------------------------'
 your-listed-item:
-    # %price% = Цена товара
+    # {PRICE} = Цена товара
     # {H} = Hours | {M} = Minutes
     - '&7-------------------------'
     - '&cНажмите, чтобы отменить.'
     - ''
-    - '&9Цена: &e$%price%'
+    - '&9Цена: &e${PRICE}'
     - '&9Истекает через: &e{H}:{M}'
     - '&7-------------------------'
 view-listed-items:
-    # %selling% = Количество активных товаров
+    # {SELLING} = Количество активных товаров
     name: '&6Предметы, которые вы продаете'
     lore:
         - '&aНажмите здесь, чтобы просмотреть все предметы, которые вы'
         - '&aв данный момент продаете на аукционе.'
         - ''
-        - '&9Продажа: &e%selling%'
+        - '&9Продажа: &e{SELLING}'
 view-expired-items:
-    # %expired% = Количество истекших аукционов
+    # {EXPIRED} = Количество истекших аукционов
     name: '&6Забрать просроченные / удалённые предметы'
     lore:
         - '&r&aНажмите, чтобы просмотреть и собрать все'
         - '&aЭлементы, которые вы отменили или просрочели.'
         - ''
-        - '&9Предметы для сбора: &e%expired%'
+        - '&9Предметы для сбора: &e{EXPIRED}'
 
 # Admin Menu
 view-admin-menu:
@@ -82,26 +82,26 @@ view-admin-menu:
         - '&r&aНажмите, чтобы перейти в админ-меню.'
         - '&aВ админ-меню вы можете удалить предметы с аукциона.'
 main-stats-admin:
-    # %page% = Текущая страница
-    # %max% = Всего страниц
-    # %expired% = Список истёкших предметов
-    # %total% = Всего предметов
+    # {PAGE} = Текущая страница
+    # {MAX} = Всего страниц
+    # {EXPIRED} = Список истёкших предметов
+    # {TOTAL} = Всего предметов
     name: '&l&cАдмин Меню'
     lore:
-        - '&aСтраница %page%/%max%'
-        - '&7Всего &b%total% &7предметов'
-        - '&c(&b%expired% &cистёкших)'
+        - '&aСтраница {PAGE}/{MAX}'
+        - '&7Всего &b{TOTAL} &7предметов'
+        - '&c(&b{EXPIRED} &cистёкших)'
         - 'Нажмите, чтобы перезагрузить страницу'
 listed-item-admin:
-    # %price% = Цена товара
-    # %seller% = Ник продавца
-    # %status% = Статус товара(Активное/Истёкшие)
+    # {PRICE} = Цена товара
+    # {SELLER} = Ник продавца
+    # {STATUS} = Статус товара(Активное/Истёкшие)
     - '&7-------------------------'
     - '&6Нажмите, чтобы отредактировать товар.'
     - ''
-    - '&9Цена: &e%price%'
-    - '&9Продавец: &e%seller%'
-    - '&9Статус: %status%'
+    - '&9Цена: &e{PRICE}'
+    - '&9Продавец: &e{SELLER}'
+    - '&9Статус: {STATUS}'
     - '&7-------------------------'
 
 status-active: '&aАктивное'
@@ -140,13 +140,13 @@ main-description:
         - '&aденьги от продажи других товаров'
         - '&aигроки могут быть заинтересованы в покупке.'
 main-stats:
-    # %page% = Текущая страница
-    # %max% = Макс страница
-    # %total% = Общее количество товаров
+    # {PAGE} = Текущая страница
+    # {MAX} = Макс страница
+    # {TOTAL} = Общее количество товаров
     name: '&l&6Аукционный дом'
     lore:
-        - '&aСтраница %page%/%max%'
-        - '&7Всего &b%total% &7предметов'
+        - '&aСтраница {PAGE}/{MAX}'
+        - '&7Всего &b{TOTAL} &7предметов'
         - 'Нажмите, чтобы обновить страницу'
 listings-description:
     name: '&6Что это за страница?'
@@ -157,13 +157,13 @@ listings-description:
         - ''
         - '&aВы можете отменить и просмотреть свои предметы'
 listings-stats:
-    # %page% = Текущая страница
-    # %max% = Последняя страница
-    # %total% = Общее количество товаров
+    # {PAGE} = Текущая страница
+    # {MAX} = Последняя страница
+    # {TOTAL} = Общее количество товаров
     name: '&l&6Товары на продаже'
     lore:
-        - '&aСтраница %page%/%max%'
-        - '&7Всего &b%total% &7предметов'
+        - '&aСтраница {PAGE}/{MAX}'
+        - '&7Всего &b{TOTAL} &7предметов'
 expired-description:
     name: '&6Что это за страница?'
     lore:
@@ -175,32 +175,32 @@ expired-description:
         - '&aПросто нажмите на предмет, если у вас незаполнен'
         - '&aинвентар,то вы получите предмет.'
 expired-stats:
-    # %page% = Текущая страница
-    # %max% = Последняя страница
-    # %total% = Общее количество предметов
+    # {PAGE} = Текущая страница
+    # {MAX} = Последняя страница
+    # {TOTAL} = Общее количество предметов
     name: '&l&6Истекший'
     lore:
-        - '&aСтраница %page%/%max%'
-        - '&7Всего &b%total% &7предметов'
+        - '&aСтраница {PAGE}/{MAX}'
+        - '&7Всего &b{TOTAL} &7предметов'
 
 # Category menu
 category-stats:
-    # %category% = Категория
-    # %page% = Текущая страница
-    # %max% = Всего страниц
-    # %total% = Кол-во товаров
-    name: '%category%'
+    # {CATEGORY} = Категория
+    # {PAGE} = Текущая страница
+    # {MAX} = Всего страниц
+    # {TOTAL} = Кол-во товаров
+    name: '{CATEGORY}'
     lore:
-        - '&aСтраница %page%/%max%'
-        - '&7Всего &b%total% &7listings товаров'
+        - '&aСтраница {PAGE}/{MAX}'
+        - '&7Всего &b{TOTAL} &7listings товаров'
 category-list-stats:
-    # %page% = Текущая страница
-    # %max% = Всего страниц
-    # %total% = Кол-во товаров
+    # {PAGE} = Текущая страница
+    # {MAX} = Всего страниц
+    # {TOTAL} = Кол-во товаров
     name: '&l&6Категории'
     lore:
-        - '&aСтраница %page%/%max%'
-        - '&7Всего &b%total% &7категорий'
+        - '&aСтраница {PAGE}/{MAX}'
+        - '&7Всего &b{TOTAL} &7категорий'
 
 purchase-confirm:
     name: '&aПодтвердите покупку'
@@ -209,6 +209,6 @@ purchase-cancel:
 purchase-item:
     lore:
         - '&7-------------------------'
-        - '&9Цена: &e$%price%'
-        - '&9Продавец: &e%seller%'
+        - '&9Цена: &e${PRICE}'
+        - '&9Продавец: &e{SELLER}'
         - '&7-------------------------'

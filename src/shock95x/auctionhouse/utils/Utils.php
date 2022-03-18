@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\utils;
 
-
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\LegacyStringToItemParser;
@@ -51,7 +50,7 @@ class Utils {
 		$item = LegacyStringToItemParser::getInstance()->parse(Settings::getButtons()[$itemKey]);
 		$message = Locale::get($player, $messageKey);
 
-		$item->setCustomName(TextFormat::RESET . str_replace($searchArgs, $replaceArgs, $message["name"]));
+		$item->setCustomName(TextFormat::RESET . str_ireplace($searchArgs, $replaceArgs, $message["name"]));
 		if(isset($message["lore"])) {
 			if(is_array($message["lore"])) $item->setLore(preg_filter('/^/', TextFormat::RESET, str_replace($searchArgs, $replaceArgs, $message["lore"])));
 		}
@@ -90,7 +89,7 @@ class Utils {
 			$plugin->saveResource($configDir);
 			$message = "Your {$info["basename"]} file is outdated. Your old {$info["basename"]} has been saved as $oldFile and a new {$info["basename"]} file has been created. Please update accordingly.";
 
-			$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use ($plugin, $message): void{
+			$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use ($plugin, $message): void {
 				$plugin->getLogger()->critical($message);
 			}), 1); // should display once the server is done loading
 		}

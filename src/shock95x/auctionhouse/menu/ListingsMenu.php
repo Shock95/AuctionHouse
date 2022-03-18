@@ -7,6 +7,7 @@ use DateTime;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\storage\DataStorage;
@@ -31,15 +32,13 @@ class ListingsMenu extends PagingMenu {
 			$this->setListings(yield $storage->getActiveListingsByPlayer(yield, $this->player, (45 * $this->page) - 45) => Await::ONCE);
 			$this->total = yield $storage->getActiveCountByPlayer($this->player, yield) => Await::ONCE;
 			$this->pages = (int) ceil($this->total / 45);
-		}, function () use ($storage) {
-			parent::init($storage);
-		});
+		}, fn() => parent::init($storage));
 	}
 
 	public function renderButtons(): void {
 		parent::renderButtons();
 		$info = Utils::getButtonItem($this->player, "info", "listings-description");
-		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["%page%", "%max%", "%total%"], [$this->page, $this->pages, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
 
 		$this->getInventory()->setItem(53, $info);
 		$this->getInventory()->setItem(49, $stats);
@@ -52,14 +51,12 @@ class ListingsMenu extends PagingMenu {
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getEndTime()));
 			$listedItem = Locale::get($this->player, "your-listed-item");
 
-			$lore = str_replace(["%price%", "{D}", "{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
+			$lore = str_ireplace(["{PRICE}", "{D}", "{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
 			$lore = Settings::allowLore() ? [...$item->getLore(), ...$lore] : $lore;
 			$item->setLore($lore);
 	        $this->getInventory()->setItem($index, $item);
 		}
-        for($i = count($this->getListings()); $i < 45; ++$i) {
-	        $this->getInventory()->setItem($i, ItemFactory::air());
-        }
+        parent::renderListings();
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
@@ -67,7 +64,7 @@ class ListingsMenu extends PagingMenu {
 			$listing = $this->getListings()[$slot];
 			DataStorage::getInstance()->setExpired($listing);
 			(new AuctionEndEvent($listing, AuctionEndEvent::CANCELLED, $player))->call();
-			$inventory->setItem($slot, ItemFactory::air());
+			$inventory->setItem($slot, VanillaItems::AIR());
 		}
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}

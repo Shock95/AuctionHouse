@@ -24,7 +24,7 @@ class PlayerListingMenu extends PagingMenu {
 
 	public function __construct(Player $player, string $username) {
 		$this->username = $username;
-		$this->setName(str_replace("{player}", $username, Locale::get($player, "player-listing")));
+		$this->setName(str_ireplace("{player}", $username, Locale::get($player, "player-listing")));
 		parent::__construct($player, true);
 	}
 
@@ -33,13 +33,11 @@ class PlayerListingMenu extends PagingMenu {
 			$this->setListings(yield $storage->getActiveListingsByUsername(yield, $this->username, (45 * $this->page) - 45) => Await::ONCE);
 			$this->total = yield $storage->getActiveCountByUsername($this->username, yield) => Await::ONCE;
 			$this->pages = (int) ceil($this->total / 45);
-		}, function () use ($storage) {
-			parent::init($storage);
-		});
+		}, fn() => parent::init($storage));
 	}
 
 	public function renderButtons() : void {
-		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["%page%", "%max%", "%total%"], [$this->page, $this->pages, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
 		$this->getInventory()->setItem(49, $stats);
 	}
 
@@ -49,15 +47,13 @@ class PlayerListingMenu extends PagingMenu {
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getEndTime()));
 
 			$listedItem = Locale::get($this->player, "listed-item");
-			$lore = str_replace(["%price%", "%seller%", "{D}", "{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
+			$lore = str_ireplace(["{PRICE}", "{SELLER}", "{D}", "{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
 			$lore = Settings::allowLore() ? array_merge($item->getLore(), $lore) : $lore;
 			$item->setLore($lore);
 
             $this->getInventory()->setItem($index, $item);
 		}
-        for($i = count($this->getListings()); $i < 45; ++$i) {
-            $this->getInventory()->setItem($i, ItemFactory::air());
-        }
+		parent::renderListings();
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
