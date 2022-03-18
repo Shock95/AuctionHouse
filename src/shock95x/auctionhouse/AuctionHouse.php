@@ -77,7 +77,7 @@ class AuctionHouse extends PluginBase {
 				$this->disable();
 				return;
 			}
-			Settings::setMonetaryUnit($this->economyProvider->getMonetaryUnit());
+			Settings::setCurrencySymbol($this->economyProvider->getCurrencySymbol());
 		}), 1);
 		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
 		if($pluginManager->getPlugin("InvCrashFix") == null) {

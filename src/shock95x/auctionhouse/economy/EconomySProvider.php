@@ -29,7 +29,7 @@ class EconomySProvider implements EconomyProvider {
 		$callback($this->economyAPI->myMoney($player));
 	}
 
-	public function getMonetaryUnit(): string {
+	public function getCurrencySymbol(): string {
 		return $this->economyAPI->getMonetaryUnit();
 	}
 

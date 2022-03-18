@@ -27,10 +27,10 @@ class AHListing {
 		return $this->item;
 	}
 
-	public function getPrice(bool $monetaryUnit = false, bool $formatted = false): int|string {
+	public function getPrice(bool $currencySymbol = false, bool $formatted = false): int|string {
 		$price = $this->price;
     	if($formatted) $price = number_format($price);
-    	if($monetaryUnit) $price = Settings::getMonetaryUnit() . strval($price);
+    	if($currencySymbol) $price = Settings::getCurrencySymbol() . $price;
     	return $price;
 	}
 

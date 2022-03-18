@@ -26,7 +26,7 @@ class Settings {
 	private static array $blacklist = [];
 	private static array $signTriggers = ["[AuctionHouse]", "[AH]"];
 	private static array $buttons = [];
-	private static string $monetaryUnit = "";
+	private static string $currencySymbol = "";
 
 	public static function init(Config $config, bool $reload = false) {
 	    if($reload) $config->reload();
@@ -118,11 +118,11 @@ class Settings {
 		return self::$buttons;
 	}
 
-    public static function setMonetaryUnit(string $monetaryUnit): void {
-        self::$monetaryUnit = $monetaryUnit;
+    public static function setCurrencySymbol(string $currencySymbol): void {
+        self::$currencySymbol = $currencySymbol;
     }
 
-    public static function getMonetaryUnit(): string {
-        return self::$monetaryUnit;
+    public static function getCurrencySymbol(): string {
+        return self::$currencySymbol;
     }
 }

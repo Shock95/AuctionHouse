@@ -14,10 +14,10 @@ interface EconomyProvider {
 	public function getMoney(string|Player $player, callable $callback): void;
 
 	/**
-	 * Get monetary unit of economy provider
+	 * Get currency symbol of economy provider
 	 * @return string
 	 */
-	public function getMonetaryUnit(): string;
+	public function getCurrencySymbol(): string;
 
 	/**
 	 * Get name of economy provider
