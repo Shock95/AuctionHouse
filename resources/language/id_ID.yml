@@ -1,0 +1,237 @@
+---
+# DO NOT EDIT THIS VALUE, INTERNAL USE ONLY. #
+lang-version: 4
+
+# Refer to https://minecraft.gamepedia.com/Formatting_codes for formatting codes, you can replace the '§' symbol with a '&'
+
+# AH Menu titles
+menu-name: "Rumah Pelelangan"
+listings-menu-name: "&aDaftar Barang aktif"
+expired-menu-name: "&cBarang Expire / Tidak jadi"
+purchase-menu-name: "Konfirmasi Pembelian"
+admin-menu-name: "&l&cMenu Admin"
+category-menu-name: "&6Menu Kategori"
+manage-listing-name: "&6Atur Barang"
+player-listing: "&6Barang &b{PLAYER}"
+
+# Chat messages
+item-listed: "&2Kamu Telah Mendaftarkan &d{ITEM} &r&d(x{AMOUNT}) &2dgn harga &d{PRICE}. Tulis &e/ah listings &duntuk melihat semua barang yg kamu daftarkan"
+cancelled-item: "&eKamu Telah &6membatalkan &esebuah lelang. Kembalikan barang yang dibatalkan dan expire di &6/ah expired&e."
+cancelled-purchase: "&cKamu telah membatalkan pembelian ini"    #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
+purchased-item: "&2Kamu Telah membeli &d{ITEM} &r&d(x{AMOUNT}) &2dgn harga &d{PRICE}"    #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
+seller-message: "&e{PLAYER} &bterbeli {ITEM} (x{AMOUNT}) dari kamu dgn harga &d{PRICE}!"    #{ITEM}, {AMOUNT}
+returned-item: "&2Kamu telah membuang &d{ITEM} &r&d(x{AMOUNT}) &2dari Rumah Lelang." 
+
+# Error messages
+in-creative: "&cKamu tidak bisa menjual barang saat di gamemode creative."
+max-listings: "&cKamu tidak bisa mendaftarkan lebih dari {MAX} barang aktif."
+invalid-price: "&cHarga Invalid."
+not-enough-space: "&cKamu tidak punya banyak slot inventory untuk membeli item ini"
+self-purchase: "&cKamu tidak bisa membeli barangmu sendiri di Rumah Lelang!"
+no-item: "&cKamu harus memegang sesuatu agar bisa menjual item!"
+cannot-afford: "&cKamu tidak punya cukup uang untuk membeli barang ini."
+item-blacklisted: "&cKamu tidak bisa menjual item ini karena termasuk dalam daftar blacklist item di Rumah Lelang!"
+invalid-balance: "&cKamu tidak punya cukup uang untuk mendaftarkan balang."
+listing-gone: "&cBarang ini sudah tidak ada."
+price-range: "&cKisaran harga tidak valid"    #{MIN}, {MAX}
+in-cooldown: "&cKamu sedang di masa cooldown, tunggu &b{M} menit &cdan &b{S} detik&c."    #{M}, {S}
+player-not-found: "&cPlayer ini tidak punya barang ."
+player-listings-usage: "&cLIhat barang yang kamu daftarkan di /ah listings"
+inventory-full: "&cInventory kamu penuh, buang beberapa barang untuk menerima barang kamu."
+purchase-economy-error: "&cTransaksi gagal."
+
+# Items in the menu UI
+listed-item:
+    # {PRICE} = Price of listing
+    # {SELLER} = Username of seller
+    # {D} = Days, {H} = Hours, {M} = Minutes
+    - "&7-------------------------"
+    - "&aKlik/Tekan disini untuk membeli."
+    - ""
+    - "&9Harga: &e{PRICE}"
+    - "&9Seller: &e{SELLER}"
+    - "&9Expire: &e{D}d {H}h {M}m"
+    - "&7-------------------------"
+your-listed-item:
+    # {PRICE} = Price of listing
+    # {D} = Days, {H} = Hours, {M} = Minutes
+    - "&7-------------------------"
+    - "&cKlik disini untuk membuang barang."
+    - ""
+    - "&9Barang: &e{PRICE}"
+    - "&9Expire: &e{D}d {H}h {M}m"
+    - "&7-------------------------"
+expired-item:
+    # {PRICE} = Price of listing
+    - "&7-------------------------"
+    - "&aKlik disini untuk menerima barang."
+    - ""
+    - ""
+    - "&9Harga: &e{PRICE}"
+    - "&7-------------------------"
+view-listed-items:
+    # {SELLING} = Number of active listings
+    name: "&6Barang yang kamu jual"
+    lore:
+        - "&aKlik disini untuk melihat item yang"
+        - "&aKamu jual di lelang."
+        - ""
+        - "&9Menjual: &e{SELLING}"
+view-expired-items:
+    # {EXPIRED} = Number of expired listings
+    name: "&6Kumpulkan Expired / Barang yang dibatlakan"
+    lore:
+      - "&r&aKlik disini untuk mengumpulkan"
+      - "&abarang yang kamu batalkan / expire."
+      - ""
+      - "&9Items untuk dikumpulkan: &e{EXPIRED}"
+
+# Admin Menu
+view-admin-menu:
+    name: "&e&k----- &r&l&c Admin Menu &r&e&k-----"
+    lore:
+        - "&r&aKlik disini untuk melihat menu Admin."
+        #- "&aKamu bisa membuang item di sini."
+main-stats-admin:
+    # {PAGE} = Current page
+    # {MAX} = Max page
+    # {EXPIRED} = Expired listing count
+    # {TOTAL} = Total listing count
+    name: "&l&cAdmin Menu"
+    lore:
+        - "&aHalaman {PAGE}/{MAX}"
+        - "&7Total Dari &b{TOTAL} &7items"
+        - "&c(&b{EXPIRED} &cexpired items)"
+        - "Klik untuk refresh halaman"
+listed-item-admin:
+    # {PRICE} = Price of listing
+    # {SELLER} = Username of seller
+    # {STATUS} = Listing status (Active/Expired)
+    - "&7-------------------------"
+    - "&6Klik disini untuk mengatur barang."
+    - ""
+    - "&9Harga: &e{PRICE}"
+    - "&9Seller: &e{SELLER}"
+    - "&9Status: {STATUS}"
+    - "&7-------------------------"
+
+status-active: "&aAktif"
+status-expired: "&cExpire"
+selected-listing-name: "&l&eAtur barang"
+
+#duplicate-item: "&aKlik disini untuk mengduplikat barang ke inventory kamu"
+#listing-expired: "&eKlik disini untuk membuat barang &cexpire"
+#listing-active: "&eKlik disini untuk membuat barang &aaktif"
+#delete-item: "&cClick here to delete item and listing"
+
+duplicate-item: "&aKasih barang ke inventory kamu"
+listing-status:
+    - "Status: {STATUS}"
+    - "&6Ubah status barang"
+delete-item: "&cBuang Barang dan Item"
+
+# Pagination items
+previous-page:
+    name: "&a<- Halaman sebelumnya"
+    lore:
+        - "&7Pergi ke halaman sebelumnya"
+next-page:
+    name: "&aHalaman selanjutnya ->"
+    lore:
+        - "&7Pergi ke halaman selanjutnya"
+back-button:
+    name: "&6Kembali"
+    lore:
+
+sell-description:
+    name: "&6Cara menjual barang di Rumah Lelang"
+    lore:
+        - "&aUntuk menjual barang/item di Rumah Lelang, Pegang"
+        - "&aItem yang mau kamu jual dan ketik &b/ah sell <harga>&a."
+main-description:
+    name: "&6Apa halaman ini?"
+    lore:
+        - "&aIni adalah Rumah Lelang, disini kamu bisa"
+        - "&amenjual item dan membeli barang"
+        - "&ayang di jual player lain untuk dijual."
+        - ""
+        - "&aRumah Lelang juga cara bagus untuk membuat"
+        - "&auang dengan cara menjual barang yang"
+        - "&aplayers lain tertarik untuk membeli."
+main-stats:
+    # {PAGE} = Current page
+    # {MAX} = Max page
+    # {TOTAL} = Total listing count
+    name: "&l&6Rumah Lelang"
+    lore:
+        - "&aHalaman {PAGE}/{MAX}"
+        - "&7Total dari &b{TOTAL} &7item"
+        - "Klik untuk refresh halaman"
+listings-description:
+    name: "&6Apa halaman ini?"
+    lore:
+        - "&aIni adalah barang yang sedang kamu jual, semua dari"
+        - "&abarang yang kamu daftarkan di"
+        - "&aRumah Lelang di tampilkan disini."
+        - ""
+        - "&aKamu bisa membatalkan barang kamu"
+        - "&adan set waktu expire disini."
+listings-stats:
+    # {PAGE} = Current page
+    # {MAX} = Max page
+    # {TOTAL} = Total listing count
+    name: "&l&6Barang-Barang"
+    lore:
+        - "&aHalaman {PAGE}/{MAX}"
+        - "&7Total dari &b{TOTAL} &7item"
+expired-description:
+    name: "&6Apa Halaman ini?"
+    lore:
+        - "&aHalaman ini memuat barang yg kamu batalkan dan"
+        - "&abarang expire, Jika ada barang yang dibatalkan"
+        - "&aatau expire kamu bisa mengambil barang"
+        - "&ake kamu dari halaman ini."
+        - ""
+        - "&aKlik di item dan jika kamu mempunyai"
+        - "&acukup ruang inventory kamu akan mendapatkan item ini."
+expired-stats:
+    # {PAGE} = Current page
+    # {MAX} = Max page
+    # {TOTAL} = Number of categories
+    name: "&l&6Expire"
+    lore:
+        - "&aHalaman {PAGE}/{MAX}"
+        - "&7Total dari &b{TOTAL} &7item"
+        - "&3Klik disini untuk mengembalikan semua barang"
+
+# Category menu
+category-stats:
+    # {CATEGORY} = Category
+    # {PAGE} = Current page
+    # {MAX} = Max page
+    # {TOTAL} = Total listing count
+    name: "{CATEGORY}"
+    lore:
+        - "&aHalaman {PAGE}/{MAX}"
+        - "&7Total dari &b{TOTAL} &7listing"
+category-list-stats:
+    # {PAGE} = Current page
+    # {MAX} = Max page
+    # {TOTAL} = Total listing count
+    name: "&l&6Menu Kategori"
+    lore:
+        - "&aHalaman {PAGE}/{MAX}"
+        - "&7Total dari &b{TOTAL} &7kategori"
+
+# Confirm purchase menu
+purchase-confirm:
+    name: "&aKonfirmasi Pembelian"
+purchase-cancel:
+    name: "&cBatalkan Pembelian"
+purchase-item:
+    lore:
+        - "&7-------------------------"
+        - "&9Harga: &e{PRICE}"
+        - "&9Seller: &e{SELLER}"
+        - "&7-------------------------"
+...
