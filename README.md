@@ -114,14 +114,15 @@ cancel_purchase: "minecraft:stained_glass_pane:14"
 | [shock95x\auctionhouse\event\MenuCloseEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/MenuCloseEvent.php) | Called when a menu is closed by player |  
   
 ## Contributing  
-You can contribute to this project by creating a new language file and opening a PR!  
-### Supported languages and contributors 
+You can contribute to this project by creating or modifying a language file and opening a PR!  
+### Contributors 
 - [Shock95x](https://github.com/Shock95x) (English)  
 - [ipad54](https://github.com/ipad54) (Russian)
 - [No4NaMe](https://github.com/No4NaMe) (Russian)
 - [Unickorn](https://github.com/Unickorn) (German)
 - Chaosfelix4451#0157 (German)
 - [xAliTura01](https://github.com/xAliTura01) (Turkish)
+- [NotEnriko](https://github.com/NotEnriko) (Indonesian)
 
 ## Credits / Virions Used
 - [InvMenu](https://github.com/Muqsit/InvMenu) (Muqsit)  
