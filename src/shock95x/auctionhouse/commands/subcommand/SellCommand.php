@@ -53,13 +53,6 @@ class SellCommand extends BaseSubCommand {
 				return;
 			}
 			$price = $args["price"];
-			$listingPrice = Settings::getListingPrice();
-
-			$balance = yield $this->getEconomy()->getMoney($sender, yield) => Await::ONCE;
-			if(($balance < $listingPrice) && $listingPrice != 0) {
-				Locale::sendMessage($sender, "invalid-balance");
-				return;
-			}
 			$listingCount = yield DataStorage::getInstance()->getActiveCountByPlayer($sender, yield) => Await::ONCE;
 			if($listingCount >= (Utils::getMaxListings($sender))) {
 				$sender->sendMessage(str_ireplace(["{MAX}"], [Utils::getMaxListings($sender)], Locale::get($sender, "max-listings", true)));
@@ -83,9 +76,30 @@ class SellCommand extends BaseSubCommand {
 					}), Settings::getListingCooldown() * 20);
 				}
 			}
+
+			$listingPrice = Settings::getListingPrice();
+			if($listingPrice > 0) {
+				$subtractMoneyOk = yield $this->getEconomy()->subtractMoney($sender, $listingPrice, [
+					"reason" => "auctionListing",
+				], EconomyProvider::USAGE_LISTING_PRICE, yield) => Await::ONCE;
+				if(!$subtractMoneyOk) {
+					return;
+				}
+			}
+
 			$event = new ItemListedEvent($sender, $item, $price);
 			$event->call();
-			if($event->isCancelled()) return;
+			if($event->isCancelled()) {
+				// refund the listing price
+				$addMoneyOk = yield $this->getEconomy()->addMoney($sender, $listingPrice, [
+					"reason" => "auctionListingRefund",
+				], EconomyProvider::USAGE_LISTING_PRICE, yield) => Await::ONCE;
+				if(!$addMoneyOk) {
+					// TODO we failed to refund; what now?
+				}
+
+				return;
+			}
 
 			$count = $item->getCount();
 			Utils::removeItem($sender, $item);
