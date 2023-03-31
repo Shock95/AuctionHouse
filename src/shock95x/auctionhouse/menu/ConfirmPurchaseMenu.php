@@ -13,6 +13,7 @@ use Ramsey\Uuid\Uuid;
 use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\event\ItemPurchasedEvent;
 use shock95x\auctionhouse\menu\type\AHMenu;
@@ -80,12 +81,6 @@ class ConfirmPurchaseMenu extends AHMenu {
 				return;
 			}
 			$economy = AuctionHouse::getInstance()->getEconomyProvider();
-			$balance = yield $economy->getMoney($player, yield) => Await::ONCE;
-			if($balance < $listing->getPrice()) {
-				$player->removeCurrentWindow();
-				Locale::sendMessage($player, "cannot-afford");
-				return;
-			}
 			$item = $listing->getItem();
 			if (!$player->getInventory()->canAddItem($item)) {
 				$player->removeCurrentWindow();
@@ -98,12 +93,16 @@ class ConfirmPurchaseMenu extends AHMenu {
 
 			$storage->removeListing($listing);
 
-			$res = yield $economy->subtractMoney($player, $listing->getPrice(), yield) => Await::ONCE;
+			$res = yield $economy->subtractMoney($player, $listing->getPrice(), [
+				"reason" => "itemPurchase",
+			], EconomyProvider::USAGE_PURCHASE_PRICE, yield) => Await::ONCE;
 			if(!$res) {
-				Locale::sendMessage($player, "purchase-economy-error");
+				Locale::sendMessage($player, "cannot-afford");
 				return;
 			}
-			$res = yield $economy->addMoney($listing->getSeller(), $listing->getPrice(), yield) => Await::ONCE;
+			$res = yield $economy->addMoney($listing->getSeller(), $listing->getPrice(), [
+				"reason" => "itemSell",
+			], EconomyProvider::USAGE_SALES_PRICE, yield) => Await::ONCE;
 			if(!$res) {
 				$economy->addMoney($player, $listing->getPrice());
 				Locale::sendMessage($player, "purchase-economy-error");

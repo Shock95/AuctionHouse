@@ -81,17 +81,8 @@ abstract class AHMenu extends InvMenu {
 			Await::f2c(function () use ($itemClicked, $slot) {
 				$plugin = AuctionHouse::getInstance();
 				$listing = $this->getListings()[$slot];
-				$balance = yield $plugin->getEconomyProvider()->getMoney($this->player, yield) => Await::ONCE;
-				if($balance < $listing->getPrice()) {
-					if($itemClicked->getId() == -161) return;
-					$this->getInventory()->setItem($slot, ItemFactory::getInstance()->get(-161)->setCustomName(TextFormat::RESET . Locale::get($this->player, "cannot-afford")));
-					$plugin->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($itemClicked, $slot) {
-						$this->inventory?->setItem($slot, $itemClicked);
-					}), 40);
-				} else {
-					$this->player->removeCurrentWindow();
-					self::open(new ConfirmPurchaseMenu($this->player, $listing));
-				}
+				$this->player->removeCurrentWindow();
+				self::open(new ConfirmPurchaseMenu($this->player, $listing));
 			});
 		}
 		return true;
