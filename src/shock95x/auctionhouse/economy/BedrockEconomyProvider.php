@@ -14,7 +14,7 @@ class BedrockEconomyProvider implements EconomyProvider {
 		$this->economy = BedrockEconomy::getInstance();
 	}
 
-	public function subtractMoney(Player $player, float $amount, array $labels, int $usage, callable $callback): void {
+	public function addMoney(Player $player, float $amount, array $labels, int $usage, callable $callback): void {
 		if($player instanceof Player) $player = $player->getName();
 		$this->economy->getAPI()->addToPlayerBalance($player, $amount, ClosureContext::create(fn (bool $r) => $callback($r)));
 	}
