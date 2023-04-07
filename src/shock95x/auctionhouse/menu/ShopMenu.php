@@ -94,7 +94,9 @@ class ShopMenu extends PagingMenu {
 				self::open(new ExpiredMenu($this->player), false);
 				return false;
 			case 47: case 51:
-				self::open(new AdminMenu($this->player), false);
+				if($player->hasPermission("auctionhouse.command.admin")) {
+					self::open(new AdminMenu($this->player), false);
+				}
 				return false;
 		}
 		$this->openListing($slot);
