@@ -57,7 +57,7 @@ class PlayerListingMenu extends PagingMenu {
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
-		$this->openListing($slot, $itemClicked);
+		$this->openListing($slot);
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 }

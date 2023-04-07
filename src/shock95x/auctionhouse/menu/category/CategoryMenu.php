@@ -65,7 +65,7 @@ class CategoryMenu extends PagingMenu {
 			self::open(new CategoryListMenu($player, $this->returnMain), false);
 			return true;
 		}
-		$this->openListing($slot, $itemClicked);
+		$this->openListing($slot);
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 

@@ -97,7 +97,7 @@ class ShopMenu extends PagingMenu {
 				self::open(new AdminMenu($this->player), false);
 				return false;
 		}
-		$this->openListing($slot, $itemClicked);
+		$this->openListing($slot);
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 }

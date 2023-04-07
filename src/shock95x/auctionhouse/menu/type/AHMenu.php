@@ -76,14 +76,11 @@ abstract class AHMenu extends InvMenu {
 		return true;
 	}
 
-	protected function openListing(int $slot, Item $itemClicked): bool {
+	protected function openListing(int $slot): bool {
 		if($slot <= 44 && isset($this->getListings()[$slot])) {
-			Await::f2c(function () use ($itemClicked, $slot) {
-				$plugin = AuctionHouse::getInstance();
-				$listing = $this->getListings()[$slot];
-				$this->player->removeCurrentWindow();
-				self::open(new ConfirmPurchaseMenu($this->player, $listing));
-			});
+			$listing = $this->getListings()[$slot];
+			$this->player->removeCurrentWindow();
+			self::open(new ConfirmPurchaseMenu($this->player, $listing));
 		}
 		return true;
 	}
