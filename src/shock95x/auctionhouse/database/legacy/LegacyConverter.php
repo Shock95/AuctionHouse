@@ -24,22 +24,22 @@ class LegacyConverter {
 
 	public function isLegacy(): Generator {
 		$type = $this->database->getType();
-		$rowCount = count(yield $this->database->asyncSelectRaw($type == "mysql" ?  "DESCRIBE auctions;" : "PRAGMA table_info(auctions);"));
+		$rowCount = count(yield from $this->database->asyncSelectRaw($type == "mysql" ?  "DESCRIBE auctions;" : "PRAGMA table_info(auctions);"));
 		return $rowCount == 7;
 	}
 
 	public function convert(): Generator {
-		yield $this->database->asyncGeneric(Query::INIT);
-		yield $this->database->asyncGenericRaw("INSERT INTO listings (uuid, username, item, price, created, end_time, expired) SELECT uuid, username, nbt, price, id, end_time, expired FROM auctions;");
-		$rows = yield $this->database->asyncSelectRaw("SELECT * from listings;");
+		yield from $this->database->getConnector()->asyncGeneric(Query::INIT);
+		yield from $this->database->asyncGenericRaw("INSERT INTO listings (uuid, username, item, price, created, end_time, expired) SELECT uuid, username, nbt, price, id, end_time, expired FROM auctions;");
+		$rows = yield from $this->database->asyncSelectRaw("SELECT * from listings;");
 		foreach ($rows as $listing) {
 			try {
 				$uuid = Uuid::fromBytes($listing['uuid']);
 				$nbt = $this->nbt->read(zlib_decode($listing["item"]));
 				$item = Item::nbtDeserialize($nbt->mustGetCompoundTag());
-				yield $this->database->asyncGenericRaw("UPDATE listings SET uuid = :uuid, item = :item WHERE id = :id;", ["uuid" => $uuid->toString(), "item" => json_encode($item->jsonSerialize()), "id" => $listing['id']]);
+				yield from $this->database->asyncGenericRaw("UPDATE listings SET uuid = :uuid, item = :item WHERE id = :id;", ["uuid" => $uuid->toString(), "item" => json_encode($item->jsonSerialize()), "id" => $listing['id']]);
 			} catch (Exception) {}
 		}
-		yield $this->database->asyncChangeRaw("DROP TABLE auctions;");
+		yield from $this->database->asyncChangeRaw("DROP TABLE auctions;");
 	}
 }

@@ -29,10 +29,11 @@ class ListingsMenu extends PagingMenu {
 
 	protected function init(DataStorage $storage): void {
 		Await::f2c(function () use ($storage) {
-			$this->setListings(yield $storage->getActiveListingsByPlayer(yield, $this->player, (45 * $this->page) - 45) => Await::ONCE);
-			$this->total = yield $storage->getActiveCountByPlayer($this->player, yield) => Await::ONCE;
+			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getActiveListingsByPlayer(yield, $this->player, (45 * $this->page) - 45)));
+			$this->total = yield from Await::promise(fn($resolve) => $storage->getActiveCountByPlayer($this->player, yield));
 			$this->pages = (int) ceil($this->total / 45);
-		}, fn() => parent::init($storage));
+			parent::init($storage);
+		});
 	}
 
 	public function renderButtons(): void {

@@ -2,6 +2,7 @@
 
 namespace shock95x\auctionhouse\database\storage;
 
+use Generator;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\utils\SingletonTrait;
@@ -84,47 +85,47 @@ class DataStorage {
 				$listings[] = $this->database->createListingFromRows($listing);
 			}
 			$callback($listings);
-		});
+		}, fn() => $callback([]));
 	}
 
 	public function getTotalListingCount(callable $callback): void {
 		$this->database->getConnector()->executeSelect(Query::COUNT_ALL, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
-		});
+		}, fn() => $callback(false));
 	}
 
 	public function getActiveListingCount(callable $callback) {
 		$this->database->getConnector()->executeSelect(Query::COUNT_ACTIVE, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
-		});
+		}, fn() => $callback(false));
 	}
 
 	public function getActiveCountByPlayer(Player $player, callable $callback) {
 		$this->database->getConnector()->executeSelect(Query::COUNT_ACTIVE_UUID, ["uuid" => $player->getUniqueId()->toString()], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
-		});
+		}, fn() => $callback(false));
 	}
 
 	public function getActiveCountByUsername(string $username, callable $callback) {
 		$this->database->getConnector()->executeSelect(Query::COUNT_ACTIVE_USERNAME, ["username" => $username], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
-		});
+		}, fn() => $callback(false));
 	}
 
 	public function getExpiredCount(callable $callback) {
 		$this->database->getConnector()->executeSelect(Query::COUNT_EXPIRED, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
-		});
+		}, fn() => $callback(false));
 	}
 
 	public function getExpiredCountByPlayer(Player $player, callable $callback) {
 		$this->database->getConnector()->executeSelect(Query::COUNT_EXPIRED_UUID, ["uuid" => $player->getUniqueId()->toString()], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
-		});
+		}, fn() => $callback(false));
 	}
 
-	public function setExpired(AHListing $listing, ?callable $callback = null, $value = true) {
-		$this->database->getConnector()->executeGeneric(Query::SET_EXPIRED, ["id" => $listing->getId(), "expired" => $value], $callback);
+	public function setExpired(AHListing $listing, $value = true, ?callable $onSuccess = null, ?callable $onError = null) {
+		$this->database->getConnector()->executeGeneric(Query::SET_EXPIRED, ["id" => $listing->getId(), "expired" => $value], $onSuccess, $onError);
 	}
 
 	public function removeListing(AHListing $listing, ?callable $onSuccess = null, ?callable $onError = null): void {
@@ -137,24 +138,49 @@ class DataStorage {
 	}
 
 	public function createListing(Player $player, Item $item, int $price, ?callable $callback = null): void {
-		Await::f2c(function () use ($player, $item, $price, $callback) {
-			$uuid = $player->getUniqueId()->toString();
-			$name = $player->getName();
-			$created = time();
-			$endTime = Utils::getEndTime();
+		$uuid = $player->getUniqueId()->toString();
+		$name = $player->getName();
+		$created = time();
+		$endTime = Utils::getEndTime();
 
-			$id = yield $this->database->getConnector()->executeInsert(Query::INSERT, [
+		$this->database->getConnector()->executeInsert(Query::INSERT, [
+			"uuid" => $uuid,
+			"username" => $name,
+			"price" => $price,
+			"item" => json_encode($item->jsonSerialize()),
+			"created" => $created,
+			"end_time" => $endTime,
+			"expired" => false],
+
+			function($id) use ($endTime, $item, $created, $name, $price, $uuid, $callback) {
+				$listing = new AHListing($id, $uuid, $price, $name, $created, $endTime, false, $item);
+				(new AuctionStartEvent($listing))->call();
+				$callback($listing);
+
+			}, fn() => $callback(null));
+	}
+
+	public function createListingAsync(Player $player, Item $item, int $price): Generator {
+		$created = time();
+		$uuid = $player->getUniqueId()->toString();
+		$name = $player->getName();
+		$endTime = Utils::getEndTime();
+
+		$id = yield from Await::promise(function($resolve, $reject) use ($endTime, $created, $item, $price, $name, $uuid, $player) {
+			$this->database->getConnector()->executeInsert(Query::INSERT, [
 				"uuid" => $uuid,
 				"username" => $name,
 				"price" => $price,
 				"item" => json_encode($item->jsonSerialize()),
 				"created" => $created,
 				"end_time" => $endTime,
-				"expired" => false], yield, yield Await::REJECT) => Await::ONCE;
-
-			$listing = new AHListing($id, $uuid, $price, $name, $created, $endTime, false, $item);
-			(new AuctionStartEvent($listing))->call();
-			$callback($listing);
+				"expired" => false], $resolve, $reject);
 		});
+
+		if(!is_numeric($id)) return null;
+
+		$listing = new AHListing($id, $uuid, $price, $name, $created, $endTime, false, $item);
+		(new AuctionStartEvent($listing))->call();
+		return $listing;
 	}
 }

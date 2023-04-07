@@ -13,7 +13,7 @@ class CheckLegacyTask extends Task {
 
 	public function onRun(): void {
 		Await::f2c(function () {
-			if(yield LegacyConverter::getInstance()->isLegacy()) {
+			if(yield from LegacyConverter::getInstance()->isLegacy()) {
 				$this->plugin->getLogger()->notice("Old database format detected! Run '/ah convert' to update");
 			}
 		});

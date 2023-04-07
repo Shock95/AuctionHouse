@@ -70,7 +70,7 @@ class ConfirmPurchaseMenu extends AHMenu {
 		Await::f2c(function () use ($player) {
 			$storage = DataStorage::getInstance();
 			/** @var ?AHListing $listing */
-			$listing = yield $storage->getListingById($this->getListings()[0]?->getId(), yield) => Await::ONCE;
+			$listing = yield from Await::promise(fn($resolve) => $storage->getListingById($this->getListings()[0]?->getId(), $resolve));
 			if($listing == null || $listing->isExpired()) {
 				Locale::sendMessage($player, "listing-gone");
 				return;
@@ -93,16 +93,16 @@ class ConfirmPurchaseMenu extends AHMenu {
 
 			$storage->removeListing($listing);
 
-			$res = yield $economy->subtractMoney($player, $listing->getPrice(), [
+			$res = yield from Await::promise(fn($resolve) => $economy->subtractMoney($player, $listing->getPrice(), [
 				"reason" => "itemPurchase",
-			], EconomyProvider::USAGE_PURCHASE_PRICE, yield) => Await::ONCE;
+			], EconomyProvider::USAGE_PURCHASE_PRICE, $resolve));
 			if(!$res) {
 				Locale::sendMessage($player, "cannot-afford");
 				return;
 			}
-			$res = yield $economy->addMoney($listing->getSeller(), $listing->getPrice(), [
+			$res = yield from Await::promise(fn($resolve) => $economy->addMoney($listing->getSeller(), $listing->getPrice(), [
 				"reason" => "itemSell",
-			], EconomyProvider::USAGE_SALES_PRICE, yield) => Await::ONCE;
+			], EconomyProvider::USAGE_SALES_PRICE, $resolve));
 			if(!$res) {
 				$economy->addMoney($player, $listing->getPrice());
 				Locale::sendMessage($player, "purchase-economy-error");

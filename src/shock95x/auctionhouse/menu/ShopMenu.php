@@ -38,12 +38,13 @@ class ShopMenu extends PagingMenu {
 
 	protected function init(DataStorage $storage): void {
 		Await::f2c(function () use ($storage) {
-			$this->setListings(yield $storage->getActiveListings(yield, (45 * $this->page) - 45) => Await::ONCE);
-			$this->selling = yield $storage->getActiveCountByPlayer($this->player, yield) => Await::ONCE;
-			$this->expired = yield $storage->getExpiredCountByPlayer($this->player, yield) => Await::ONCE;
-			$this->total = yield $storage->getActiveListingCount(yield) => Await::ONCE;
+			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getActiveListings($resolve, (45 * $this->page) - 45)));
+			$this->selling = yield from Await::promise(fn($resolve) => $storage->getActiveCountByPlayer($this->player, $resolve));
+			$this->expired = yield from Await::promise(fn($resolve) => $storage->getExpiredCountByPlayer($this->player, $resolve));
+			$this->total = yield from Await::promise(fn($resolve) => $storage->getActiveListingCount($resolve));
 			$this->pages = (int) ceil($this->total / 45);
-		}, fn() => parent::init($storage));
+			parent::init($storage);
+		});
 	}
 
 	public function renderButtons(): void {

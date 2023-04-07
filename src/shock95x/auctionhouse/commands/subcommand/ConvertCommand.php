@@ -18,9 +18,9 @@ class ConvertCommand extends BaseSubCommand {
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		Await::f2c(function () use ($sender) {
 			$converter = LegacyConverter::getInstance();
-			if (yield $converter->isLegacy()) {
+			if (yield from $converter->isLegacy()) {
 				$sender->sendMessage("Starting conversion...");
-				yield $converter->convert();
+				yield from $converter->convert();
 				$sender->sendMessage("Conversion done!");
 			}
 		});

@@ -18,16 +18,18 @@ class ListingExpireTask extends Task {
 		Await::f2c(function () {
 			$time = new DateTime();
 			$dataStorage = DataStorage::getInstance();
-			$listings = $this->createListingsFromRows(yield $this->database->asyncSelectRaw("SELECT * from listings WHERE :time >= end_time AND expired = FALSE;", ["time" => time()]));
+			$result = yield from $this->database->asyncSelectRaw("SELECT * from listings WHERE :time >= end_time AND expired = FALSE;", ["time" => time()]);
+			$listings = $this->createListingsFromRows($result[0]->getRows());
 			foreach ($listings as $listing) {
-				yield $dataStorage->setExpired($listing, yield) => Await::ONCE;
+				yield from Await::promise(fn($resolve, $reject) => $dataStorage->setExpired($listing, true, $resolve, $reject));
 				(new AuctionEndEvent($listing, AuctionEndEvent::EXPIRED))->call();
 			}
-			$listings = $this->createListingsFromRows(yield $this->database->asyncSelectRaw("SELECT * from listings WHERE expired = TRUE;"));
+			$result = yield from $this->database->asyncSelectRaw("SELECT * from listings WHERE expired = TRUE;");
+			$listings = $this->createListingsFromRows($result[0]->getRows());
 			foreach ($listings as $listing) {
 				$time->setTimestamp($listing->getEndTime());
 				if($time->diff(new DateTime())->days >= Settings::getExpiredDuration()) {
-					yield $dataStorage->removeListing($listing, yield, yield Await::REJECT) => Await::ONCE;
+					yield from Await::promise(fn($resolve, $reject) => $dataStorage->removeListing($listing, $resolve, $reject));
 					(new AuctionEndEvent($listing, AuctionEndEvent::EXPIRED_PURGED))->call();
 				}
 			}

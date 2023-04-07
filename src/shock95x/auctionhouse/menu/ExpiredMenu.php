@@ -30,10 +30,11 @@ class ExpiredMenu extends PagingMenu {
 
 	protected function init(DataStorage $storage): void {
 		Await::f2c(function () use ($storage) {
-			$this->setListings(yield $storage->getExpiredListingsByPlayer(yield, $this->player, (45 * $this->page) - 45) => Await::ONCE);
-			$this->total = yield $storage->getExpiredCountByPlayer($this->player, yield) => Await::ONCE;
+			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getExpiredListingsByPlayer($resolve, $this->player, (45 * $this->page) - 45)));
+			$this->total = yield from Await::promise(fn($resolve) => $storage->getExpiredCountByPlayer($this->player, $resolve));
 			$this->pages = (int) ceil($this->total / 45);
-		}, fn() => parent::init($storage));
+			parent::init($storage);
+		});
 	}
 
 	public function renderButtons() : void {
@@ -65,8 +66,8 @@ class ExpiredMenu extends PagingMenu {
 			$storage = DataStorage::getInstance();
 			if($slot <= 44 && isset($this->getListings()[$slot])) {
 				$id = $this->getListings()[$slot]->getId();
-				$listing = yield $storage->getListingById($id, yield) => Await::ONCE;
-				if($listing == null || $listing?->getSellerUUID() != $player->getUniqueId()->toString()) {
+				$listing = yield from Await::promise(fn($resolve) => $storage->getListingById($id, $resolve));
+				if($listing == null || $listing->getSellerUUID() != $player->getUniqueId()->toString()) {
 					return;
 				}
 				$item = $listing->getItem();

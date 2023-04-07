@@ -31,11 +31,12 @@ class AdminMenu extends PagingMenu {
 
 	protected function init(DataStorage $storage): void {
 		Await::f2c(function () use ($storage) {
-			$this->setListings(yield $storage->getListings(yield, (45 * $this->page) - 45) => Await::ONCE);
-			$this->expired = yield $storage->getExpiredCount(yield) => Await::ONCE;
-			$this->total = yield $storage->getTotalListingCount(yield) => Await::ONCE;
+			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getListings(yield, (45 * $this->page) - 45)));
+			$this->expired = yield from Await::promise(fn($resolve) => $storage->getExpiredCount(yield));
+			$this->total = yield from Await::promise(fn($resolve) => $storage->getTotalListingCount(yield));
 			$this->pages = (int) ceil($this->total / 45);
-		}, fn() => parent::init($storage));
+			parent::init($storage);
+		});
 	}
 	
 	public function renderButtons(): void {

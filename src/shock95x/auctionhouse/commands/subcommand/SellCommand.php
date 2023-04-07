@@ -53,7 +53,7 @@ class SellCommand extends BaseSubCommand {
 				return;
 			}
 			$price = $args["price"];
-			$listingCount = yield DataStorage::getInstance()->getActiveCountByPlayer($sender, yield) => Await::ONCE;
+			$listingCount = yield from Await::promise(fn($result) => DataStorage::getInstance()->getActiveCountByPlayer($sender, $result));
 			if($listingCount >= (Utils::getMaxListings($sender))) {
 				$sender->sendMessage(str_ireplace(["{MAX}"], [Utils::getMaxListings($sender)], Locale::get($sender, "max-listings", true)));
 				return;
@@ -79,9 +79,11 @@ class SellCommand extends BaseSubCommand {
 
 			$listingPrice = Settings::getListingPrice();
 			if($listingPrice > 0) {
-				$subtractMoneyOk = yield $this->getEconomy()->subtractMoney($sender, $listingPrice, [
-					"reason" => "auctionListing",
-				], EconomyProvider::USAGE_LISTING_PRICE, yield) => Await::ONCE;
+				$subtractMoneyOk = yield from Await::promise(function($result) use ($listingPrice, $sender) {
+					$this->getEconomy()->subtractMoney($sender, $listingPrice, [
+						"reason" => "auctionListing",
+					], EconomyProvider::USAGE_LISTING_PRICE, $result);
+				});
 				if(!$subtractMoneyOk) {
 					return;
 				}
@@ -91,9 +93,11 @@ class SellCommand extends BaseSubCommand {
 			$event->call();
 			if($event->isCancelled()) {
 				// refund the listing price
-				$addMoneyOk = yield $this->getEconomy()->addMoney($sender, $listingPrice, [
-					"reason" => "auctionListingRefund",
-				], EconomyProvider::USAGE_LISTING_PRICE, yield) => Await::ONCE;
+				$addMoneyOk = yield from Await::promise(function($result) use ($listingPrice, $sender) {
+					$this->getEconomy()->addMoney($sender, $listingPrice, [
+						"reason" => "auctionListingRefund",
+					], EconomyProvider::USAGE_LISTING_PRICE, $result);
+				});
 				if(!$addMoneyOk) {
 					// TODO we failed to refund; what now?
 				}
@@ -103,7 +107,7 @@ class SellCommand extends BaseSubCommand {
 
 			$count = $item->getCount();
 			Utils::removeItem($sender, $item);
-			$listing = yield DataStorage::getInstance()->createListing($sender, $item->setCount($count), (int) $price, yield) => Await::ONCE;
+			$listing = yield from DataStorage::getInstance()->createListingAsync($sender, $item->setCount($count), (int) $price);
 			$sender->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $count], Locale::get($sender, "item-listed", true)));
 		});
 	}

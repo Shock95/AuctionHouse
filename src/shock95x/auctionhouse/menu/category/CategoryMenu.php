@@ -31,10 +31,11 @@ class CategoryMenu extends PagingMenu {
 
 	protected function init(DataStorage $storage): void {
 		Await::f2c(function () use ($storage) {
-			$this->setListings(yield $storage->getListings(yield, 0, PHP_INT_MAX) => Await::ONCE);
+			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getListings($resolve, 0, PHP_INT_MAX)));
 			$this->total = count($this->getListings());
 			$this->pages = (int) ceil($this->total / 45);
-		}, fn() => parent::init($storage));
+			parent::init($storage);
+		});
 	}
 
 	public function renderButtons(): void {

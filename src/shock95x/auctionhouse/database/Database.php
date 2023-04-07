@@ -9,6 +9,7 @@ use pocketmine\utils\Config;
 use poggit\libasynql\DataConnector;
 use poggit\libasynql\libasynql;
 use poggit\libasynql\SqlError;
+use poggit\libasynql\SqlThread;
 use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\storage\DataStorage;
@@ -74,29 +75,22 @@ class Database {
 		return $this->type;
 	}
 
-	public function asyncSelect(string $query, array $args): Generator {
-		$this->connector->executeSelect($query, $args, yield, yield Await::REJECT);
-		return yield Await::ONCE;
-	}
-
 	public function asyncSelectRaw(string $query, array $args = []): Generator {
-		$this->connector->executeSelectRaw($query, $args, yield, yield Await::REJECT);
-		return yield Await::ONCE;
-	}
-
-	public function asyncGeneric(string $query, array $args = []): Generator {
-		$this->connector->executeGeneric($query, $args, yield, yield Await::REJECT);
-		return yield Await::ONCE;
+		return yield from Await::promise(function ($resolve, $reject) use ($query, $args) {
+			$this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_SELECT], $resolve, $reject);
+		});
 	}
 
 	public function asyncGenericRaw(string $query, array $args = []): Generator {
-		$this->connector->executeGenericRaw($query, $args, yield, yield Await::REJECT);
-		return yield Await::ONCE;
+		return yield from Await::promise(function ($resolve, $reject) use ($query, $args) {
+			$this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_GENERIC], $resolve, $reject);
+		});
 	}
 
 	public function asyncChangeRaw(string $query, array $args = []): Generator {
-		$this->connector->executeChangeRaw($query, $args, yield, yield Await::REJECT);
-		return yield Await::ONCE;
+		return yield from Await::promise(function ($resolve, $reject) use ($query, $args) {
+			$this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_CHANGE], $resolve, $reject);
+		});
 	}
 
 	public function createListingFromRows(array $rows): AHListing {
