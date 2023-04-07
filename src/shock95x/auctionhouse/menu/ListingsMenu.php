@@ -29,8 +29,8 @@ class ListingsMenu extends PagingMenu {
 
 	protected function init(DataStorage $storage): void {
 		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getActiveListingsByPlayer(yield, $this->player, (45 * $this->page) - 45)));
-			$this->total = yield from Await::promise(fn($resolve) => $storage->getActiveCountByPlayer($this->player, yield));
+			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getActiveListingsByPlayer($resolve, $this->player, (45 * $this->page) - 45)));
+			$this->total = yield from Await::promise(fn($resolve) => $storage->getActiveCountByPlayer($this->player, $resolve));
 			$this->pages = (int) ceil($this->total / 45);
 			parent::init($storage);
 		});

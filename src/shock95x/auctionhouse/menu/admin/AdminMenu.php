@@ -31,9 +31,9 @@ class AdminMenu extends PagingMenu {
 
 	protected function init(DataStorage $storage): void {
 		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getListings(yield, (45 * $this->page) - 45)));
-			$this->expired = yield from Await::promise(fn($resolve) => $storage->getExpiredCount(yield));
-			$this->total = yield from Await::promise(fn($resolve) => $storage->getTotalListingCount(yield));
+			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getListings($resolve, (45 * $this->page) - 45)));
+			$this->expired = yield from Await::promise(fn($resolve) => $storage->getExpiredCount($resolve));
+			$this->total = yield from Await::promise(fn($resolve) => $storage->getTotalListingCount($resolve));
 			$this->pages = (int) ceil($this->total / 45);
 			parent::init($storage);
 		});
