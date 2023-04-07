@@ -83,9 +83,6 @@ class AuctionHouse extends PluginBase {
 			Settings::setCurrencySymbol($this->economyProvider->getCurrencySymbol());
 		}), 1);
 		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
-		if($pluginManager->getPlugin("InvCrashFix") == null) {
-			$this->getLogger()->warning("InvCrashFix is required to fix menu issues on PM4, download it here: https://poggit.pmmp.io/ci/Muqsit/InvCrashFix");
-		}
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
 		$this->getScheduler()->scheduleDelayedTask(new CheckLegacyTask($this), 1);
 	}
