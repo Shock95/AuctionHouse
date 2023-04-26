@@ -15,12 +15,12 @@ class EconomySProvider implements EconomyProvider {
 		$this->economyAPI = EconomyAPI::getInstance();
 	}
 
-	public function addMoney(Player $player, float $amount, array $labels, int $usage, callable $callback): void {
+	public function addMoney(string|Player $player, float $amount, callable $callback): void {
 		$ret = $this->economyAPI->addMoney($player, $amount);
 		$callback($ret === EconomyAPI::RET_SUCCESS);
 	}
 
-	public function subtractMoney(Player $player, float $amount, array $labels, int $usage, callable $callback): void {
+	public function subtractMoney(string|Player $player, float $amount,  callable $callback): void {
 		$ret = $this->economyAPI->reduceMoney($player, $amount);
 		$callback($ret === EconomyAPI::RET_SUCCESS);
 	}

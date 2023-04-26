@@ -26,9 +26,6 @@ class Settings {
 	private static array $blacklist = [];
 	private static array $signTriggers = ["[AuctionHouse]", "[AH]"];
 	private static array $buttons = [];
-	private static array $capitalListingSelector = [];
-	private static array $capitalPurchaseSelector = [];
-	private static array $capitalSalesSelector = [];
 	private static string $currencySymbol = "";
 
 	public static function init(Config $config, bool $reload = false) {
@@ -48,9 +45,6 @@ class Settings {
 		self::$blacklist = $config->getNested("blacklist");
 		self::$signTriggers = $config->getNested("sign-triggers");
 		self::$buttons = $config->getNested("buttons");
-		self::$capitalListingSelector = $config->getNested("capital.listing-selector");
-		self::$capitalPurchaseSelector = $config->getNested("capital.purchase-selector");
-		self::$capitalSalesSelector = $config->getNested("capital.sales-selector");
 	}
 
 	public static function getPrefix(): string {
@@ -122,18 +116,6 @@ class Settings {
 
 	public static function getButtons(): array {
 		return self::$buttons;
-	}
-
-	public static function getCapitalListingSelector(): array {
-		return self::$capitalListingSelector;
-	}
-
-	public static function getCapitalPurchaseSelector(): array {
-		return self::$capitalPurchaseSelector;
-	}
-
-	public static function getCapitalSalesSelector(): array {
-		return self::$capitalSalesSelector;
 	}
 
 	public static function setCurrencySymbol(string $currencySymbol): void {

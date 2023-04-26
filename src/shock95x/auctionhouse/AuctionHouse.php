@@ -18,7 +18,6 @@ use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\database\legacy\LegacyConverter;
 use shock95x\auctionhouse\economy\BedrockEconomyProvider;
-use shock95x\auctionhouse\economy\CapitalProvider;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\economy\EconomySProvider;
 use shock95x\auctionhouse\task\CheckLegacyTask;
@@ -71,8 +70,6 @@ class AuctionHouse extends PluginBase {
 			$this->setEconomyProvider(new EconomySProvider());
 		} elseif ($pluginManager->getPlugin(BedrockEconomyProvider::getName()) !== null) {
 			$this->setEconomyProvider(new BedrockEconomyProvider());
-		} elseif ($pluginManager->getPlugin(CapitalProvider::getName()) !== null) {
-			$this->setEconomyProvider(new CapitalProvider());
 		}
 		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function() {
 			if($this->economyProvider == null) {

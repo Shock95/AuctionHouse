@@ -7,6 +7,7 @@ use muqsit\invmenu\InvMenu;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\sound\FizzSound;
 use Ramsey\Uuid\Uuid;
@@ -93,18 +94,14 @@ class ConfirmPurchaseMenu extends AHMenu {
 
 			$storage->removeListing($listing);
 
-			$res = yield from Await::promise(fn($resolve) => $economy->subtractMoney($player, $listing->getPrice(), [
-				"reason" => "itemPurchase",
-			], EconomyProvider::USAGE_PURCHASE_PRICE, $resolve));
+			$res = yield from Await::promise(fn($resolve) => $economy->subtractMoney($player, $listing->getPrice(), $resolve));
 			if(!$res) {
 				Locale::sendMessage($player, "cannot-afford");
 				return;
 			}
-			$res = yield from Await::promise(fn($resolve) => $economy->addMoney($listing->getSeller(), $listing->getPrice(), [
-				"reason" => "itemSell",
-			], EconomyProvider::USAGE_SALES_PRICE, $resolve));
+			$res = yield from Await::promise(fn($resolve) => $economy->addMoney($listing->getSeller(), $listing->getPrice(), $resolve));
 			if(!$res) {
-				$economy->addMoney($player, $listing->getPrice());
+				yield from Await::promise(fn($resolve) => $economy->addMoney($player, $listing->getPrice(), $resolve));
 				Locale::sendMessage($player, "purchase-economy-error");
 				return;
 			}

@@ -7,13 +7,9 @@ use pocketmine\player\Player;
 
 interface EconomyProvider {
 
-	public const USAGE_LISTING_PRICE = 0;
-	public const USAGE_PURCHASE_PRICE = 1;
-	public const USAGE_SALES_PRICE = 2;
+	public function addMoney(string|Player $player, float $amount, callable $callback): void;
 
-	public function addMoney(Player $player, float $amount, array $labels, int $usage, callable $callback): void;
-
-	public function subtractMoney(Player $player, float $amount, array $labels, int $usage, callable $callback): void;
+	public function subtractMoney(string|Player $player, float $amount, callable $callback): void;
 
 	/**
 	 * Get currency symbol of economy provider

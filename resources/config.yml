@@ -52,15 +52,6 @@ buttons:
   confirm_purchase: "minecraft:stained_glass_pane:5"
   cancel_purchase: "minecraft:stained_glass_pane:14"
 
-# If you use Capital, you may use this to select the account charged for paying and receiving money.
-capital:
-  # the account for paying listing price
-  listing-selector: []
-  # the account for paying purchase price
-  purchase-selector: []
-  # the account for receiving sales income
-  sales-selector: []
-
 ### DATABASE SETTINGS ###
 database:
   # The database type. "sqlite" and "mysql" are supported.
