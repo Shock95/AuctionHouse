@@ -137,6 +137,9 @@ class DataStorage {
 		$this->database->getConnector()->executeGeneric(Query::DELETE, ["id" => $id], $onSuccess, $onError);
 	}
 
+	/**
+	 * @throws \JsonException
+	 */
 	public function createListing(Player $player, Item $item, int $price, ?callable $callback = null): void {
 		$uuid = $player->getUniqueId()->toString();
 		$name = $player->getName();
@@ -147,7 +150,7 @@ class DataStorage {
 			"uuid" => $uuid,
 			"username" => $name,
 			"price" => $price,
-			"item" => json_encode($item->jsonSerialize()),
+			"item" => json_encode(bin2hex(Utils::ItemSerialize($item))),
 			"created" => $created,
 			"end_time" => $endTime,
 			"expired" => false],
@@ -166,12 +169,15 @@ class DataStorage {
 		$name = $player->getName();
 		$endTime = Utils::getEndTime();
 
-		$id = yield from Await::promise(function($resolve, $reject) use ($endTime, $created, $item, $price, $name, $uuid, $player) {
+		$id = yield from Await::promise(
+		/**
+		 * @throws \JsonException
+		 */ function($resolve, $reject) use ($endTime, $created, $item, $price, $name, $uuid, $player) {
 			$this->database->getConnector()->executeInsert(Query::INSERT, [
 				"uuid" => $uuid,
 				"username" => $name,
 				"price" => $price,
-				"item" => json_encode($item->jsonSerialize()),
+				"item" => json_encode(bin2hex(Utils::ItemSerialize($item))),
 				"created" => $created,
 				"end_time" => $endTime,
 				"expired" => false], $resolve, $reject);

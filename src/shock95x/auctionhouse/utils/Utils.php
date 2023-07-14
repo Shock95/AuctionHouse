@@ -6,6 +6,8 @@ namespace shock95x\auctionhouse\utils;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\nbt\BigEndianNbtSerializer;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
@@ -55,6 +57,19 @@ class Utils {
 			if(is_array($message["lore"])) $item->setLore(preg_filter('/^/', TextFormat::RESET, str_replace($searchArgs, $replaceArgs, $message["lore"])));
 		}
 		return $item;
+	}
+
+	public static function itemSerialize(Item $item) : string{
+		$data = zlib_encode((new BigEndianNbtSerializer())->write(new TreeRoot($item->nbtSerialize())), ZLIB_ENCODING_GZIP);
+		if($data === false){
+			/** @noinspection PhpUnhandledExceptionInspection */
+			throw new \RuntimeException("Failed to serialize item " . json_encode($item, JSON_THROW_ON_ERROR));
+		}
+		return $data;
+	}
+
+	public static function itemDeserialize(string $str) : Item{
+		return Item::nbtDeserialize((new BigEndianNbtSerializer())->read(zlib_decode(hex2bin($str)))->mustGetCompoundTag());
 	}
 
 	public static function removeItem(Player $player, Item $slot) : bool {

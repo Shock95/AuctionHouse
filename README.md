@@ -1,3 +1,5 @@
+# ⚠️ Update all virions for the plugin to work correctly!
+
 # AuctionHouse [![](https://poggit.pmmp.io/shield.state/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse) [![](https://poggit.pmmp.io/shield.dl.total/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse)
 Feature-packed AuctionHouse plugin for PocketMine-MP  
    
@@ -128,5 +130,5 @@ You can contribute to this project by creating or modifying a language file and 
 - [InvMenu](https://github.com/Muqsit/InvMenu) (Muqsit)  
 - [libasynql](https://github.com/poggit/libasynql) (SOFe)
 - [await-generator](https://github.com/SOF3/await-generator) (SOFe)
-- [Commando](https://github.com/CortexPE/Commando) (CortexPE)
-- [UpdateNotifier](https://github.com/ifera-mc/UpdateNotifier) (Ifera)
+- [Commando](https://github.com/JinodkDevTeam/Commando) (CortexPE and JinodkDevTeam)
+- [UpdateNotifier](https://github.com/Aboshxm2/UpdateNotifier) (Ifera and Aboshxm2)

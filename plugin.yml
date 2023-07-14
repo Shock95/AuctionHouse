@@ -1,11 +1,20 @@
 name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
-version: 2.0.2
-api: 4.0.0
+version: 3.0.0
+api: 5.0.0
 author: Shock95x
 softdepend: [BedrockEconomy]
 virions: ["InvMenu", "libasynql", "await-generator", "UpdateNotifier", "Commando"]
 permissions:
+    auctionhouse.command:
+        default: true
+        description: какой же дилан долбоеб
+    auctionhouse.command.about:
+        default: true
+        description: какой же дилан долбоеб
+    auctionhouse.command.convert:
+        default: true
+        description: какой же дилан долбоеб
     auctionhouse.command.shop:
         default: true
         description: Allows player to open the shop menu

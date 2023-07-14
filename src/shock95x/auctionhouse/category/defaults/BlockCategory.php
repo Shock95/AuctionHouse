@@ -5,8 +5,7 @@ namespace shock95x\auctionhouse\category\defaults;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\category\ICategory;
@@ -26,6 +25,6 @@ class BlockCategory implements ICategory {
 	}
 
 	public function getMenuItem(): Item {
-		return ItemFactory::getInstance()->get(ItemIds::BRICK_BLOCK)->setCustomName(TextFormat::RESET . $this->getDisplayName());
+		return VanillaItems::BRICK()->setCustomName(TextFormat::RESET . $this->getDisplayName());
 	}
 }

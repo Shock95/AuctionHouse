@@ -9,6 +9,7 @@ use pocketmine\utils\SingletonTrait;
 use Ramsey\Uuid\Uuid;
 use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\database\Query;
+use shock95x\auctionhouse\utils\Utils;
 
 class LegacyConverter {
 
@@ -37,7 +38,7 @@ class LegacyConverter {
 				$uuid = Uuid::fromBytes($listing['uuid']);
 				$nbt = $this->nbt->read(zlib_decode($listing["item"]));
 				$item = Item::nbtDeserialize($nbt->mustGetCompoundTag());
-				yield from $this->database->asyncGenericRaw("UPDATE listings SET uuid = :uuid, item = :item WHERE id = :id;", ["uuid" => $uuid->toString(), "item" => json_encode($item->jsonSerialize()), "id" => $listing['id']]);
+				yield from $this->database->asyncGenericRaw("UPDATE listings SET uuid = :uuid, item = :item WHERE id = :id;", ["uuid" => $uuid->toString(), "item" => json_encode(bin2hex(Utils::ItemSerialize($item))), "id" => $listing['id']]);
 			} catch (Exception) {}
 		}
 		yield from $this->database->asyncChangeRaw("DROP TABLE auctions;");
