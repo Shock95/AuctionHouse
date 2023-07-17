@@ -1,4 +1,4 @@
-# ⚠️ Update all virions for the plugin to work correctly!
+# ⚠️ Please update all virions for the plugin to work correctly!
 
 # AuctionHouse [![](https://poggit.pmmp.io/shield.state/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse) [![](https://poggit.pmmp.io/shield.dl.total/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse)
 Feature-packed AuctionHouse plugin for PocketMine-MP  
