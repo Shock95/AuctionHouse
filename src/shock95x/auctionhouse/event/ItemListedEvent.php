@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace shock95x\auctionhouse\event;
@@ -9,7 +10,7 @@ use pocketmine\event\Event;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
-class ItemListedEvent extends Event implements Cancellable {
+class ItemListedEvent extends Event implements Cancellable{
 
 	use CancellableTrait;
 
@@ -17,17 +18,18 @@ class ItemListedEvent extends Event implements Cancellable {
 		private Player $player,
 		private Item $item,
 		private int $price
-	) {}
+	){
+	}
 
-	public function getItem() : Item {
+	public function getItem() : Item{
 		return $this->item;
 	}
 
-	public function getPlayer() : Player {
+	public function getPlayer() : Player{
 		return $this->player;
 	}
 
-	public function getPrice() : int {
+	public function getPrice() : int{
 		return $this->price;
 	}
 }

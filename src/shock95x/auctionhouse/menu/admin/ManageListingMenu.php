@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace shock95x\auctionhouse\menu\admin;
@@ -15,24 +16,27 @@ use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Utils;
+use function implode;
+use function preg_filter;
+use function str_ireplace;
 
-class ManageListingMenu extends AHMenu {
+class ManageListingMenu extends AHMenu{
 
 	const INDEX_DUPLICATE = 38;
 	const INDEX_STATUS = 40;
 	const INDEX_DELETE = 42;
 
-	public function __construct(Player $player, AHListing $listing) {
+	public function __construct(Player $player, AHListing $listing){
 		$this->setName(Locale::get($player, "manage-listing-name"));
 		$this->setListings([$listing]);
 		parent::__construct($player);
 	}
 
-	public function renderButtons(): void {
+	public function renderButtons() : void{
 		parent::renderButtons();
 		$listing = $this->getListings()[0];
 		$duplicateItem = ItemFactory::getInstance()->get(ItemIDs::EMERALD_BLOCK)->setCustomName(TextFormat::RESET . Locale::get($this->player, "duplicate-item"));
-		$status =  Locale::get($this->player, $listing->isExpired() ? "status-expired" : "status-active");
+		$status = Locale::get($this->player, $listing->isExpired() ? "status-expired" : "status-active");
 		$listingStatus = ItemFactory::getInstance()->get(ItemIDs::GOLD_BLOCK)
 			->setCustomName(str_ireplace("{STATUS}", $status, implode("\n", preg_filter('/^/', TextFormat::RESET, Locale::get($this->player, "listing-status")))));
 		$deleteItem = ItemFactory::getInstance()->get(ItemIDs::REDSTONE_BLOCK)->setCustomName(TextFormat::RESET . Locale::get($this->player, "delete-item"));
@@ -42,22 +46,22 @@ class ManageListingMenu extends AHMenu {
 		$this->inventory->setItem(self::INDEX_DELETE, $deleteItem);
 	}
 
-	public function renderListings(): void {
+	public function renderListings() : void{
 		$this->inventory->setItem(22, $this->getListings()[0]->getItem());
 	}
 
-	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
+	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot) : bool{
 		$listing = $this->getListings()[0];
-		switch ($slot) {
+		switch($slot){
 			case self::INDEX_DUPLICATE:
 				$player->getInventory()->addItem($listing->getItem());
 				break;
 			case self::INDEX_STATUS:
-				if($listing->isExpired()) {
+				if($listing->isExpired()){
 					$listing->setExpired(false);
 					DataStorage::getInstance()->setExpired($listing, value: false);
 					$listing->setEndTime(Utils::getEndTime());
-				} else {
+				}else{
 					$listing->setExpired();
 					(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
 				}
@@ -72,7 +76,7 @@ class ManageListingMenu extends AHMenu {
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 
-	public function onClose(Player $player): void {
+	public function onClose(Player $player) : void{
 		parent::onClose($player);
 	}
 }
