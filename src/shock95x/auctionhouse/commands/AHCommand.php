@@ -23,7 +23,7 @@ use function count;
 class AHCommand extends BaseCommand{
 
 	protected function prepare() : void{
-		$this->setPermission("auctionhouse.command"); //какой же дилан долбоеб
+		$this->setPermission("auctionhouse.command");
 		$this->registerSubCommand(new ShopCommand("shop", "Shows AH shop menu"));
 		$this->registerSubCommand(new AdminCommand("admin", "Opens AH admin menu"));
 		$this->registerSubCommand(new SellCommand("sell", "Sell item in hand to the AH"));

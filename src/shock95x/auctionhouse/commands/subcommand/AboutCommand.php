@@ -12,7 +12,7 @@ use shock95x\auctionhouse\utils\Utils;
 class AboutCommand extends BaseSubCommand{
 
 	protected function prepare() : void{
-		$this->setPermission("auctionhouse.command.about"); //какой же дилан долбоеб
+		$this->setPermission("auctionhouse.command.about");
 	}
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void{

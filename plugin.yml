@@ -8,16 +8,13 @@ virions: ["InvMenu", "libasynql", "await-generator", "UpdateNotifier", "Commando
 permissions:
     auctionhouse.command:
         default: true
-        description: какой же дилан долбоеб
+        description: Allows player to use AuctionHouse command
     auctionhouse.command.about:
         default: true
-        description: какой же дилан долбоеб
-    auctionhouse.command.convert:
-        default: true
-        description: какой же дилан долбоеб
+        description: Allows player to shows plugin information
     auctionhouse.command.shop:
         default: true
-        description: Allows player to open the shop menu
+        description: Allows player to shows AH shop menu
     auctionhouse.command.sell:
         default: true
         description: Allows player to list an item
@@ -33,6 +30,9 @@ permissions:
     auctionhouse.command.admin:
         default: op
         description: Allows player to open the admin menu
+    auctionhouse.command.convert:
+        default: op
+        description: Allows player to use Legacy DB conversion
     auctionhouse.command.reload:
         default: op
         description: Allows player to reload configuration files

@@ -13,7 +13,7 @@ use SOFe\AwaitGenerator\Await;
 class ConvertCommand extends BaseSubCommand{
 
 	protected function prepare() : void{
-		$this->setPermission("auctionhouse.command.convert"); //какой же дилан долбоеб
+		$this->setPermission("auctionhouse.command.convert");
 		$this->addConstraint(new ConsoleRequiredConstraint($this));
 	}
 
