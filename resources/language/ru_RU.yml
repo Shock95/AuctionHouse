@@ -6,14 +6,14 @@ menu-name: '&l&6Аукцион'
 listings-menu-name: '&6Товары на продаже'
 expired-menu-name: '&6Отменённые / истёкшие предметы'
 purchase-menu-name: 'Подтвердите покупку'
-# admin-menu-name: "&l&cAdmin Menu"
-# category-menu-name: "&l&6Category Menu"
-# manage-listing-name: "&l&eManage Listing"
-# player-listing: "&2{player}'s &6Listings"
+admin-menu-name: "&l&cАдмин Меню"
+category-menu-name: "&l&6Категории"
+manage-listing-name: "&l&eУправление витриной"
+player-listing: "&2Витрина товаров &e{player}"
 
 # Chat messages
-item-listed: '&2Вы выставили &d{ITEM} &r&d(x{AMOUNT}) &2 на продажу за &d{PRICE}. &eВведите /ah listings &dчтобы просмотреть все ваши товары'
-cancelled-item: '&eВы &6сняли &eтовар с продажи. Чтобы вернуть предмет в инвентарь введите &6/ah expired&e.'
+item-listed: '&2Вы выставили &d{ITEM} &r&d(x{AMOUNT}) &2 на продажу за &d{PRICE}. &eВведите /ah listings&d чтобы просмотреть все ваши товары'
+cancelled-item: '&eВы &6сняли&e товар с продажи. Чтобы вернуть предмет в инвентарь введите &6/ah expired&e.'
 cancelled-purchase: '&cВы отменили эту покупку'
 purchased-item: '&2Вы купили &d{ITEM} &r&d(x{AMOUNT}) &2за &d{PRICE}' #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
 seller-message: '&e@Игрок приобрел {ITEM} (x{AMOUNT}) ваш предмет за &d{PRICE}!' #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
@@ -22,7 +22,7 @@ returned-item: '&2Вы успешно сняли &d{ITEM} &r&d(x{AMOUNT}) &2 с 
 # Error messages
 in-creative: '&cВы не можете продавать предметы в творческом режиме.'
 max-listings: '&cВы не можете иметь более {MAX} активных товаров.' #{MAX}
-invalid-price: '&cНеккоректная цена.'
+invalid-price: '&cНекорректная цена.'
 not-enough-space: 'Недостаточно места в инвентаре'
 self-purchase: '&cВы не можете купить свои предметы на аукционе!'
 no-item: '&cВы должны держать предмет в руке!'
@@ -30,12 +30,11 @@ cannot-afford: '&6У вас недостаточно денег, чтобы ку
 item-blacklisted: '&cЭтот предмет не может быть выставлен на аукцион!'
 invalid-balance: '&cУ вас недостаточно денег, чтобы выставить предмет на аукцион.'
 listing-gone: '&cЭтого товара больше не существует, вероятно его уже купили.'
-# price-range: "&cInvalid price range"                                                                         #{MIN}, {MAX}
-# in-cooldown: "&cYou are currently in cooldown, please wait &b{M} minute(s) &cand &b{S} second(s)&c."               #{M}, {S}
-# in-cooldown: "&cYou are currently in cooldown, please wait &b{M} minute(s) &cand &b{S} second(s)&c."               #{M}, {S}
-# player-not-found: "&cThis player has no active listings."
-# player-listings-usage: "&cView your listings with /ah listings"
-# inventory-full: "&cYour inventory is full, remove some items to claim your listings."
+price-range: "&cНедопустимый диапазон цен"                                                                         #{MIN}, {MAX}
+in-cooldown: "&cВ данный момент вы находитесь в режиме восстановления, пожалуйста, подождите &b{M} минут(ы) &cи &b{S} секунд(ы)&c."               #{M}, {S}
+player-not-found: "&cУ этого игрока нет активных продаж."
+player-listings-usage: "&cПросмотр ваших активных продаж: /ah listings"
+inventory-full: "&cВаш инвентарь переполнен, удалите некоторые товары, чтобы снять товар с витрины."
 
 # Items in the menu UI
 listed-item:
@@ -71,7 +70,7 @@ view-expired-items:
     name: '&6Забрать просроченные / удалённые предметы'
     lore:
         - '&r&aНажмите, чтобы просмотреть и собрать все'
-        - '&aЭлементы, которые вы отменили или просрочели.'
+        - '&aЭлементы, которые вы отменили или просрочили.'
         - ''
         - '&9Предметы для сбора: &e{EXPIRED}'
 
@@ -173,7 +172,7 @@ expired-description:
         - '&aвернуть предметы.'
         - ''
         - '&aПросто нажмите на предмет, если у вас незаполнен'
-        - '&aинвентар,то вы получите предмет.'
+        - '&aинвентарь,то вы получите предмет.'
 expired-stats:
     # {PAGE} = Текущая страница
     # {MAX} = Последняя страница
