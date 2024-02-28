@@ -94,8 +94,6 @@ class ConfirmPurchaseMenu extends AHMenu{
 			$event->call();
 			if($event->isCancelled()) return;
 
-			$storage->removeListing($listing);
-
 			$res = yield from Await::promise(fn($resolve) => $economy->subtractMoney($player, $listing->getPrice(), $resolve));
 			if(!$res){
 				Locale::sendMessage($player, "cannot-afford");
@@ -107,6 +105,7 @@ class ConfirmPurchaseMenu extends AHMenu{
 				Locale::sendMessage($player, "purchase-economy-error");
 				return;
 			}
+            $storage->removeListing($listing);
 			$player->removeCurrentWindow();
 			$player->getInventory()->addItem($item);
 			$player->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "purchased-item", true)));
