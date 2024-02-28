@@ -9,7 +9,7 @@
 		}
 	],
 	"require": {
-		"pocketmine/pocketmine-mp": "^4.0",
+		"pocketmine/pocketmine-mp": "^5.0",
 		"ext-json": "*"
 	},
 	"autoload": {

@@ -6,7 +6,6 @@ namespace shock95x\auctionhouse\tile;
 
 use pocketmine\block\tile\Sign;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\convert\TypeConverter;
 
 class AHSign extends Sign{
 

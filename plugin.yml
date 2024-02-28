@@ -2,7 +2,9 @@ name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
 version: 3.0.0
 api: 5.0.0
-author: Shock95x
+authors:
+    - "Shock95x"
+    - "fixed by XackiGiFF, "
 softdepend: [BedrockEconomy]
 virions: ["InvMenu", "libasynql", "await-generator", "UpdateNotifier", "Commando"]
 permissions:
