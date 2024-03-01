@@ -18,12 +18,12 @@ class BedrockEconomyProvider implements EconomyProvider{
 
 	public function addMoney(string|Player $player, float $amount, callable $callback) : void{
 		if($player instanceof Player) $player = $player->getName();
-		$this->economy->getAPI()->addToPlayerBalance($player, $amount, ClosureContext::create(fn(bool $r) => $callback($r)));
+		$this->economy->getAPI()->addToPlayerBalance($player, (int) $amount, ClosureContext::create(fn(bool $r) => $callback($r)));
 	}
 
 	public function subtractMoney(string|Player $player, float $amount, callable $callback) : void{
 		if($player instanceof Player) $player = $player->getName();
-		$this->economy->getAPI()->subtractFromPlayerBalance($player, $amount, ClosureContext::create(fn(bool $r) => $callback($r)));
+		$this->economy->getAPI()->subtractFromPlayerBalance($player, (int) $amount, ClosureContext::create(fn(bool $r) => $callback($r)));
 	}
 
 	public function getCurrencySymbol() : string{
