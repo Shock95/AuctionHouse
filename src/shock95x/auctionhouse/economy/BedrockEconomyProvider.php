@@ -4,30 +4,47 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\economy;
 
-use cooldogedev\BedrockEconomy\BedrockEconomy;
-use cooldogedev\BedrockEconomy\libs\cooldogedev\libSQL\context\ClosureContext;
+use cooldogedev\BedrockEconomy\api\BedrockEconomyAPI;
+use cooldogedev\BedrockEconomy\api\version\BetaBEAPI;
 use pocketmine\player\Player;
+use pocketmine\Server;
 
 class BedrockEconomyProvider implements EconomyProvider{
 
-	protected ?BedrockEconomy $economy;
+	protected ?BetaBEAPI $economy;
 
 	public function __construct(){
-		$this->economy = BedrockEconomy::getInstance();
+		$this->economy = BedrockEconomyAPI::beta();
 	}
 
-	public function addMoney(string|Player $player, float $amount, callable $callback) : void{
+	public function addMoney(string|Player $player, float $amount, callable $callback) : void
+    {
 		if($player instanceof Player) $player = $player->getName();
-		$this->economy->getAPI()->addToPlayerBalance($player, (int) $amount, ClosureContext::create(fn(bool $r) => $callback($r)));
+		$this->economy->add($player, (int) $amount)->onCompletion(
+            function () use ($callback): void {
+                $callback(true);
+            },
+            function () use ($callback): void {
+                $callback(false);
+            },
+        );
 	}
 
 	public function subtractMoney(string|Player $player, float $amount, callable $callback) : void{
 		if($player instanceof Player) $player = $player->getName();
-		$this->economy->getAPI()->subtractFromPlayerBalance($player, (int) $amount, ClosureContext::create(fn(bool $r) => $callback($r)));
+		$this->economy->deduct($player, (int) $amount)->onCompletion(
+            function () use ($callback): void {
+                $callback(true);
+            },
+            function () use ($callback): void {
+                $callback(false);
+            },
+        );
 	}
 
 	public function getCurrencySymbol() : string{
-		return $this->economy->getCurrencyManager()->getSymbol();
+        $eco = Server::getInstance()->getPluginManager()->getPlugin(self::getName());
+		return $eco->getCurrencyManager()->getSymbol();
 	}
 
 	public static function getName() : string{
