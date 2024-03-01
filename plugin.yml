@@ -1,14 +1,22 @@
 name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
-version: 2.0.2
-api: 4.0.0
-author: Shock95x
+version: 3.0.0-dev5
+api: 5.0.0
+authors:
+    - "Shock95x"
+    - "fixed by XackiGiFF"
 softdepend: [BedrockEconomy]
 virions: ["InvMenu", "libasynql", "await-generator", "UpdateNotifier", "Commando"]
 permissions:
+    auctionhouse.command:
+        default: true
+        description: Allows player to use AuctionHouse command
+    auctionhouse.command.about:
+        default: true
+        description: Allows player to shows plugin information
     auctionhouse.command.shop:
         default: true
-        description: Allows player to open the shop menu
+        description: Allows player to shows AH shop menu
     auctionhouse.command.sell:
         default: true
         description: Allows player to list an item
@@ -24,6 +32,9 @@ permissions:
     auctionhouse.command.admin:
         default: op
         description: Allows player to open the admin menu
+    auctionhouse.command.convert:
+        default: op
+        description: Allows player to use Legacy DB conversion
     auctionhouse.command.reload:
         default: op
         description: Allows player to reload configuration files

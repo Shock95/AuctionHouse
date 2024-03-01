@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace shock95x\auctionhouse\commands;
@@ -15,13 +16,14 @@ use shock95x\auctionhouse\commands\subcommand\ListingsCommand;
 use shock95x\auctionhouse\commands\subcommand\ReloadCommand;
 use shock95x\auctionhouse\commands\subcommand\SellCommand;
 use shock95x\auctionhouse\commands\subcommand\ShopCommand;
-use shock95x\auctionhouse\commands\subcommand\TestCommand;
 use shock95x\auctionhouse\menu\ShopMenu;
 use shock95x\auctionhouse\menu\type\AHMenu;
+use function count;
 
-class AHCommand extends BaseCommand {
+class AHCommand extends BaseCommand{
 
-	protected function prepare(): void {
+	protected function prepare() : void{
+		$this->setPermission("auctionhouse.command");
 		$this->registerSubCommand(new ShopCommand("shop", "Shows AH shop menu"));
 		$this->registerSubCommand(new AdminCommand("admin", "Opens AH admin menu"));
 		$this->registerSubCommand(new SellCommand("sell", "Sell item in hand to the AH"));
@@ -33,8 +35,8 @@ class AHCommand extends BaseCommand {
 		$this->registerSubCommand(new ConvertCommand("convert", "Legacy DB conversion"));
 	}
 
-	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
-		if(count($args) == 0 && $sender instanceof Player) {
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void{
+		if(count($args) == 0 && $sender instanceof Player){
 			AHMenu::open(new ShopMenu($sender));
 		}
 	}
