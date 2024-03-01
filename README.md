@@ -1,4 +1,5 @@
-# ⚠️ Please help me fix a bugs! I check issues and pull requests every day! Пожалуйста, помогите с исправлением багов! Я проверяю сообщения об ошибках и пулл реквесты каждый день!
+# ⚠️ Please help me fix a bugs! I check issues and pull requests every day!
+# ⚠️Пожалуйста, помогите с исправлением багов! Я проверяю сообщения об ошибках и пулл реквесты каждый день!
 
 # AuctionHouse [![](https://poggit.pmmp.io/shield.state/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse) [![](https://poggit.pmmp.io/shield.dl.total/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse)
 Feature-packed AuctionHouse plugin for PocketMine-MP  
