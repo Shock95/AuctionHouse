@@ -1,4 +1,4 @@
-# ⚠️ Please update all virions for the plugin to work correctly!
+# ⚠️ Please help me fix a bugs! I check issues and pull requests every day! Пожалуйста, помогите с исправлением багов! Я проверяю сообщения об ошибках и пулл реквесты каждый день!
 
 # AuctionHouse [![](https://poggit.pmmp.io/shield.state/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse) [![](https://poggit.pmmp.io/shield.dl.total/AuctionHouse)](https://poggit.pmmp.io/p/AuctionHouse)
 Feature-packed AuctionHouse plugin for PocketMine-MP  
@@ -121,6 +121,7 @@ You can contribute to this project by creating or modifying a language file and 
 - [Shock95x](https://github.com/Shock95x) (English)  
 - [ipad54](https://github.com/ipad54) (Russian)
 - [No4NaMe](https://github.com/No4NaMe) (Russian)
+- [XackiGiFF](https://github.com/XackiGiFF) (Russian)
 - [Unickorn](https://github.com/Unickorn) (German)
 - Chaosfelix4451#0157 (German)
 - [xAliTura01](https://github.com/xAliTura01) (Turkish)
