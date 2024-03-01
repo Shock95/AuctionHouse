@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace shock95x\auctionhouse\commands\subcommand;
@@ -10,16 +9,15 @@ use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use shock95x\auctionhouse\menu\ExpiredMenu;
 use shock95x\auctionhouse\menu\type\AHMenu;
-use function assert;
 
-class ExpiredCommand extends BaseSubCommand{
+class ExpiredCommand extends BaseSubCommand {
 
-	protected function prepare() : void{
+	protected function prepare(): void {
 		$this->setPermission("auctionhouse.command.expired");
 		$this->addConstraint(new InGameRequiredConstraint($this));
 	}
 
-	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void{
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		assert($sender instanceof Player);
 		AHMenu::open(new ExpiredMenu($sender, false));
 	}

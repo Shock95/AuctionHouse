@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace shock95x\auctionhouse\event;
@@ -10,7 +9,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use shock95x\auctionhouse\AHListing;
 
-class AuctionEndEvent extends Event{
+class AuctionEndEvent extends Event {
 
 	const CANCELLED = 0;
 	const EXPIRED = 1;
@@ -23,22 +22,21 @@ class AuctionEndEvent extends Event{
 		private AHListing $listing,
 		private int $type,
 		private ?Player $purchaser = null
-	){
-	}
+	) {}
 
-	public function getListing() : AHListing{
+	public function getListing() : AHListing {
 		return $this->listing;
 	}
 
-	public function getType() : int{
+	public function getType() : int {
 		return $this->type;
 	}
 
-	public function getPurchaser() : ?Player{
+	public function getPurchaser() : ?Player {
 		return $this->purchaser;
 	}
 
-	public function getSeller() : ?IPlayer{
+	public function getSeller() : ?IPlayer {
 		$listing = $this->listing;
 		return Server::getInstance()->getPlayerByRawUUID($listing->getSellerUUID()) ?? Server::getInstance()->getOfflinePlayer($listing->getSeller());
 	}

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace shock95x\auctionhouse;
@@ -27,7 +26,7 @@ use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 
-class AuctionHouse extends PluginBase{
+class AuctionHouse extends PluginBase {
 
 	use SingletonTrait;
 
@@ -37,7 +36,7 @@ class AuctionHouse extends PluginBase{
 	public const FAKE_ENCH_ID = -1;
 	private const RESOURCES = ["statements/mysql.sql" => true, "statements/sqlite.sql" => true, "language/en_US.yml" => false, "language/ru_RU.yml" => false, "language/de_DE.yml" => false];
 
-	public function onLoad() : void{
+	public function onLoad(): void {
 		self::setInstance($this);
 		$this->saveDefaultConfig();
 		foreach(self::RESOURCES as $file => $r) $this->saveResource($file, $r);
@@ -48,7 +47,7 @@ class AuctionHouse extends PluginBase{
 	/**
 	 * @throws HookAlreadyRegistered
 	 */
-	public function onEnable() : void{
+	public function onEnable(): void {
 		Settings::init($this->getConfig());
 		Locale::init($this);
 
@@ -67,13 +66,13 @@ class AuctionHouse extends PluginBase{
 
 		$pluginManager->registerEvents(new EventListener(), $this);
 
-		if($pluginManager->getPlugin(EconomySProvider::getName()) !== null){
+		if($pluginManager->getPlugin(EconomySProvider::getName()) !== null) {
 			$this->setEconomyProvider(new EconomySProvider());
-		}elseif($pluginManager->getPlugin(BedrockEconomyProvider::getName()) !== null){
+		} elseif ($pluginManager->getPlugin(BedrockEconomyProvider::getName()) !== null) {
 			$this->setEconomyProvider(new BedrockEconomyProvider());
 		}
-		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function(){
-			if($this->economyProvider == null){
+		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function() {
+			if($this->economyProvider == null) {
 				$this->getLogger()->notice("No economy provider found, disabling plugin...");
 				$this->disable();
 				return;
@@ -85,29 +84,29 @@ class AuctionHouse extends PluginBase{
 		$this->getScheduler()->scheduleDelayedTask(new CheckLegacyTask($this), 1);
 	}
 
-	public function onDisable() : void{
+	public function onDisable(): void {
 		self::reset();
 		$this->database?->close();
 	}
 
-	public function reload() : void{
+	public function reload(): void {
 		Locale::init($this);
 		Settings::init($this->getConfig(), true);
 	}
 
-	public function disable() : void{
+	public function disable(): void {
 		$this->getServer()->getPluginManager()->disablePlugin($this);
 	}
 
-	public function getDatabase() : Database{
+	public function getDatabase(): Database {
 		return $this->database;
 	}
 
-	public function setEconomyProvider(EconomyProvider $provider) : void{
+	public function setEconomyProvider(EconomyProvider $provider): void {
 		$this->economyProvider = $provider;
 	}
 
-	public function getEconomyProvider() : ?EconomyProvider{
+	public function getEconomyProvider(): ?EconomyProvider {
 		return $this->economyProvider;
 	}
 }

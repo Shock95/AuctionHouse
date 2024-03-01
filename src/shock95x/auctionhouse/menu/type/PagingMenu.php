@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace shock95x\auctionhouse\menu\type;
@@ -11,7 +10,7 @@ use shock95x\auctionhouse\database\storage\DataStorage;
 use shock95x\auctionhouse\utils\Pagination;
 use shock95x\auctionhouse\utils\Utils;
 
-abstract class PagingMenu extends AHMenu{
+abstract class PagingMenu extends AHMenu {
 
 	protected int $page = 1;
 	protected int $pages = 1;
@@ -20,20 +19,20 @@ abstract class PagingMenu extends AHMenu{
 	const INDEX_REFRESH = 49;
 	const INDEX_NEXT = 50;
 
-	public function __construct(Player $player, bool $returnMain = false){
+	public function __construct(Player $player, bool $returnMain = false) {
 		parent::__construct($player, $returnMain);
 	}
 
-	public function getPage() : int{
+	public function getPage() : int {
 		return $this->page;
 	}
 
-	public function getPages() : int{
+	public function getPages(): int {
 		return $this->pages;
 	}
 
-	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot) : bool{
-		switch($slot){
+	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
+		switch ($slot) {
 			case self::INDEX_BACK:
 				return $this->handlePagination(Pagination::BACK);
 			case self::INDEX_NEXT:
@@ -44,7 +43,7 @@ abstract class PagingMenu extends AHMenu{
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 
-	public function renderButtons() : void{
+	public function renderButtons(): void {
 		parent::renderButtons();
 		$back = Utils::getButtonItem($this->player, "previous", "previous-page");
 		$next = Utils::getButtonItem($this->player, "next", "next-page");
@@ -52,8 +51,8 @@ abstract class PagingMenu extends AHMenu{
 		$this->getInventory()->setItem(self::INDEX_NEXT, $next);
 	}
 
-	protected function handlePagination(int $action) : bool{
-		switch($action){
+	protected function handlePagination(int $action): bool {
+		switch($action) {
 			case Pagination::BACK:
 				if(($this->page - 1) <= 0) break;
 				$this->page--;
