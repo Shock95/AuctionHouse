@@ -98,14 +98,15 @@ class ConfirmPurchaseMenu extends AHMenu{
 			if(!$res){
 				Locale::sendMessage($player, "cannot-afford");
 				return;
-			}
+			} else {
+                $storage->removeListing($listing);
+            }
 			$res = yield from Await::promise(fn($resolve) => $economy->addMoney($listing->getSeller(), $listing->getPrice(), $resolve));
 			if(!$res){
 				yield from Await::promise(fn($resolve) => $economy->addMoney($player, $listing->getPrice(), $resolve));
 				Locale::sendMessage($player, "purchase-economy-error");
 				return;
 			}
-            $storage->removeListing($listing);
 			$player->removeCurrentWindow();
 			$player->getInventory()->addItem($item);
 			$player->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "purchased-item", true)));
