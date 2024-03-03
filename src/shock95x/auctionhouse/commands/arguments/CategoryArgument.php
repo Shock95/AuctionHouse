@@ -19,7 +19,13 @@ class CategoryArgument extends StringEnumArgument {
 		return "name";
 	}
 
+	public function getEnumName() : string {
+		return "category";
+	}
+
 	public function parse(string $argument, CommandSender $sender): ICategory {
 		return Category::get($argument);
 	}
+
+
 }

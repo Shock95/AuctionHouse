@@ -1,20 +1,36 @@
 {
-	"name": "shock95x/auctionhouse",
+	"name": "shock95/auctionhouse",
 	"description": "Feature-packed AuctionHouse plugin for PocketMine-MP",
-	"type": "project",
+	"type": "pocketmine-plugin",
 	"license": "GPL-3.0-or-later",
 	"authors": [
 		{
-			"name": "Shock95x"
+			"name": "Shock95"
 		}
 	],
 	"require": {
-		"pocketmine/pocketmine-mp": "^5.0",
-		"ext-json": "*"
+		"pocketmine/pocketmine-mp": "^5.0.0",
+		"sof3/await-generator": "^3.6",
+		"sof3/libasynql": "^4.2",
+		"muqsit/invmenu": "^4.6.5",
+		"ifera-mc/update-notifier": "dev-master",
+		"muqsit/simple-packet-handler": "dev-pm5",
+		"cortexpe/commando": "dev-master"
 	},
-	"autoload": {
-		"psr-4": {
-			"": "./src"
+	"require-dev": {
+		"sof3/pharynx": "^0.3.4"
+	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/Aboshxm2/Commando.git"
+		},
+		{
+			"type": "git",
+			"url": "https://github.com/ifera-mc/UpdateNotifier.git"
 		}
+	],
+	"autoload": {
+		"classmap": ["src"]
 	}
 }

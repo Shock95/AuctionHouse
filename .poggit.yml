@@ -3,17 +3,4 @@ projects:
   AuctionHouse:
     path: ""
     icon: icon.png
-    libs:
-    - src: SOF3/await-generator/await-generator
-      version: ^3.6.1
-    - src: poggit/libasynql/libasynql
-      version: ^4.2.0
-    - src: muqsit/invmenu/InvMenu
-      version: ^4.6.5
-      branch: "pm5"
-    - src: ifera-mc/UpdateNotifier/UpdateNotifier
-      version: ^3.1.0
-    - src: JinodkDevTeam/Commando/Commando
-      version: ^3.2.0
-      branch: "pm5"
 ...

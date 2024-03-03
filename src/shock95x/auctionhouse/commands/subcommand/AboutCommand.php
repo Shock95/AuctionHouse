@@ -15,6 +15,6 @@ class AboutCommand extends BaseSubCommand {
 	}
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
-		$sender->sendMessage(Utils::prefixMessage(TextFormat::BLUE . "This server is running " . TextFormat::GOLD  . "AuctionHouse v" . $this->getOwningPlugin()->getDescription()->getVersion() . TextFormat::BLUE . " by " . TextFormat::GREEN . "Shock95x"));
+		$sender->sendMessage(Utils::prefixMessage(TextFormat::BLUE . "This server is running " . TextFormat::GOLD  . "AuctionHouse v" . $this->getOwningPlugin()->getDescription()->getVersion() . TextFormat::BLUE . " by " . TextFormat::GREEN . "Shock95"));
 	}
 }
