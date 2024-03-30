@@ -114,7 +114,7 @@ class ConfirmPurchaseMenu extends AHMenu {
 
 			$seller = AuctionHouse::getInstance()->getServer()->getPlayerByUUID($listing->getSellerUUID());
 			$seller?->getWorld()->addSound($seller->getPosition(), new FizzSound(), [$seller]);
-			$seller?->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "seller-message", true)));
+			$seller?->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($seller, "seller-message", true)));
 			(new AuctionEndEvent($listing, AuctionEndEvent::PURCHASED, $player))->call();
 		});
 		return true;
