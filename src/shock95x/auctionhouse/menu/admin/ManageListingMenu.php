@@ -9,11 +9,10 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AHListing;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
-use shock95x\auctionhouse\utils\Utils;
 
 class ManageListingMenu extends AHMenu {
 
@@ -47,24 +46,22 @@ class ManageListingMenu extends AHMenu {
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		$listing = $this->getListings()[0];
+		$database = AuctionHouse::getInstance()->getDatabase();
 		switch ($slot) {
 			case self::INDEX_DUPLICATE:
 				$player->getInventory()->addItem($listing->getItem());
 				break;
 			case self::INDEX_STATUS:
 				if($listing->isExpired()) {
-					$listing->setExpired(false);
-					DataStorage::getInstance()->setExpired($listing, value: false);
-					$listing->setEndTime(Utils::getEndTime());
+					$database->setExpired($listing->getId(), value: false);
 				} else {
-					$listing->setExpired();
-					(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
+					$database->setExpired($listing->getId());
 				}
 				$this->renderButtons();
 				break;
 			case self::INDEX_DELETE:
-				DataStorage::getInstance()->removeListing($listing);
-				(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_PURGED))->call();
+				$database->removeListing($listing->getId());
+				(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
 				self::open(new AdminMenu($player, false));
 				break;
 		}

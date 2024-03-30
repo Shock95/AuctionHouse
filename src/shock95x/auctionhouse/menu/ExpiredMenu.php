@@ -5,12 +5,12 @@ namespace shock95x\auctionhouse\menu;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\database\storage\DataStorage;
-use shock95x\auctionhouse\manager\MenuManager;
+use shock95x\auctionhouse\AHListing;
+use shock95x\auctionhouse\AuctionHouse;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -28,12 +28,12 @@ class ExpiredMenu extends PagingMenu {
 		parent::__construct($player, $returnMain);
 	}
 
-	protected function init(DataStorage $storage): void {
-		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getExpiredListingsByPlayer($resolve, $this->player, (45 * $this->page) - 45)));
-			$this->total = yield from Await::promise(fn($resolve) => $storage->getExpiredCountByPlayer($this->player, $resolve));
+	protected function init(Database $database): void {
+		Await::f2c(function () use ($database) {
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getExpiredListingsByPlayer($resolve, $this->player->getUniqueId(), (45 * $this->page) - 45)));
+			$this->total = yield from Await::promise(fn($resolve) => $database->getExpiredCountByPlayer($this->player->getUniqueId(), $resolve));
 			$this->pages = (int) ceil($this->total / 45);
-			parent::init($storage);
+			parent::init($database);
 		});
 	}
 
@@ -63,16 +63,18 @@ class ExpiredMenu extends PagingMenu {
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		Await::f2c(function () use ($player, $slot, $itemClicked, $inventory) {
-			$storage = DataStorage::getInstance();
+			$database = AuctionHouse::getInstance()->getDatabase();
 			if($slot <= 44 && isset($this->getListings()[$slot])) {
 				$id = $this->getListings()[$slot]->getId();
-				$listing = yield from Await::promise(fn($resolve) => $storage->getListingById($id, $resolve));
-				if($listing == null || $listing->getSellerUUID() != $player->getUniqueId()->toString()) {
+				/** @var AHListing $listing */
+				$listing = yield from Await::promise(fn($resolve) => $database->getListingById($id, $resolve));
+				if($listing == null || !$listing->getSellerUUID()->equals($player->getUniqueId())) {
 					return;
 				}
 				$item = $listing->getItem();
 				if($player->getInventory()->canAddItem($item)) {
-					$storage->removeListing($listing);
+					$err = yield from $database->deleteListingAsync($id);
+					if($err) return;
 					$inventory->setItem($slot, VanillaItems::AIR());
 					$player->getInventory()->addItem($item);
 					$player->sendMessage(str_ireplace(["{ITEM}", "{AMOUNT}"], [$item->getName(), $item->getCount()], Locale::get($player, "returned-item", true)));
@@ -85,7 +87,8 @@ class ExpiredMenu extends PagingMenu {
 				}
 				foreach ($this->getListings() as $index => $expired) {
 					if ($player->getInventory()->canAddItem($expired->getItem())) {
-						$storage->removeListing($expired);
+						$err = yield from $database->deleteListingAsync($expired->getId());
+						if($err) return;
 						$inventory->setItem($index, VanillaItems::AIR());
 						$player->getInventory()->addItem($expired->getItem());
 					}

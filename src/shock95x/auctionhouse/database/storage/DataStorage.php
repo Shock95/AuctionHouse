@@ -13,6 +13,10 @@ use shock95x\auctionhouse\event\AuctionStartEvent;
 use shock95x\auctionhouse\utils\Utils;
 use SOFe\AwaitGenerator\Await;
 
+/**
+ * Use AuctionHouse->getDatabase()
+ * @deprecated
+ */
 class DataStorage {
 
 	use SingletonTrait;
@@ -26,7 +30,7 @@ class DataStorage {
 	public function getListingById(int $id, callable $callback): void {
 		$this->database->getConnector()->executeSelect(Query::FETCH_ID, ["id" => $id], function(array $rows) use ($callback): void {
 			foreach ($rows as $listing) {
-				$callback($this->database->createListingFromRows($listing));
+				$callback(AHListing::fromRow($listing));
 				return;
 			}
 			$callback(null);
@@ -38,7 +42,7 @@ class DataStorage {
 			/** @var AHListing[] $listings */
 			$listings = [];
 			foreach ($rows as $listing) {
-				$listings[] = $this->database->createListingFromRows($listing);
+				$listings[] = AHListing::fromRow($listing);
 			}
 			$callback($listings);
 		});
@@ -49,7 +53,7 @@ class DataStorage {
 			/** @var AHListing[] $listings */
 			$listings = [];
 			foreach ($rows as $listing) {
-				$listings[] = $this->database->createListingFromRows($listing);
+				$listings[] = AHListing::fromRow($listing);
 			}
 			$callback($listings);
 		});
@@ -60,29 +64,29 @@ class DataStorage {
 			/** @var AHListing[] $listings */
 			$listings = [];
 			foreach ($rows as $listing) {
-				$listings[] = $this->database->createListingFromRows($listing);
+				$listings[] = AHListing::fromRow($listing);
 			}
 			$callback($listings);
 		});
 	}
 
 	public function getActiveListingsByPlayer(callable $callback, Player $player, int $offset = 0, int $limit = 45): void {
-		$this->database->getConnector()->executeSelect(Query::FETCH_ACTIVE_UUID, ["uuid" => $player->getUniqueId()->toString(), "id" => $offset, "limit" => $limit], function(array $rows) use ($callback): void {
+		$this->database->getConnector()->executeSelect(Query::FETCH_ACTIVE_UUID, ["uuid" => $player->getUniqueId()->getBytes(), "id" => $offset, "limit" => $limit], function(array $rows) use ($callback): void {
 			/** @var AHListing[] $listings */
 			$listings = [];
 			foreach ($rows as $listing) {
-				$listings[] = $this->database->createListingFromRows($listing);
+				$listings[] = AHListing::fromRow($listing);
 			}
 			$callback($listings);
 		});
 	}
 
 	public function getExpiredListingsByPlayer(callable $callback, Player $player, int $offset = 0, int $limit = 45): void {
-		$this->database->getConnector()->executeSelect(Query::FETCH_EXPIRED_UUID, ["uuid" => $player->getUniqueId()->toString(), "id" => $offset, "limit" => $limit], function(array $rows) use ($callback): void {
+		$this->database->getConnector()->executeSelect(Query::FETCH_EXPIRED_UUID, ["uuid" => $player->getUniqueId()->getBytes(), "id" => $offset, "limit" => $limit], function(array $rows) use ($callback): void {
 			/** @var AHListing[] $listings */
 			$listings = [];
 			foreach ($rows as $listing) {
-				$listings[] = $this->database->createListingFromRows($listing);
+				$listings[] = AHListing::fromRow($listing);
 			}
 			$callback($listings);
 		}, fn() => $callback([]));
@@ -101,7 +105,7 @@ class DataStorage {
 	}
 
 	public function getActiveCountByPlayer(Player $player, callable $callback) {
-		$this->database->getConnector()->executeSelect(Query::COUNT_ACTIVE_UUID, ["uuid" => $player->getUniqueId()->toString()], function(array $rows) use ($callback): void {
+		$this->database->getConnector()->executeSelect(Query::COUNT_ACTIVE_UUID, ["uuid" => $player->getUniqueId()->getBytes()], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
 		}, fn() => $callback(false));
 	}
@@ -119,7 +123,7 @@ class DataStorage {
 	}
 
 	public function getExpiredCountByPlayer(Player $player, callable $callback) {
-		$this->database->getConnector()->executeSelect(Query::COUNT_EXPIRED_UUID, ["uuid" => $player->getUniqueId()->toString()], function(array $rows) use ($callback): void {
+		$this->database->getConnector()->executeSelect(Query::COUNT_EXPIRED_UUID, ["uuid" => $player->getUniqueId()->getBytes()], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
 		}, fn() => $callback(false));
 	}
@@ -129,7 +133,6 @@ class DataStorage {
 	}
 
 	public function removeListing(AHListing $listing, ?callable $onSuccess = null, ?callable $onError = null): void {
-		$listing->setExpired();
 		$this->removeListingById($listing->getId(), $onSuccess, $onError);
 	}
 
@@ -137,24 +140,19 @@ class DataStorage {
 		$this->database->getConnector()->executeGeneric(Query::DELETE, ["id" => $id], $onSuccess, $onError);
 	}
 
-	/**
-	 * @throws \JsonException
-	 */
 	public function createListing(Player $player, Item $item, int $price, ?callable $callback = null): void {
-		$uuid = $player->getUniqueId()->toString();
+		$uuid = $player->getUniqueId()->getBytes();
 		$name = $player->getName();
 		$created = time();
-		$endTime = Utils::getEndTime();
-
+		$endTime = Utils::getExpireTime($created);
 		$this->database->getConnector()->executeInsert(Query::INSERT, [
 			"uuid" => $uuid,
 			"username" => $name,
 			"price" => $price,
-			"item" => json_encode(bin2hex(Utils::ItemSerialize($item))),
+			"item" => Utils::serializeItem($item),
 			"created" => $created,
 			"end_time" => $endTime,
 			"expired" => false],
-
 			function($id) use ($endTime, $item, $created, $name, $price, $uuid, $callback) {
 				$listing = new AHListing($id, $uuid, $price, $name, $created, $endTime, false, $item);
 				(new AuctionStartEvent($listing))->call();
@@ -164,29 +162,6 @@ class DataStorage {
 	}
 
 	public function createListingAsync(Player $player, Item $item, int $price): Generator {
-		$created = time();
-		$uuid = $player->getUniqueId()->toString();
-		$name = $player->getName();
-		$endTime = Utils::getEndTime();
-
-		$id = yield from Await::promise(
-		/**
-		 * @throws \JsonException
-		 */ function($resolve, $reject) use ($endTime, $created, $item, $price, $name, $uuid, $player) {
-			$this->database->getConnector()->executeInsert(Query::INSERT, [
-				"uuid" => $uuid,
-				"username" => $name,
-				"price" => $price,
-				"item" => json_encode(bin2hex(Utils::ItemSerialize($item))),
-				"created" => $created,
-				"end_time" => $endTime,
-				"expired" => false], $resolve, $reject);
-		});
-
-		if(!is_numeric($id)) return null;
-
-		$listing = new AHListing($id, $uuid, $price, $name, $created, $endTime, false, $item);
-		(new AuctionStartEvent($listing))->call();
-		return $listing;
+		return yield from Await::promise(fn($cb) => $this->createListing($player, $item, $price));
 	}
 }

@@ -22,7 +22,7 @@ creative-sale: false
 max-listings: 45
 # Shows item lore on the auction house
 show-lore: true
-# Days to automatically delete expired listings (-1 to disable)
+# Days to automatically delete expired listings (0 to disable)
 expired-duration: 15
 # Formats price with commas (ex. 1,000,000)
 price-formatted: true

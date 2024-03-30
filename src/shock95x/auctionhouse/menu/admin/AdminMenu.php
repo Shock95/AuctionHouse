@@ -7,12 +7,10 @@ use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\storage\DataStorage;
-use shock95x\auctionhouse\manager\MenuManager;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -29,13 +27,13 @@ class AdminMenu extends PagingMenu {
 		parent::__construct($player, $returnMain);
 	}
 
-	protected function init(DataStorage $storage): void {
-		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getListings($resolve, (45 * $this->page) - 45)));
-			$this->expired = yield from Await::promise(fn($resolve) => $storage->getExpiredCount($resolve));
-			$this->total = yield from Await::promise(fn($resolve) => $storage->getTotalListingCount($resolve));
+	protected function init(Database $database): void {
+		Await::f2c(function () use ($database) {
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getListings($resolve, (45 * $this->page) - 45)));
+			$this->expired = yield from Await::promise(fn($resolve) => $database->getExpiredCount($resolve));
+			$this->total = yield from Await::promise(fn($resolve) => $database->getTotalListingCount($resolve));
 			$this->pages = (int) ceil($this->total / 45);
-			parent::init($storage);
+			parent::init($database);
 		});
 	}
 	

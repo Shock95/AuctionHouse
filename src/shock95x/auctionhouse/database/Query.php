@@ -5,7 +5,8 @@ namespace shock95x\auctionhouse\database;
 
 class Query{
 
-	const INIT = "auctionhouse.init";
+	const INIT = "auctionhouse.init.tables";
+
 	const INSERT = "auctionhouse.insert";
 	const DELETE = "auctionhouse.delete";
 	const SET_EXPIRED = "auctionhouse.expired";

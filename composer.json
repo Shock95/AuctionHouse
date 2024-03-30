@@ -11,7 +11,7 @@
 	"require": {
 		"pocketmine/pocketmine-mp": "^5.0.0",
 		"sof3/await-generator": "^3.6",
-		"sof3/libasynql": "^4.2",
+		"sof3/libasynql": "dev-master",
 		"muqsit/invmenu": "^4.6.5",
 		"ifera-mc/update-notifier": "dev-master",
 		"muqsit/simple-packet-handler": "dev-pm5",

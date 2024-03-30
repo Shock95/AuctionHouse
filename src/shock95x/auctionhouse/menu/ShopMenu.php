@@ -8,11 +8,10 @@ use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\admin\AdminMenu;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
@@ -36,14 +35,14 @@ class ShopMenu extends PagingMenu {
 		parent::__construct($player, false);
 	}
 
-	protected function init(DataStorage $storage): void {
-		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getActiveListings($resolve, (45 * $this->page) - 45)));
-			$this->selling = yield from Await::promise(fn($resolve) => $storage->getActiveCountByPlayer($this->player, $resolve));
-			$this->expired = yield from Await::promise(fn($resolve) => $storage->getExpiredCountByPlayer($this->player, $resolve));
-			$this->total = yield from Await::promise(fn($resolve) => $storage->getActiveListingCount($resolve));
+	protected function init(Database $database): void {
+		Await::f2c(function () use ($database) {
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListings($resolve, (45 * $this->page) - 45)));
+			$this->selling = yield from Await::promise(fn($resolve) => $database->getActiveCountByPlayer($this->player->getUniqueId(), $resolve));
+			$this->expired = yield from Await::promise(fn($resolve) => $database->getExpiredCountByPlayer($this->player->getUniqueId(), $resolve));
+			$this->total = yield from Await::promise(fn($resolve) => $database->getActiveListingCount($resolve));
 			$this->pages = (int) ceil($this->total / 45);
-			parent::init($storage);
+			parent::init($database);
 		});
 	}
 
@@ -74,7 +73,7 @@ class ShopMenu extends PagingMenu {
 	public function renderListings(): void {
         foreach($this->getListings() as $index => $listing) {
 			$item = clone $listing->getItem();
-			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getEndTime()));
+			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getExpireTime()));
 
 			$listedItem = Locale::get($this->player, "listed-item");
 			$lore = str_ireplace(["{PRICE}", "{SELLER}", "{D}","{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));

@@ -5,13 +5,11 @@ namespace shock95x\auctionhouse\menu\category;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\category\Category;
 use shock95x\auctionhouse\category\ICategory;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Utils;
@@ -25,7 +23,7 @@ class CategoryListMenu extends PagingMenu {
 		parent::__construct($player, $returnMain);
 	}
 
-	protected function init(DataStorage $storage): void {
+	protected function init(Database $database): void {
 		$this->total = count(Category::getAll());
 		$this->pages = (int) ceil($this->total / 45);
 		$this->renderButtons();

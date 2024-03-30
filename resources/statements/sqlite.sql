@@ -2,16 +2,25 @@
 -- #{ auctionhouse
 
 -- #  { init
+
+-- #    { tables
+CREATE TABLE IF NOT EXISTS players(
+    uuid BINARY(16) PRIMARY KEY,
+    username VARCHAR(16) NOT NULL
+);
+-- #&
 CREATE TABLE IF NOT EXISTS listings(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid CHAR(36),
-    username VARCHAR(36),
+    player_uuid BINARY(16),
+    item BLOB NOT NULL,
     price INT,
-    item TEXT,
-    created INT,
-    end_time INT,
-    expired BOOLEAN DEFAULT FALSE
+    created_at INT,
+    expires_at INT,
+    expired BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (player_uuid) REFERENCES players(uuid) ON DELETE CASCADE
 );
+-- #    }
+
 -- #  }
 
 -- # { count
@@ -28,14 +37,13 @@ SELECT COUNT(*) FROM listings WHERE expired = FALSE;
 
 -- #        { uuid
 -- #          :uuid string
-SELECT COUNT(*) FROM listings WHERE uuid = :uuid AND expired = FALSE;
+SELECT COUNT(*) FROM listings WHERE player_uuid = :uuid AND expired = FALSE;
 -- #        }
 
 -- #        { username
 -- #          :username string
-SELECT COUNT(*) FROM listings WHERE username = :username AND expired = FALSE;
+SELECT COUNT(*) FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE players.username = :username AND expired = FALSE;
 -- #        }
-
 -- #    }
 
 -- #    { expired
@@ -46,7 +54,7 @@ SELECT COUNT(*) FROM listings WHERE expired = TRUE;
 
 -- #        { uuid
 -- #          :uuid string
-SELECT COUNT(*) FROM listings WHERE uuid = :uuid AND expired = TRUE;
+SELECT COUNT(*) FROM listings WHERE player_uuid = :uuid AND expired = TRUE;
 -- #        }
 
 -- #    }
@@ -58,12 +66,12 @@ SELECT COUNT(*) FROM listings WHERE uuid = :uuid AND expired = TRUE;
 -- #    { all
 -- #        :id int
 -- #        :limit int
-SELECT * FROM listings LIMIT :id, :limit;
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid LIMIT :id, :limit;
 -- #    }
 
 -- #    { id
 -- #        :id int
-SELECT * FROM listings WHERE id = :id;
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE id = :id;
 -- #    }
 
 -- #    { active
@@ -71,21 +79,21 @@ SELECT * FROM listings WHERE id = :id;
 -- #        { next
 -- #            :id int
 -- #            :limit int
-SELECT * FROM listings WHERE expired = FALSE LIMIT :id, :limit;
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE listings.expired = FALSE LIMIT :id, :limit;
 -- #        }
 
 -- #        { uuid
 -- #            :id int
 -- #            :limit int
 -- #            :uuid string
-SELECT * FROM listings WHERE uuid = :uuid AND expired = FALSE LIMIT :id, :limit;
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE player_uuid = :uuid AND expired = FALSE LIMIT :id, :limit;
 -- #        }
 
 -- #        { username
 -- #            :id int
 -- #            :limit int
 -- #            :username string
-SELECT * FROM listings WHERE username = :username AND expired = FALSE LIMIT :id, :limit;
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE players.username = :username AND expired = FALSE LIMIT :id, :limit;
 -- #        }
 
 -- #    }
@@ -95,14 +103,14 @@ SELECT * FROM listings WHERE username = :username AND expired = FALSE LIMIT :id,
 -- #        { next
 -- #            :id int
 -- #            :limit int
-SELECT * FROM listings WHERE expired = TRUE LIMIT :id, :limit;
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE expired = TRUE LIMIT :id, :limit;
 -- #        }
 
 -- #        { uuid
 -- #            :id int
 -- #            :limit int
 -- #            :uuid string
-SELECT * FROM listings WHERE uuid = :uuid AND expired = TRUE LIMIT :id, :limit;
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE player_uuid = :uuid AND expired = TRUE LIMIT :id, :limit;
 -- #        }
 
 -- #    }
@@ -121,14 +129,16 @@ UPDATE listings SET expired = :expired WHERE id = :id;
 -- # }
 
 -- # { insert
--- #    :uuid string
+-- #    :player_uuid string
 -- #    :username string
 -- #    :price int
 -- #    :item string
--- #    :created int
--- #    :end_time int
--- #    :expired bool
-INSERT INTO listings(id, uuid, username, price, item, created, end_time, expired) VALUES (NULL, :uuid, :username, :price, :item, :created, :end_time, :expired);
+-- #    :created_at int
+-- #    :expires_at int
+INSERT INTO players(uuid, username) VALUES (:player_uuid, :username)
+ON CONFLICT DO UPDATE SET username = :username;
+-- #&
+INSERT INTO listings(player_uuid, item, price, created_at, expires_at) VALUES (:player_uuid, :item, :price, :created_at, :expires_at);
 -- # }
 
 -- # }

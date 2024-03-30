@@ -30,9 +30,6 @@ permissions:
     auctionhouse.command.admin:
         default: op
         description: Allows player to open the admin menu
-    auctionhouse.command.convert:
-        default: op
-        description: Allows player to use Legacy DB conversion
     auctionhouse.command.reload:
         default: op
         description: Allows player to reload configuration files

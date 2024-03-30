@@ -5,25 +5,20 @@ namespace shock95x\auctionhouse\menu\type;
 
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\InvMenuHandler;
-use muqsit\invmenu\session\InvMenuInfo;
 use muqsit\invmenu\transaction\DeterministicInvMenuTransaction;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
-use pocketmine\scheduler\ClosureTask;
-use pocketmine\utils\TextFormat;
 use pocketmine\world\sound\ClickSound;
 use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\event\MenuCloseEvent;
 use shock95x\auctionhouse\menu\ConfirmPurchaseMenu;
 use shock95x\auctionhouse\menu\ShopMenu;
-use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Utils;
-use SOFe\AwaitGenerator\Await;
 
 abstract class AHMenu extends InvMenu {
 
@@ -49,10 +44,10 @@ abstract class AHMenu extends InvMenu {
 			$this->handle($transaction->getPlayer(), $transaction->getItemClicked(), $transaction->getAction()->getInventory(), $transaction->getAction()->getSlot());
 		}));
 
-		$this->init(DataStorage::getInstance());
+		$this->init(AuctionHouse::getInstance()->getDatabase());
 	}
 
-	protected function init(DataStorage $storage): void {
+	protected function init(Database $database): void {
 		$this->renderButtons();
 		$this->renderListings();
 	}

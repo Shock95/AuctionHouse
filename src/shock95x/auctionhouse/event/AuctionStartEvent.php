@@ -19,6 +19,6 @@ class AuctionStartEvent extends Event {
 	}
 
 	public function getPlayer() : ?Player {
-		return Server::getInstance()->getPlayerByRawUUID($this->listing->getSellerUUID());
+		return Server::getInstance()->getPlayerByUUID($this->listing->getSellerUUID());
 	}
 }

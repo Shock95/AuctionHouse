@@ -9,13 +9,11 @@ use pocketmine\player\Player;
 use shock95x\auctionhouse\commands\subcommand\AboutCommand;
 use shock95x\auctionhouse\commands\subcommand\AdminCommand;
 use shock95x\auctionhouse\commands\subcommand\CategoryCommand;
-use shock95x\auctionhouse\commands\subcommand\ConvertCommand;
 use shock95x\auctionhouse\commands\subcommand\ExpiredCommand;
 use shock95x\auctionhouse\commands\subcommand\ListingsCommand;
 use shock95x\auctionhouse\commands\subcommand\ReloadCommand;
 use shock95x\auctionhouse\commands\subcommand\SellCommand;
 use shock95x\auctionhouse\commands\subcommand\ShopCommand;
-use shock95x\auctionhouse\commands\subcommand\TestCommand;
 use shock95x\auctionhouse\menu\ShopMenu;
 use shock95x\auctionhouse\menu\type\AHMenu;
 
@@ -31,7 +29,6 @@ class AHCommand extends BaseCommand {
 		$this->registerSubCommand(new ExpiredCommand($this->plugin, "expired", "Shows expired listings"));
 		$this->registerSubCommand(new ReloadCommand($this->plugin, "reload", "Reload plugin configuration files"));
 		$this->registerSubCommand(new AboutCommand($this->plugin, "about", "Plugin information"));
-		$this->registerSubCommand(new ConvertCommand($this->plugin, "convert", "Legacy DB conversion"));
 	}
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {

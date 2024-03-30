@@ -11,6 +11,10 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ItemFlags;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+use pocketmine\nbt\BigEndianNbtSerializer;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\SingletonTrait;
@@ -59,10 +63,7 @@ class AuctionHouse extends PluginBase {
 
 		$pluginManager = $this->getServer()->getPluginManager();
 
-		$this->database = new Database($this, $this->getConfig());
-		$this->database->connect();
-
-		LegacyConverter::getInstance()->init($this->database);
+		$this->database = (new Database($this))->connect($this->getConfig());
 
 		$pluginManager->registerEvents(new EventListener(), $this);
 
@@ -79,9 +80,8 @@ class AuctionHouse extends PluginBase {
 			}
 			Settings::setCurrencySymbol($this->economyProvider->getCurrencySymbol());
 		}), 1);
-		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
-		$this->getScheduler()->scheduleDelayedTask(new CheckLegacyTask($this), 1);
+		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
 	}
 
 	public function onDisable(): void {

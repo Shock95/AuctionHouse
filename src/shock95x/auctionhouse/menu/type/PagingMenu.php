@@ -6,7 +6,7 @@ namespace shock95x\auctionhouse\menu\type;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\utils\Pagination;
 use shock95x\auctionhouse\utils\Utils;
 
@@ -62,7 +62,7 @@ abstract class PagingMenu extends AHMenu {
 				$this->page++;
 				break;
 		}
-		$this->init(DataStorage::getInstance());
+		$this->init(AuctionHouse::getInstance()->getDatabase());
 		return true;
 	}
 }

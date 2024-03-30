@@ -6,11 +6,11 @@ namespace shock95x\auctionhouse\menu\category;
 use DateTime;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\category\ICategory;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Pagination;
@@ -29,12 +29,12 @@ class CategoryMenu extends PagingMenu {
 		parent::__construct($player, true);
 	}
 
-	protected function init(DataStorage $storage): void {
-		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getListings($resolve, 0, PHP_INT_MAX)));
+	protected function init(Database $database): void {
+		Await::f2c(function () use ($database) {
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getListings($resolve, 0, PHP_INT_MAX)));
 			$this->total = count($this->getListings());
 			$this->pages = (int) ceil($this->total / 45);
-			parent::init($storage);
+			parent::init($database);
 		});
 	}
 
@@ -48,7 +48,7 @@ class CategoryMenu extends PagingMenu {
 		$listings = array_slice($this->getListings(), ($this->page - 1) * 45, 45);
 		foreach($listings as $key => $auction) {
 			$item = clone $auction->getItem();
-			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getEndTime()));
+			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($auction->getExpireTime()));
 
 			$listedItem = Locale::get($this->player, "listed-item");
 			$lore = str_ireplace(["{PRICE}", "{SELLER}", "{D}", "{H}", "{M}"], [$auction->getPrice(true, Settings::formatPrice()), $auction->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
@@ -88,10 +88,10 @@ class CategoryMenu extends PagingMenu {
 				break;
 			default:
 				$this->page = 1;
-				$this->init(DataStorage::getInstance());
+				$this->init(AuctionHouse::getInstance()->getDatabase());
 				return true;
 		}
-		parent::init(DataStorage::getInstance());
+		parent::init(AuctionHouse::getInstance()->getDatabase());
 		return true;
 	}
 }
