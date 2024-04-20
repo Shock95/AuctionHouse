@@ -119,15 +119,7 @@ status-active: "&aAktif"
 status-expired: "&cExpire"
 selected-listing-name: "&l&eAtur barang"
 
-#duplicate-item: "&aKlik disini untuk mengduplikat barang ke inventory kamu"
-#listing-expired: "&eKlik disini untuk membuat barang &cexpire"
-#listing-active: "&eKlik disini untuk membuat barang &aaktif"
-#delete-item: "&cClick here to delete item and listing"
-
-duplicate-item: "&aKasih barang ke inventory kamu"
-listing-status:
-    - "Status: {STATUS}"
-    - "&6Ubah status barang"
+copy-item: "&aKasih barang ke inventory kamu"
 delete-item: "&cBuang Barang dan Item"
 
 # Pagination items

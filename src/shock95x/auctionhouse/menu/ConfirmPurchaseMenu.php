@@ -102,8 +102,8 @@ class ConfirmPurchaseMenu extends AHMenu {
 				Locale::sendMessage($player, "purchase-economy-error");
 				return;
 			}
-			$err = yield from Await::promise(fn($resolve, $reject) => $database->removeListing($listing->getId(), $resolve, $reject));
-			if($err) {
+			$res = yield from $database->removeListingAsync($listing->getId());
+			if(!$res) {
 				$player->removeCurrentWindow();
 				Locale::sendMessage($player, "listing-gone");
 				return;

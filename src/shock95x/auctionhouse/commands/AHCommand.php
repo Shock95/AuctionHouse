@@ -7,7 +7,7 @@ use CortexPE\Commando\BaseCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use shock95x\auctionhouse\commands\subcommand\AboutCommand;
-use shock95x\auctionhouse\commands\subcommand\AdminCommand;
+use shock95x\auctionhouse\commands\subcommand\admin\AdminCommand;
 use shock95x\auctionhouse\commands\subcommand\CategoryCommand;
 use shock95x\auctionhouse\commands\subcommand\ExpiredCommand;
 use shock95x\auctionhouse\commands\subcommand\ListingsCommand;

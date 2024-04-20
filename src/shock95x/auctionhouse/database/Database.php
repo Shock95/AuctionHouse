@@ -51,21 +51,20 @@ class Database {
 
 		} catch(SqlError $error) {
 			$this->plugin->getLogger()->error($error->getMessage());
-		} finally {
-			Await::f2c(function () {
-				yield from $this->executeMultiAsync(Query::INIT);
-				LegacyConverter::getInstance()->init($this);
-				yield from LegacyConverter::getInstance()->convert();
-				if($this->type == DatabaseType::SQLite) {
-					yield from $this->asyncChangeRaw("PRAGMA foreign_keys = ON;");
-					$this->plugin->getScheduler()->scheduleRepeatingTask(new SQLiteExpireTask($this), 1200);
-				} else if($this->type == DatabaseType::MySQL) {
-					yield from $this->connector->asyncChange("auctionhouse.init.events", ["duration" => Settings::getExpiredDuration()]);
-				}
-			});
-			$this->connector->waitAll();
-			DataStorage::getInstance()->init($this);
 		}
+		Await::f2c(function () {
+			yield from $this->executeMultiAsync(Query::INIT);
+			LegacyConverter::getInstance()->init($this);
+			yield from LegacyConverter::getInstance()->convert();
+			if($this->type == DatabaseType::SQLite) {
+				yield from $this->asyncChangeRaw("PRAGMA foreign_keys = ON;");
+				$this->plugin->getScheduler()->scheduleRepeatingTask(new SQLiteExpireTask($this), 1200);
+			} else if($this->type == DatabaseType::MySQL) {
+				yield from $this->connector->asyncChange("auctionhouse.init.events", ["duration" => Settings::getExpiredDuration()]);
+			}
+		});
+		$this->connector->waitAll();
+		DataStorage::getInstance()->init($this);
 		return $this;
 	}
 
@@ -90,6 +89,17 @@ class Database {
 
 	public function getListings(callable $callback, int $offset = 0, int $limit = 45) {
 		$this->connector->executeSelect(Query::FETCH_ALL, ["id" => $offset, "limit" => $limit], function(array $rows) use ($callback): void {
+			/** @var AHListing[] $listings */
+			$listings = [];
+			foreach ($rows as $listing) {
+				$listings[] = AHListing::fromRow($listing);
+			}
+			$callback($listings);
+		});
+	}
+
+	public function getListingsByUsername(callable $callback, string $username, int $offset = 0, int $limit = 45): void {
+		$this->connector->executeSelect(Query::FETCH_USERNAME, ["username" => $username, "id" => $offset, "limit" => $limit], function(array $rows) use ($callback): void {
 			/** @var AHListing[] $listings */
 			$listings = [];
 			foreach ($rows as $listing) {
@@ -143,13 +153,13 @@ class Database {
 		}, fn() => $callback([]));
 	}
 
-	public function getTotalListingCount(callable $callback): void {
+	public function getListingsCount(callable $callback): void {
 		$this->connector->executeSelect(Query::COUNT_ALL, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
 		}, fn() => $callback(false));
 	}
 
-	public function getActiveListingCount(callable $callback) {
+	public function getActiveListingsCount(callable $callback) {
 		$this->connector->executeSelect(Query::COUNT_ACTIVE, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
 		}, fn() => $callback(false));
@@ -167,6 +177,18 @@ class Database {
 		}, fn() => $callback(false));
 	}
 
+	public function getExpiredCountByUsername(string $username, callable $callback) {
+		$this->connector->executeSelect(Query::COUNT_EXPIRED_USERNAME, ["username" => $username], function(array $rows) use ($callback): void {
+			$callback($rows[0]["COUNT(*)"]);
+		}, fn() => $callback(false));
+	}
+
+	public function getListingsCountByUsername(string $username, callable $callback) {
+		$this->connector->executeSelect(Query::COUNT_USERNAME, ["username" => $username], function(array $rows) use ($callback): void {
+			$callback($rows[0]["COUNT(*)"]);
+		}, fn() => $callback(false));
+	}
+
 	public function getExpiredCount(callable $callback) {
 		$this->connector->executeSelect(Query::COUNT_EXPIRED, [], function(array $rows) use ($callback): void {
 			$callback($rows[0]["COUNT(*)"]);
@@ -179,19 +201,15 @@ class Database {
 		}, fn() => $callback(false));
 	}
 
-	public function setExpired(int $id, $value = true, ?callable $onSuccess = null, ?callable $onError = null) {
-		$this->connector->executeGeneric(Query::SET_EXPIRED, ["id" => $id, "expired" => $value], $onSuccess, $onError);
+	public function setExpired(int $id, callable $callback) {
+		$this->connector->executeChange(Query::EXPIRE_ID, ["id" => $id], $callback, fn() => $callback(false));
 	}
 
-	public function removeListing(int $id, ?callable $onSuccess = null, ?callable $onError = null): void {
-		$this->connector->executeGeneric(Query::DELETE, ["id" => $id], $onSuccess, $onError);
+	public function removeListing(int $id, callable $callback): void {
+		$this->connector->executeChange(Query::DELETE_ID, ["id" => $id], $callback, fn() => $callback(false));
 	}
 
-	public function deleteListingAsync(int $id): Generator {
-		return yield from Await::promise(fn($resolve, $reject) => $this->removeListing($id, $resolve, $reject));
-	}
-
-	public function createListing(Player $player, Item $item, int $price, ?callable $callback = null): void {
+	public function createListing(Player $player, Item $item, int $price, callable $callback): void {
 		$username = $player->getName();
 		$uuid = $player->getUniqueId();
 		$createdTime = time();
@@ -214,44 +232,35 @@ class Database {
 		);
 	}
 
+	public function setExpiredAsync(int $id): Generator {
+		return yield from Await::promise(fn($res) => $this->setExpired($id, $res));
+	}
+
+	public function removeListingAsync(int $id): Generator {
+		return yield from Await::promise(fn($res) => $this->removeListing($id, $res));
+	}
+
 	public function createListingAsync(Player $player, Item $item, int $price): Generator {
 		return yield from Await::promise(fn($cb) => $this->createListing($player, $item, $price, $cb));
 	}
 
 	public function asyncGenericRaw(string $query, array $args = []): Generator {
-		return yield from Await::promise(function ($resolve, $reject) use ($query, $args) {
-			$this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_GENERIC], $resolve, $reject);
-		});
-	}
-
-	public function asyncSelectRaw(string $query, array $args = []): Generator {
-		/** @var SqlSelectResult[] $results */
-		$results = yield from Await::promise(function ($resolve, $reject) use ($query, $args) {
-			$this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_SELECT], $resolve, $reject);
-		});
-		return $results[0]->getRows();
-	}
-
-	public function asyncInsertRaw(string $query, array $args = []): Generator {
-		/** @var SqlInsertResult[] $results */
-		$results = yield from Await::promise(function ($resolve, $reject) use ($query, $args) {
-			$this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_SELECT], $resolve, $reject);
-		});
-		return $results[0]->getInsertId();
+		return yield from Await::promise(fn ($resolve, $reject) => $this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_GENERIC], $resolve, $reject));
 	}
 
 	public function asyncChangeRaw(string $query, array $args = []): Generator {
-		/** @var SqlChangeResult[] $results */
-		$results = yield from Await::promise(function ($resolve, $reject) use ($query, $args) {
-			$this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_CHANGE], $resolve, $reject);
-		});
-		return $results[0]->getAffectedRows();
+		return yield from Await::promise(fn ($resolve, $reject) => $this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_CHANGE], $resolve, $reject));
+	}
+
+	public function asyncInsertRaw(string $query, array $args = []): Generator {
+		return yield from Await::promise(fn ($resolve, $reject) => $this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_INSERT], $resolve, $reject));
+	}
+
+	public function asyncSelectRaw(string $query, array $args = []): Generator {
+		return yield from Await::promise(fn ($resolve, $reject) => $this->connector->executeImplRaw([$query], [$args], [SqlThread::MODE_SELECT], $resolve, $reject));
 	}
 
 	public function executeMultiAsync(string $queryName, array $args = [], int $mode = SqlThread::MODE_GENERIC): Generator {
-		/** @var SqlResult[] $results */
-		yield from Await::promise(function ($resolve, $reject) use ($queryName, $args, $mode) {
-			$this->connector->executeMulti($queryName, [$args], $mode , $resolve, $reject);
-		});
+		return yield from Await::promise(fn ($resolve, $reject) => $this->connector->executeMulti($queryName, [$args], $mode , $resolve, $reject));
 	}
 }

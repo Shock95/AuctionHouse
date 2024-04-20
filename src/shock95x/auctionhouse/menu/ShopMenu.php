@@ -40,7 +40,7 @@ class ShopMenu extends PagingMenu {
 			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListings($resolve, (45 * $this->page) - 45)));
 			$this->selling = yield from Await::promise(fn($resolve) => $database->getActiveCountByPlayer($this->player->getUniqueId(), $resolve));
 			$this->expired = yield from Await::promise(fn($resolve) => $database->getExpiredCountByPlayer($this->player->getUniqueId(), $resolve));
-			$this->total = yield from Await::promise(fn($resolve) => $database->getActiveListingCount($resolve));
+			$this->total = yield from Await::promise(fn($resolve) => $database->getActiveListingsCount($resolve));
 			$this->pages = (int) ceil($this->total / 45);
 			parent::init($database);
 		});
@@ -71,7 +71,7 @@ class ShopMenu extends PagingMenu {
 	}
 
 	public function renderListings(): void {
-        foreach($this->getListings() as $index => $listing) {
+		foreach($this->getListings() as $index => $listing) {
 			$item = clone $listing->getItem();
 			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getExpireTime()));
 
@@ -96,7 +96,7 @@ class ShopMenu extends PagingMenu {
 				if($player->hasPermission("auctionhouse.command.admin")) {
 					self::open(new AdminMenu($this->player), false);
 				}
-				return false;
+			return false;
 		}
 		$this->openListing($slot);
 		return parent::handle($player, $itemClicked, $inventory, $slot);

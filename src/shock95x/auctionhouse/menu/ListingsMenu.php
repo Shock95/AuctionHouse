@@ -63,7 +63,8 @@ class ListingsMenu extends PagingMenu {
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		if($slot <= 44 && isset($this->getListings()[$slot])) {
 			$listing = $this->getListings()[$slot];
-			AuctionHouse::getInstance()->getDatabase()->setExpired($listing->getId(), true, function() use ($itemClicked, $player, $listing, $slot, $inventory) {
+			AuctionHouse::getInstance()->getDatabase()->setExpired($listing->getId(), function($res) use ($itemClicked, $player, $listing, $slot, $inventory) {
+				if(!$res) return;
 				$inventory->setItem($slot, VanillaItems::AIR());
 				(new AuctionEndEvent($listing, AuctionEndEvent::CANCELLED, $player))->call();
 			});

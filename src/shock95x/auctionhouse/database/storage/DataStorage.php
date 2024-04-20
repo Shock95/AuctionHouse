@@ -128,8 +128,8 @@ class DataStorage {
 		}, fn() => $callback(false));
 	}
 
-	public function setExpired(AHListing $listing, $value = true, ?callable $onSuccess = null, ?callable $onError = null) {
-		$this->database->getConnector()->executeGeneric(Query::SET_EXPIRED, ["id" => $listing->getId(), "expired" => $value], $onSuccess, $onError);
+	public function setExpired(AHListing $listing,  ?callable $onSuccess = null, ?callable $onError = null) {
+		$this->database->getConnector()->executeGeneric(Query::EXPIRE_ID, ["id" => $listing->getId()], $onSuccess, $onError);
 	}
 
 	public function removeListing(AHListing $listing, ?callable $onSuccess = null, ?callable $onError = null): void {
@@ -137,7 +137,7 @@ class DataStorage {
 	}
 
 	public function removeListingById(int $id, ?callable $onSuccess = null, ?callable $onError = null): void {
-		$this->database->getConnector()->executeGeneric(Query::DELETE, ["id" => $id], $onSuccess, $onError);
+		$this->database->getConnector()->executeGeneric(Query::DELETE_ID, ["id" => $id], $onSuccess, $onError);
 	}
 
 	public function createListing(Player $player, Item $item, int $price, ?callable $callback = null): void {

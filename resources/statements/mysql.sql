@@ -47,6 +47,11 @@ DO CALL expire_listings();
 SELECT COUNT(*) FROM listings;
 -- #    }
 
+-- #    { username
+-- #          :username string
+SELECT COUNT(*) FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE players.username = :username;
+-- #    }
+
 -- #    { active
 
 -- #        { all
@@ -75,6 +80,11 @@ SELECT COUNT(*) FROM listings WHERE expired = TRUE;
 SELECT COUNT(*) FROM listings WHERE player_uuid = :uuid AND expired = TRUE;
 -- #        }
 
+-- #        { username
+-- #          :username string
+SELECT COUNT(*) FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE players.username = :username AND expired = TRUE;
+-- #        }
+
 -- #    }
 
 -- # }
@@ -90,6 +100,13 @@ SELECT listings.*, players.username FROM listings JOIN players ON listings.playe
 -- #    { id
 -- #        :id int
 SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE id = :id;
+-- #    }
+
+-- #    { username
+-- #        :id int
+-- #        :limit int
+-- #        :username string
+SELECT listings.*, players.username FROM listings JOIN players ON listings.player_uuid = players.uuid WHERE players.username = :username LIMIT :id, :limit;
 -- #    }
 
 -- #    { active
@@ -136,14 +153,55 @@ SELECT listings.*, players.username FROM listings JOIN players ON listings.playe
 -- #    }
 
 -- # { delete
--- #    :id int
+
+-- #    { id
+-- #        :id int
 DELETE FROM listings WHERE id = :id;
+-- #    }
+
+-- #    { username
+-- #        :username string
+DELETE listings FROM listings JOIN players ON listings.player_uuid = players.uuid
+WHERE players.username = :username;
+-- #    }
+
 -- # }
 
--- # { expired
--- #    :id int
--- #    :expired bool
-UPDATE listings SET expired = :expired WHERE id = :id;
+
+-- # { expire
+
+-- #    { id
+-- #        :id int
+UPDATE listings SET expired = TRUE WHERE id = :id;
+-- #    }
+
+-- #    { username
+-- #        :username string
+UPDATE listings JOIN players ON listings.player_uuid = players.uuid SET listings.expired = TRUE
+WHERE players.username = :username;
+-- #    }
+
+-- #    { all
+UPDATE listings SET expired = TRUE;
+-- #    }
+
+-- # }
+
+-- # { relist
+
+-- #    { username
+-- #        :expires_at int
+-- #        :username string
+UPDATE listings JOIN players ON listings.player_uuid = players.uuid
+SET listings.expired = FALSE, listings.expires_at = :expires_at
+WHERE players.username = :username;
+-- #    }
+
+-- #    { all
+-- #        :expires_at int
+UPDATE listings SET expired = FALSE, expires_at = :expires_at;
+-- #    }
+
 -- # }
 
 -- # { insert

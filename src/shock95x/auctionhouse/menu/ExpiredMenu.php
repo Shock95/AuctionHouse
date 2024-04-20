@@ -11,6 +11,7 @@ use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\Database;
+use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -73,8 +74,8 @@ class ExpiredMenu extends PagingMenu {
 				}
 				$item = $listing->getItem();
 				if($player->getInventory()->canAddItem($item)) {
-					$err = yield from $database->deleteListingAsync($id);
-					if($err) return;
+					$res = yield from $database->removeListingAsync($id);
+					if(!$res) return;
 					$inventory->setItem($slot, VanillaItems::AIR());
 					$player->getInventory()->addItem($item);
 					$player->sendMessage(str_ireplace(["{ITEM}", "{AMOUNT}"], [$item->getName(), $item->getCount()], Locale::get($player, "returned-item", true)));
@@ -87,8 +88,9 @@ class ExpiredMenu extends PagingMenu {
 				}
 				foreach ($this->getListings() as $index => $expired) {
 					if ($player->getInventory()->canAddItem($expired->getItem())) {
-						$err = yield from $database->deleteListingAsync($expired->getId());
-						if($err) return;
+						$res = yield from $database->removeListingAsync($expired->getId());
+						if(!$res) return;
+						(new AuctionEndEvent($listing, AuctionEndEvent::CANCELLED))->call();
 						$inventory->setItem($index, VanillaItems::AIR());
 						$player->getInventory()->addItem($expired->getItem());
 					}

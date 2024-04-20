@@ -23,7 +23,7 @@ class PlayerListingMenu extends PagingMenu {
 	public function __construct(Player $player, string $username) {
 		$this->username = $username;
 		$this->setName(str_ireplace("{player}", $username, Locale::get($player, "player-listing")));
-		parent::__construct($player, true);
+		parent::__construct($player);
 	}
 
 	protected function init(Database $database): void {
@@ -35,6 +35,7 @@ class PlayerListingMenu extends PagingMenu {
 	}
 
 	public function renderButtons() : void {
+		parent::renderButtons();
 		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
 		$this->getInventory()->setItem(49, $stats);
 	}

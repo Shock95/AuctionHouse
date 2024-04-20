@@ -1,8 +1,8 @@
 <?php
-declare(strict_types=1);
 
 namespace shock95x\auctionhouse\menu\admin;
 
+use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -19,34 +19,38 @@ use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 use SOFe\AwaitGenerator\Await;
 
-class AdminMenu extends PagingMenu {
+class AdminListingsMenu extends PagingMenu {
 
 	protected int $expired;
-	protected int $total;
+	private string $username;
+	private int $total;
 
-	const INDEX_RELIST_ALL = 52;
-	const INDEX_RETURN_ALL = 53;
+	const INDEX_RELIST_ALL = 51;
+	const INDEX_RETURN_ALL = 52;
+	const INDEX_DELETE_ALL = 53;
 
-	public function __construct(Player $player, bool $returnMain = true) {
-		$this->setName(Locale::get($player, "admin-menu-name"));
-		parent::__construct($player, $returnMain);
+	public function __construct(Player $player, string $username) {
+		$this->username = $username;
+		$this->setName(str_ireplace("{player}", $username, Locale::get($player, "player-listing")));
+		parent::__construct($player);
 	}
 
 	protected function init(Database $database): void {
 		Await::f2c(function () use ($database) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $database->getListings($resolve, (45 * $this->page) - 45)));
-			$this->expired = yield from Await::promise(fn($resolve) => $database->getExpiredCount($resolve));
-			$this->total = yield from Await::promise(fn($resolve) => $database->getListingsCount($resolve));
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getListingsByUsername($resolve, $this->username, (45 * $this->page) - 45)));
+			$this->expired = yield from Await::promise(fn($resolve) => $database->getExpiredCountByUsername($this->username, $resolve));
+			$this->total = yield from Await::promise(fn($resolve) => $database->getListingsCountByUsername($this->username, $resolve));
 			$this->pages = (int) ceil($this->total / 45);
 			parent::init($database);
 		});
 	}
-	
+
 	public function renderButtons(): void {
 		parent::renderButtons();
 		$fakeEnchant = new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId(AuctionHouse::FAKE_ENCH_ID));
 
-		$stats = Utils::getButtonItem($this->player, "stats", "main-stats-admin", ["{PAGE}", "{MAX}", "{EXPIRED}", "{TOTAL}"], [$this->page, $this->pages, $this->expired, $this->total])
+		$stats = Utils::getButtonItem($this->player, "stats", "main-stats-admin", ["{PAGE}", "{MAX}", "{EXPIRED}", "{TOTAL}"], [$this->page, $this->pages, $this->expired, $this->total]);
+		$deleteAll = VanillaBlocks::BARRIER()->asItem()->setCustomName(TextFormat::RESET . Locale::get($this->player, "delete-all"))
 			->addEnchantment($fakeEnchant);
 		$relistALl = VanillaItems::EMERALD()->setCustomName(TextFormat::RESET . Locale::get($this->player, "relist-all"))
 			->addEnchantment($fakeEnchant);
@@ -54,19 +58,20 @@ class AdminMenu extends PagingMenu {
 			->addEnchantment($fakeEnchant);
 
 		$this->getInventory()->setItem(self::INDEX_REFRESH, $stats);
+		$this->getInventory()->setItem(self::INDEX_DELETE_ALL, $deleteAll);
 		$this->getInventory()->setItem(self::INDEX_RELIST_ALL, $relistALl);
 		$this->getInventory()->setItem(self::INDEX_RETURN_ALL, $returnAll);
 	}
-	
+
 	public function renderListings(): void {
-        foreach($this->getListings() as $index => $listing) {
+		foreach($this->getListings() as $index => $listing) {
 			$item = clone $listing->getItem();
 			$status =  Locale::get($this->player, $listing->isExpired() ? "status-expired" : "status-active");
 			$listedItem = Locale::get($this->player, "listed-item-admin");
 			$item->setLore(str_ireplace(["{PRICE}", "{SELLER}", "{STATUS}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $status], preg_filter('/^/', TextFormat::RESET, $listedItem)));
-            $this->getInventory()->setItem($index, $item);
+			$this->getInventory()->setItem($index, $item);
 		}
-       	parent::renderListings();
+		parent::renderListings();
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
@@ -81,11 +86,15 @@ class AdminMenu extends PagingMenu {
 			switch($slot) {
 				case self::INDEX_RELIST_ALL:
 					$expireTime = Utils::getExpireTime(time());
-					yield from $database->getConnector()->asyncChange(Query::RELIST_ALL, ["expires_at" => $expireTime]);
+					yield from $database->getConnector()->asyncChange(Query::RELIST_USERNAME, ["username" => $this->username, "expires_at" => $expireTime]);
 					$this->init($database);
 					break;
 				case self::INDEX_RETURN_ALL:
-					yield from $database->getConnector()->asyncChange(Query::EXPIRE_ALL);
+					yield from $database->getConnector()->asyncChange(Query::EXPIRE_USERNAME, ["username" => $this->username]);
+					$this->init($database);
+					break;
+				case self::INDEX_DELETE_ALL:
+					yield from $database->getConnector()->asyncChange(Query::DELETE_USERNAME, ["username" => $this->username]);
 					$this->init($database);
 					break;
 			}

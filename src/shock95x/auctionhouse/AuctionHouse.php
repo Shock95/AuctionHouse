@@ -11,20 +11,14 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ItemFlags;
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use pocketmine\nbt\BigEndianNbtSerializer;
-use pocketmine\nbt\TreeRoot;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\SingletonTrait;
 use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\database\Database;
-use shock95x\auctionhouse\database\legacy\LegacyConverter;
 use shock95x\auctionhouse\economy\BedrockEconomyProvider;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\economy\EconomySProvider;
-use shock95x\auctionhouse\task\CheckLegacyTask;
 use shock95x\auctionhouse\tile\AHSign;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -61,10 +55,9 @@ class AuctionHouse extends PluginBase {
 		TileFactory::getInstance()->register(AHSign::class, ["AHSign", "auctionhouse:sign"]);
 		EnchantmentIdMap::getInstance()->register(self::FAKE_ENCH_ID, new Enchantment("Glow", 1, ItemFlags::ALL, ItemFlags::NONE, 1));
 
-		$pluginManager = $this->getServer()->getPluginManager();
-
 		$this->database = (new Database($this))->connect($this->getConfig());
 
+		$pluginManager = $this->getServer()->getPluginManager();
 		$pluginManager->registerEvents(new EventListener(), $this);
 
 		if($pluginManager->getPlugin(EconomySProvider::getName()) !== null) {

@@ -116,12 +116,7 @@ status-active: '&aАктивное'
 status-expired: '&cИстёкшие'
 selected-listing-name: '&l&cУправление товаром'
 
-duplicate-item: '&aДобавить предмет в инвентарь'
-listing-expired: '&eНажмите, чтобы сделать товар &cистёкшим'
-listing-active: '&eНажмите, чтобы сделать товар &aактивным'
-listing-status:
-    - "Статус: {STATUS}"
-    - "&6Изменить статус витрины"
+copy-item: '&aДобавить предмет в инвентарь'
 delete-item: '&cНажмите, чтобы удалить товар с аукциона'
 
 # Pagination items

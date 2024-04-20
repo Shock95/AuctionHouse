@@ -15,15 +15,32 @@
 		"muqsit/invmenu": "^4.6.5",
 		"ifera-mc/update-notifier": "dev-master",
 		"muqsit/simple-packet-handler": "dev-pm5",
-		"cortexpe/commando": "dev-master"
+		"cortexpe/commando": "3.1.0"
 	},
 	"require-dev": {
 		"sof3/pharynx": "^0.3.4"
 	},
 	"repositories": [
 		{
-			"type": "git",
-			"url": "https://github.com/Aboshxm2/Commando.git"
+			"type": "package",
+			"package": {
+				"name": "cortexpe/commando",
+				"version": "3.1.0",
+				"source": {
+					"url": "https://github.com/Paroxity/Commando.git",
+					"type": "git",
+					"reference": "8473a5030c7e9bed6f7a25533a797361898ab47e"
+				},
+				"autoload": {
+					"classmap": ["src"]
+				},
+				"extra": {
+					"virion": {
+						"spec": "3.0",
+						"namespace-root": "CortexPE\\Commando"
+					}
+				}
+			}
 		},
 		{
 			"type": "git",
