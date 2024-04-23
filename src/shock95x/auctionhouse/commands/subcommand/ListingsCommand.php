@@ -10,7 +10,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use shock95x\auctionhouse\commands\arguments\PlayerArgument;
 use shock95x\auctionhouse\menu\ListingsMenu;
-use shock95x\auctionhouse\menu\player\PlayerListingMenu;
+use shock95x\auctionhouse\menu\player\PlayerListingsMenu;
 use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
 
@@ -28,7 +28,7 @@ class ListingsCommand extends BaseSubCommand {
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		assert($sender instanceof Player);
 		if(!isset($args["player"])) {
-			AHMenu::open(new ListingsMenu($sender, false));
+			(new ListingsMenu($sender))->open();
 			return;
 		}
 		$player = strtolower($args["player"]);
@@ -36,6 +36,6 @@ class ListingsCommand extends BaseSubCommand {
 			Locale::sendMessage($sender, "player-listings-usage");
 			return;
 		}
-		AHMenu::open(new PlayerListingMenu($sender, $args["player"]));
+		(new PlayerListingsMenu($sender, $args["player"]))->open();
 	}
 }

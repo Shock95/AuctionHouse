@@ -20,18 +20,15 @@ use SOFe\AwaitGenerator\Await;
 
 class ListingsMenu extends PagingMenu {
 
-	private int $total;
-
-	public function __construct(Player $player, bool $returnMain = true) {
+	public function __construct(Player $player) {
 		$this->setName(Locale::get($player, "listings-menu-name"));
-		parent::__construct($player, $returnMain);
+		parent::__construct($player);
 	}
 
 	protected function init(Database $database): void {
 		Await::f2c(function () use ($database) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListingsByPlayer($resolve, $this->player->getUniqueId(), (45 * $this->page) - 45)));
-			$this->total = yield from Await::promise(fn($resolve) => $database->getActiveCountByPlayer($this->player->getUniqueId(), $resolve));
-			$this->pages = (int) ceil($this->total / 45);
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListingsByPlayer($resolve, $this->player->getUniqueId(), $this->getItemOffset())));
+			$this->setTotalCount(yield from Await::promise(fn($resolve) => $database->getActiveCountByPlayer($this->player->getUniqueId(), $resolve)));
 			parent::init($database);
 		});
 	}
@@ -39,8 +36,7 @@ class ListingsMenu extends PagingMenu {
 	public function renderButtons(): void {
 		parent::renderButtons();
 		$info = Utils::getButtonItem($this->player, "info", "listings-description");
-		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
-
+		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->getPage(), $this->getPageCount(), $this->getTotalCount()]);
 		$this->getInventory()->setItem(53, $info);
 		$this->getInventory()->setItem(49, $stats);
 	}

@@ -20,7 +20,7 @@ class AdminCommand extends BaseSubCommand{
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args) : void{
 		if($sender instanceof Player){
-			AHMenu::open(new AdminMenu($sender, false));
+			(new AdminMenu($sender))->open();
 		}
 	}
 }

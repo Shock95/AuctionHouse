@@ -8,7 +8,7 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\menu\player\PlayerListingMenu;
+use shock95x\auctionhouse\menu\player\PlayerListingsMenu;
 use shock95x\auctionhouse\menu\ShopMenu;
 use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\tile\AHSign;
@@ -53,9 +53,9 @@ class EventListener implements Listener {
 		$tile = $block->getPosition()->getWorld()->getTile($block->getPosition());
 		if($tile instanceof AHSign) {
 			if($tile->getType() == AHSign::TYPE_SHOP) {
-				AHMenu::open(new ShopMenu($player));
+				(new ShopMenu($player))->open();
 			} else if($tile->getType() == AHSign::TYPE_PLAYER) {
-				AHMenu::open(new PlayerListingMenu($player, $tile->getValue()));
+				(new PlayerListingsMenu($player, $tile->getValue()))->open();
 			}
 		}
 	}

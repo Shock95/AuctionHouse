@@ -20,29 +20,24 @@ use SOFe\AwaitGenerator\Await;
 
 class ExpiredMenu extends PagingMenu {
 
-	private int $total;
-
 	const INDEX_RETURN_ALL = 49;
 
-	public function __construct(Player $player, bool $returnMain = true) {
+	public function __construct(Player $player) {
 		$this->setName(Locale::get($player, "expired-menu-name"));
-		parent::__construct($player, $returnMain);
+		parent::__construct($player);
 	}
 
 	protected function init(Database $database): void {
 		Await::f2c(function () use ($database) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $database->getExpiredListingsByPlayer($resolve, $this->player->getUniqueId(), (45 * $this->page) - 45)));
-			$this->total = yield from Await::promise(fn($resolve) => $database->getExpiredCountByPlayer($this->player->getUniqueId(), $resolve));
-			$this->pages = (int) ceil($this->total / 45);
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getExpiredListingsByPlayer($resolve, $this->player->getUniqueId(), $this->getItemOffset())));
+			$this->setTotalCount(yield from Await::promise(fn($resolve) => $database->getExpiredCountByPlayer($this->player->getUniqueId(), $resolve)));
 			parent::init($database);
 		});
 	}
 
 	public function renderButtons() : void {
 		parent::renderButtons();
-
-		$stats = Utils::getButtonItem($this->player, "return_all", "expired-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->page, $this->total]);
-
+		$stats = Utils::getButtonItem($this->player, "return_all", "expired-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->getPage(), $this->getPageCount(), $this->getTotalCount()]);
 		$this->getInventory()->setItem(53, Utils::getButtonItem($this->player, "info", "main-description"));
 		$this->getInventory()->setItem(49, $stats);
 	}
@@ -82,7 +77,7 @@ class ExpiredMenu extends PagingMenu {
 				}
 			}
 			if($slot == self::INDEX_RETURN_ALL) {
-				if(Utils::getEmptySlotCount($player->getInventory()) < $this->total) {
+				if(Utils::getEmptySlotCount($player->getInventory()) < $this->getTotalCount()) {
 					Locale::sendMessage($player, "inventory-full");
 					return;
 				}
@@ -90,7 +85,7 @@ class ExpiredMenu extends PagingMenu {
 					if ($player->getInventory()->canAddItem($expired->getItem())) {
 						$res = yield from $database->removeListingAsync($expired->getId());
 						if(!$res) return;
-						(new AuctionEndEvent($listing, AuctionEndEvent::CANCELLED))->call();
+						(new AuctionEndEvent($expired, AuctionEndEvent::CANCELLED))->call();
 						$inventory->setItem($index, VanillaItems::AIR());
 						$player->getInventory()->addItem($expired->getItem());
 					}

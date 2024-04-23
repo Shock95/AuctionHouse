@@ -33,7 +33,7 @@ class AHCommand extends BaseCommand {
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		if(count($args) == 0 && $sender instanceof Player) {
-			AHMenu::open(new ShopMenu($sender));
+			(new ShopMenu($sender))->open();
 		}
 	}
 }

@@ -9,15 +9,15 @@ use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\database\Database;
+use shock95x\auctionhouse\menu\ConfirmPurchaseMenu;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 use SOFe\AwaitGenerator\Await;
 
-class PlayerListingMenu extends PagingMenu {
+class PlayerListingsMenu extends PagingMenu {
 
-	private int $total;
 	private string $username;
 
 	public function __construct(Player $player, string $username) {
@@ -28,15 +28,15 @@ class PlayerListingMenu extends PagingMenu {
 
 	protected function init(Database $database): void {
 		Await::f2c(function () use ($database) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListingsByUsername($resolve, $this->username, (45 * $this->page) - 45)));
-			$this->total = yield from Await::promise(fn($resolve) => $database->getActiveCountByUsername($this->username, $resolve));
-			$this->pages = (int) ceil($this->total / 45);
-		}, fn() => parent::init($database));
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListingsByUsername($resolve, $this->username, $this->getItemOffset())));
+			$this->setTotalCount(yield from Await::promise(fn($resolve) => $database->getActiveCountByUsername($this->username, $resolve)));
+			parent::init($database);
+		});
 	}
 
-	public function renderButtons() : void {
+	public function renderButtons(): void {
 		parent::renderButtons();
-		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->getPage(), $this->getPageCount(), $this->getTotalCount()]);
 		$this->getInventory()->setItem(49, $stats);
 	}
 
@@ -56,7 +56,10 @@ class PlayerListingMenu extends PagingMenu {
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
-		$this->openListing($slot);
+		if(isset($this->getListings()[$slot])) {
+			(new ConfirmPurchaseMenu($player, $this->getListings()[$slot]))->open();
+			return true;
+		}
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 }

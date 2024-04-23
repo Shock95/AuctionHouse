@@ -32,7 +32,6 @@ class ManageListingMenu extends AHMenu {
 	}
 
 	public function renderButtons(): void {
-		parent::renderButtons();
 		$this->inventory->setItem(self::INDEX_COPY,
 			VanillaBlocks::HOPPER()->asItem()->setCustomName(TextFormat::RESET . Locale::get($this->player, "copy-item")));
 		$this->inventory->setItem(self::INDEX_REMOVE,
@@ -64,7 +63,7 @@ class ManageListingMenu extends AHMenu {
 					break;
 				case self::INDEX_REMOVE:
 					if($listing == null || $listing->isExpired()) {
-						self::open(new AdminMenu($player, false));
+						$this->returnMenu?->send($player);
 						break;
 					}
 					yield from $database->setExpiredAsync($listing->getId());
@@ -73,19 +72,19 @@ class ManageListingMenu extends AHMenu {
 						$item = $listing->getItem();
 						$seller->sendMessage(str_ireplace(["{ITEM}", "{AMOUNT}"], [$item->getName(), $item->getCount()], Locale::get($seller, "returned-item", true)));
 					}
-					self::open(new AdminMenu($player, false));
+					$this->returnMenu?->send($player);
 					break;
 				case self::INDEX_DELETE:
 					if($listing == null) {
-						self::open(new AdminMenu($player, false));
+						$this->returnMenu?->send($player);
 						break;
 					}
 					yield from $database->removeListingAsync($listing->getId());
 					(new AuctionEndEvent($listing, AuctionEndEvent::ADMIN_REMOVED))->call();
-					self::open(new AdminMenu($player, false));
+					$this->returnMenu?->send($player);
 					break;
 			}
 		});
-		return parent::handle($player, $itemClicked, $inventory, $slot);
+		return true;
 	}
 }

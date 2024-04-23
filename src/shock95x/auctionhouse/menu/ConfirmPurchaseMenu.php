@@ -35,13 +35,13 @@ class ConfirmPurchaseMenu extends AHMenu {
 	}
 
 	public function renderButtons(): void {
-		foreach (self::INDEX_CONFIRM as $x) {
-			$confirmItem = Utils::getButtonItem($this->player, "confirm_purchase", "purchase-confirm");
-			$this->getInventory()->setItem($x, $confirmItem);
+		$confirm = Utils::getButtonItem($this->player, "confirm_purchase", "purchase-confirm");
+		$cancel = Utils::getButtonItem($this->player, "cancel_purchase", "purchase-cancel");
+		foreach(self::INDEX_CONFIRM as $x) {
+			$this->getInventory()->setItem($x, $confirm);
 		}
-		foreach (self::INDEX_CANCEL as $x) {
-			$cancelItem = Utils::getButtonItem($this->player, "cancel_purchase", "purchase-cancel");
-			$this->getInventory()->setItem($x, $cancelItem);
+		foreach(self::INDEX_CANCEL as $x) {
+			$this->getInventory()->setItem($x, $cancel);
 		}
 	}
 

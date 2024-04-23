@@ -21,23 +21,21 @@ use SOFe\AwaitGenerator\Await;
 
 class AdminMenu extends PagingMenu {
 
-	protected int $expired;
-	protected int $total;
+	protected int $expiredCount;
 
 	const INDEX_RELIST_ALL = 52;
 	const INDEX_RETURN_ALL = 53;
 
-	public function __construct(Player $player, bool $returnMain = true) {
+	public function __construct(Player $player) {
 		$this->setName(Locale::get($player, "admin-menu-name"));
-		parent::__construct($player, $returnMain);
+		parent::__construct($player);
 	}
 
 	protected function init(Database $database): void {
 		Await::f2c(function () use ($database) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $database->getListings($resolve, (45 * $this->page) - 45)));
-			$this->expired = yield from Await::promise(fn($resolve) => $database->getExpiredCount($resolve));
-			$this->total = yield from Await::promise(fn($resolve) => $database->getListingsCount($resolve));
-			$this->pages = (int) ceil($this->total / 45);
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getListings($resolve, (45 * $this->getPage()) - 45)));
+			$this->expiredCount = yield from Await::promise(fn($resolve) => $database->getExpiredCount($resolve));
+			$this->setTotalCount(yield from Await::promise(fn($resolve) => $database->getListingsCount($resolve)));
 			parent::init($database);
 		});
 	}
@@ -46,7 +44,7 @@ class AdminMenu extends PagingMenu {
 		parent::renderButtons();
 		$fakeEnchant = new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId(AuctionHouse::FAKE_ENCH_ID));
 
-		$stats = Utils::getButtonItem($this->player, "stats", "main-stats-admin", ["{PAGE}", "{MAX}", "{EXPIRED}", "{TOTAL}"], [$this->page, $this->pages, $this->expired, $this->total])
+		$stats = Utils::getButtonItem($this->player, "stats", "main-stats-admin", ["{PAGE}", "{MAX}", "{EXPIRED}", "{TOTAL}"], [$this->getPage(), $this->getPageCount(), $this->expiredCount, $this->getTotalCount()])
 			->addEnchantment($fakeEnchant);
 		$relistALl = VanillaItems::EMERALD()->setCustomName(TextFormat::RESET . Locale::get($this->player, "relist-all"))
 			->addEnchantment($fakeEnchant);
@@ -73,8 +71,7 @@ class AdminMenu extends PagingMenu {
 		Await::f2c(function() use ($player, $slot){
 			if($slot <= 44 && isset($this->getListings()[$slot])) {
 				$listing = $this->getListings()[$slot];
-				$player->removeCurrentWindow();
-				self::open(new ManageListingMenu($player, $listing));
+				(new ManageListingMenu($player, $listing))->setReturnMenu($this)->open();
 				return;
 			}
 			$database = AuctionHouse::getInstance()->getDatabase();
