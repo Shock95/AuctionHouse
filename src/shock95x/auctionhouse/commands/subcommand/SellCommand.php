@@ -82,9 +82,7 @@ class SellCommand extends BaseSubCommand {
 
 			$listingPrice = Settings::getListingPrice();
 			if($listingPrice > 0) {
-				$subtractMoneyOk = yield from Await::promise(function($result) use ($listingPrice, $sender) {
-					$this->getEconomy()->subtractMoney($sender, $listingPrice, $result);
-				});
+				$subtractMoneyOk = yield from $this->getEconomy()->subtractMoneyAsync($sender, $listingPrice);
 				if(!$subtractMoneyOk) {
 					return;
 				}
@@ -94,9 +92,7 @@ class SellCommand extends BaseSubCommand {
 			$event->call();
 			if($event->isCancelled()) {
 				// refund the listing price
-				$addMoneyOk = yield from Await::promise(function($result) use ($listingPrice, $sender) {
-					$this->getEconomy()->addMoney($sender, $listingPrice, $result);
-				});
+				$addMoneyOk = yield from $this->getEconomy()->addMoneyAsync($sender, $listingPrice);
 				if(!$addMoneyOk) {
 					// TODO we failed to refund; what now?
 				}

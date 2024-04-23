@@ -7,7 +7,7 @@ use onebone\economyapi\EconomyAPI;
 use pocketmine\player\Player;
 
 
-class EconomySProvider implements EconomyProvider {
+class EconomySProvider extends EconomyProvider {
 
 	protected ?EconomyAPI $economyAPI;
 

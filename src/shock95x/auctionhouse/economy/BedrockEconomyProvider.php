@@ -9,7 +9,7 @@ use cooldogedev\BedrockEconomy\BedrockEconomy;
 use pocketmine\player\Player;
 use pocketmine\Server;
 
-class BedrockEconomyProvider implements EconomyProvider {
+class BedrockEconomyProvider extends EconomyProvider {
 
 	protected ?LegacyAPI $economy;
 
@@ -27,8 +27,9 @@ class BedrockEconomyProvider implements EconomyProvider {
 		$this->economy->subtractFromPlayerBalance($player, $amount, ClosureContext::create(fn (bool $r) => $callback($r)));
 	}
 
-	public function getCurrencySymbol() : string{
-        $eco = Server::getInstance()->getPluginManager()->getPlugin(self::getName());
+	public function getCurrencySymbol(): string {
+		/** @var BedrockEconomy $eco */
+		$eco = Server::getInstance()->getPluginManager()->getPlugin(self::getName());
 		return $eco->getCurrencyManager()->getSymbol();
 	}
 

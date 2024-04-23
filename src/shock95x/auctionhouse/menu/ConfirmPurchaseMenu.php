@@ -91,14 +91,14 @@ class ConfirmPurchaseMenu extends AHMenu {
 			$event->call();
 			if($event->isCancelled()) return;
 
-			$sub = yield from Await::promise(fn($resolve) => $economy->subtractMoney($player, $listing->getPrice(), $resolve));
+			$sub = yield from $economy->subtractMoneyAsync($player, $listing->getPrice());
 			if(!$sub) {
 				Locale::sendMessage($player, "cannot-afford");
 				return;
 			}
-			$add = yield from Await::promise(fn($resolve) => $economy->addMoney($listing->getSeller(), $listing->getPrice(), $resolve));
+			$add = yield from $economy->addMoneyAsync($listing->getSeller(), $listing->getPrice());
 			if(!$add) {
-				yield from Await::promise(fn($resolve) => $economy->addMoney($player, $listing->getPrice(), $resolve));
+				yield from $economy->addMoneyAsync($player, $listing->getPrice());
 				Locale::sendMessage($player, "purchase-economy-error");
 				return;
 			}
