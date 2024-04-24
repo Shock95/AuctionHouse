@@ -1,6 +1,6 @@
 name: AuctionHouse
 main: shock95x\auctionhouse\AuctionHouse
-version: 2.1.0-dev
+version: 2.1.0
 api: 5.0.0
 author: "Shock95"
 softdepend: [BedrockEconomy]
