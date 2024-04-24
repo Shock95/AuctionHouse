@@ -20,7 +20,7 @@ cancelled-item: "&eYou have &6cancelled &ean auction. Return cancelled and expir
 cancelled-purchase: "&cYou have cancelled this purchase"    #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
 purchased-item: "&2You have bought &d{ITEM} &r&d(x{AMOUNT}) &2for &d{PRICE}"    #{PLAYER}, {ITEM}, {PRICE}, {AMOUNT}
 seller-message: "&e{PLAYER} &bpurchased {ITEM} (x{AMOUNT}) from you for &d{PRICE}!"    #{ITEM}, {AMOUNT}
-returned-item: "&2You have removed &d{ITEM} &r&d(x{AMOUNT}) &2from the auction house." 
+returned-item: "&d{ITEM} &r&d(x{AMOUNT}) &2has been removed from the auction house"
 
 # Error messages
 in-creative: "&cYou cannot sell items while in creative mode."
@@ -119,16 +119,13 @@ status-active: "&aActive"
 status-expired: "&cExpired"
 selected-listing-name: "&l&eManage Listing"
 
-#duplicate-item: "&aClick here to duplicate item to inventory"
-#listing-expired: "&eClick here to make listing &cexpired"
-#listing-active: "&eClick here to make listing &aactive"
-#delete-item: "&cClick here to delete item and listing"
+copy-item: "&bCopy item"
+return-item: "&6Return item"
+delete-item: "&cDelete item"
 
-duplicate-item: "&aAdd item to inventory"
-listing-status:
-    - "Status: {STATUS}"
-    - "&6Change listing status"
-delete-item: "&cDelete listing and item"
+relist-all: "&aRelist all items"
+return-all: "&6Return all items"
+delete-all: "&cDelete all items"
 
 # Pagination items
 previous-page:

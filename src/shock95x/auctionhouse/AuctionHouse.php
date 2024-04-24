@@ -16,11 +16,9 @@ use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\SingletonTrait;
 use shock95x\auctionhouse\commands\AHCommand;
 use shock95x\auctionhouse\database\Database;
-use shock95x\auctionhouse\database\legacy\LegacyConverter;
 use shock95x\auctionhouse\economy\BedrockEconomyProvider;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\economy\EconomySProvider;
-use shock95x\auctionhouse\task\CheckLegacyTask;
 use shock95x\auctionhouse\tile\AHSign;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
@@ -57,13 +55,9 @@ class AuctionHouse extends PluginBase {
 		TileFactory::getInstance()->register(AHSign::class, ["AHSign", "auctionhouse:sign"]);
 		EnchantmentIdMap::getInstance()->register(self::FAKE_ENCH_ID, new Enchantment("Glow", 1, ItemFlags::ALL, ItemFlags::NONE, 1));
 
+		$this->database = (new Database($this))->connect($this->getConfig());
+
 		$pluginManager = $this->getServer()->getPluginManager();
-
-		$this->database = new Database($this, $this->getConfig());
-		$this->database->connect();
-
-		LegacyConverter::getInstance()->init($this->database);
-
 		$pluginManager->registerEvents(new EventListener(), $this);
 
 		if($pluginManager->getPlugin(EconomySProvider::getName()) !== null) {
@@ -79,9 +73,8 @@ class AuctionHouse extends PluginBase {
 			}
 			Settings::setCurrencySymbol($this->economyProvider->getCurrencySymbol());
 		}), 1);
-		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
 		$this->getServer()->getCommandMap()->register($this->getDescription()->getName(), new AHCommand($this, "ah", "AuctionHouse command"));
-		$this->getScheduler()->scheduleDelayedTask(new CheckLegacyTask($this), 1);
+		UpdateNotifier::checkUpdate($this->getDescription()->getName(), $this->getDescription()->getVersion());
 	}
 
 	public function onDisable(): void {

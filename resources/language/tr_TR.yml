@@ -118,9 +118,7 @@ status-active: "&aAktif"
 status-expired: "&cSüresi Dolmuş"
 selected-listing-name: "&l&cListeyi Yönet"
 
-duplicate-item: "&aÖğeyi envantere kopyala"
-listing-expired: "&eListelemenin &csüresinin dolmasını&e sağla"
-listing-active: "&eListelemenin &aaktif etmesini&e sağla"
+copy-item: "&aÖğeyi envantere kopyala"
 delete-item: "&cÖğeyi ve listeyi sil"
 
 # Pagination items

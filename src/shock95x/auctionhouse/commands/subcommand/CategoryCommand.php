@@ -28,12 +28,12 @@ class CategoryCommand extends BaseSubCommand {
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		assert($sender instanceof Player);
 		if(!isset($args["name"])) {
-			AHMenu::open(new CategoryListMenu($sender, false));
+			(new CategoryListMenu($sender))->open();
 			return;
 		}
 		$category = $args["name"];
 		if($category instanceof ICategory) {
-			AHMenu::open(new CategoryMenu($sender, $category));
+			(new CategoryMenu($sender, $category))->open();
 		}
 	}
 }

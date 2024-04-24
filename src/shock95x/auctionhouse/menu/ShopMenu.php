@@ -8,11 +8,10 @@ use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\admin\AdminMenu;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
@@ -22,59 +21,54 @@ use SOFe\AwaitGenerator\Await;
 
 class ShopMenu extends PagingMenu {
 
-	const INDEX_STATS = 49;
 	const INDEX_LISTINGS = 45;
 	const INDEX_EXPIRED = 46;
-	const INDEX_ADMIN = [47, 51];
+	const INDEX_STATS = 49;
 
-	private int $selling = 0;
-	private int $expired = 0;
-	private int $total = 0;
+	private int $sellingCount = 0;
+	private int $expiredCount = 0;
 
 	public function __construct(Player $player) {
 		$this->setName(Locale::get($player, "menu-name"));
-		parent::__construct($player, false);
+		parent::__construct($player);
 	}
 
-	protected function init(DataStorage $storage): void {
-		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getActiveListings($resolve, (45 * $this->page) - 45)));
-			$this->selling = yield from Await::promise(fn($resolve) => $storage->getActiveCountByPlayer($this->player, $resolve));
-			$this->expired = yield from Await::promise(fn($resolve) => $storage->getExpiredCountByPlayer($this->player, $resolve));
-			$this->total = yield from Await::promise(fn($resolve) => $storage->getActiveListingCount($resolve));
-			$this->pages = (int) ceil($this->total / 45);
-			parent::init($storage);
+	protected function init(Database $database): void {
+		Await::f2c(function() use ($database) {
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListings($resolve, $this->getItemOffset())));
+			$this->setTotalCount(yield from Await::promise(fn($resolve) => $database->getActiveListingsCount($resolve)));
+			$this->sellingCount = yield from Await::promise(fn($resolve) => $database->getActiveCountByPlayer($this->player->getUniqueId(), $resolve));
+			$this->expiredCount = yield from Await::promise(fn($resolve) => $database->getExpiredCountByPlayer($this->player->getUniqueId(), $resolve));
+			parent::init($database);
 		});
 	}
 
 	public function renderButtons(): void {
 		parent::renderButtons();
-		$stats = Utils::getButtonItem($this->player, "stats", "main-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "main-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->getPage(), $this->getPageCount(), $this->getTotalCount()]);
 		$howto = Utils::getButtonItem($this->player, "howto", "sell-description");
 		$info = Utils::getButtonItem($this->player, "info", "main-description");
-		$listings = Utils::getButtonItem($this->player, "player_listings", "view-listed-items", ["{SELLING}"], [$this->selling]);
-		$expired = Utils::getButtonItem($this->player, "expired_listings", "view-expired-items", ["{EXPIRED}"], [$this->expired]);
+		$listings = Utils::getButtonItem($this->player, "player_listings", "view-listed-items", ["{SELLING}"], [$this->sellingCount]);
+		$expired = Utils::getButtonItem($this->player, "expired_listings", "view-expired-items", ["{EXPIRED}"], [$this->expiredCount]);
 
-		$items = [
-			self::INDEX_STATS => $stats,
-			self::INDEX_LISTINGS => $listings,
-			self::INDEX_EXPIRED => $expired,
-			52 => $howto,
-			53 => $info
-		];
+		$this->getInventory()->setItem(self::INDEX_STATS, $stats);
+		$this->getInventory()->setItem(self::INDEX_LISTINGS, $listings);
+		$this->getInventory()->setItem(self::INDEX_EXPIRED, $expired);
+		$this->getInventory()->setItem(52, $howto);
+		$this->getInventory()->setItem(53, $info);
 
 		if($this->player->hasPermission("auctionhouse.command.admin")) {
 			$admin = Utils::getButtonItem($this->player, "admin_menu", "view-admin-menu");
 			$admin->addEnchantment(new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId(AuctionHouse::FAKE_ENCH_ID)));
-			$items[47] = $items[51] = $admin;
+			$this->getInventory()->setItem(47, $admin);
+			$this->getInventory()->setItem(51, $admin);
 		}
-		foreach ($items as $slot => $item) $this->getInventory()->setItem($slot, $item);
 	}
 
 	public function renderListings(): void {
-        foreach($this->getListings() as $index => $listing) {
+		foreach($this->getListings() as $index => $listing) {
 			$item = clone $listing->getItem();
-			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getEndTime()));
+			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getExpireTime()));
 
 			$listedItem = Locale::get($this->player, "listed-item");
 			$lore = str_ireplace(["{PRICE}", "{SELLER}", "{D}","{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
@@ -88,18 +82,22 @@ class ShopMenu extends PagingMenu {
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		switch ($slot) {
 			case self::INDEX_LISTINGS:
-				self::open(new ListingsMenu($this->player), false);
-				return false;
+				(new ListingsMenu($player))->setReturnMenu($this)->open();
+				break;
 			case self::INDEX_EXPIRED:
-				self::open(new ExpiredMenu($this->player), false);
-				return false;
+				(new ExpiredMenu($player))->setReturnMenu($this)->open();
+				break;
 			case 47: case 51:
 				if($player->hasPermission("auctionhouse.command.admin")) {
-					self::open(new AdminMenu($this->player), false);
+					(new AdminMenu($player))->setReturnMenu($this)->open();
+					break;
 				}
-				return false;
+			return true;
 		}
-		$this->openListing($slot);
+		if(isset($this->getListings()[$slot])) {
+			(new ConfirmPurchaseMenu($player, $this->getListings()[$slot]))->open();
+			return true;
+		}
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 }

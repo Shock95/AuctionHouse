@@ -6,6 +6,8 @@ namespace shock95x\auctionhouse\utils;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\nbt\BigEndianNbtSerializer;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\ClosureTask;
@@ -14,8 +16,8 @@ use pocketmine\utils\TextFormat;
 
 class Utils {
 
-	public static function getEndTime(): int {
-		return time() + (Settings::getExpireInterval() * 3600);
+	public static function getExpireTime(int $time): int {
+		return $time + (Settings::getExpireInterval() * 3600);
 	}
 
 	public static function prefixMessage($string): string {
@@ -55,6 +57,15 @@ class Utils {
 			if(is_array($message["lore"])) $item->setLore(preg_filter('/^/', TextFormat::RESET, str_replace($searchArgs, $replaceArgs, $message["lore"])));
 		}
 		return $item;
+	}
+
+	public static function serializeItem(Item $item): string {
+		$data = zlib_encode((new BigEndianNbtSerializer())->write(new TreeRoot($item->nbtSerialize())), ZLIB_ENCODING_GZIP);
+		return $data;
+	}
+
+	public static function deserializeItem(string $data): Item {
+		return Item::nbtDeserialize((new BigEndianNbtSerializer())->read(zlib_decode($data))->mustGetCompoundTag());
 	}
 
 	public static function removeItem(Player $player, Item $slot) : bool {

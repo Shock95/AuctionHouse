@@ -116,9 +116,7 @@ status-active: "&aAktiv"
 status-expired: "&cAbgelaufen"
 selected-listing-name: "&l&cAngebot verwalten"
 
-duplicate-item: "&aKlickt hier um eine Kopie des Items in deinen Inventar zu erhalten"
-# listing-expired: "&eClick here to make listing &cexpired"
-# listing-active: "&eClick here to make listing &aactive"
+copy-item: "&aKlickt hier um eine Kopie des Items in deinen Inventar zu erhalten"
 delete-item: "&cKlickt hier um das Angebot und das Item zu löschen"
 
 # Pagination items

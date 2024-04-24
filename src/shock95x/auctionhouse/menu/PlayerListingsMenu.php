@@ -6,45 +6,44 @@ namespace shock95x\auctionhouse\menu\player;
 use DateTime;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use shock95x\auctionhouse\database\storage\DataStorage;
-use shock95x\auctionhouse\manager\MenuManager;
+use shock95x\auctionhouse\database\Database;
+use shock95x\auctionhouse\menu\ConfirmPurchaseMenu;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 use SOFe\AwaitGenerator\Await;
 
-class PlayerListingMenu extends PagingMenu {
+class PlayerListingsMenu extends PagingMenu {
 
-	private int $total;
 	private string $username;
 
 	public function __construct(Player $player, string $username) {
 		$this->username = $username;
 		$this->setName(str_ireplace("{player}", $username, Locale::get($player, "player-listing")));
-		parent::__construct($player, true);
+		parent::__construct($player);
 	}
 
-	protected function init(DataStorage $storage): void {
-		Await::f2c(function () use ($storage) {
-			$this->setListings(yield from Await::promise(fn($resolve) => $storage->getActiveListingsByUsername($resolve, $this->username, (45 * $this->page) - 45)));
-			$this->total = yield from Await::promise(fn($resolve) => $storage->getActiveCountByUsername($this->username, $resolve));
-			$this->pages = (int) ceil($this->total / 45);
-		}, fn() => parent::init($storage));
+	protected function init(Database $database): void {
+		Await::f2c(function () use ($database) {
+			$this->setListings(yield from Await::promise(fn($resolve) => $database->getActiveListingsByUsername($resolve, $this->username, $this->getItemOffset())));
+			$this->setTotalCount(yield from Await::promise(fn($resolve) => $database->getActiveCountByUsername($this->username, $resolve)));
+			parent::init($database);
+		});
 	}
 
-	public function renderButtons() : void {
-		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
+	public function renderButtons(): void {
+		parent::renderButtons();
+		$stats = Utils::getButtonItem($this->player, "stats", "listings-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->getPage(), $this->getPageCount(), $this->getTotalCount()]);
 		$this->getInventory()->setItem(49, $stats);
 	}
 
 	public function renderListings(): void {
         foreach($this->getListings() as $index => $listing) {
 			$item = clone $listing->getItem();
-			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getEndTime()));
+			$endTime = (new DateTime())->diff((new DateTime())->setTimestamp($listing->getExpireTime()));
 
 			$listedItem = Locale::get($this->player, "listed-item");
 			$lore = str_ireplace(["{PRICE}", "{SELLER}", "{D}", "{H}", "{M}"], [$listing->getPrice(true, Settings::formatPrice()), $listing->getSeller(), $endTime->days, $endTime->h,  $endTime->i], preg_filter('/^/', TextFormat::RESET, $listedItem));
@@ -57,7 +56,10 @@ class PlayerListingMenu extends PagingMenu {
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
-		$this->openListing($slot);
+		if(isset($this->getListings()[$slot])) {
+			(new ConfirmPurchaseMenu($player, $this->getListings()[$slot]))->open();
+			return true;
+		}
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}
 }

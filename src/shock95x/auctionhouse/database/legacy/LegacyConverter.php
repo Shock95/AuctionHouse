@@ -1,45 +1,59 @@
 <?php
 namespace shock95x\auctionhouse\database\legacy;
 
-use Exception;
 use Generator;
 use pocketmine\item\Item;
-use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\utils\SingletonTrait;
+use poggit\libasynql\result\SqlSelectResult;
 use Ramsey\Uuid\Uuid;
+use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\Database;
+use shock95x\auctionhouse\database\DatabaseType;
 use shock95x\auctionhouse\database\Query;
+use shock95x\auctionhouse\utils\Utils;
 
 class LegacyConverter {
 
 	private Database $database;
-	private BigEndianNbtSerializer $nbt;
 
 	use SingletonTrait;
 
 	public function init(Database $database) {
 		$this->database = $database;
-		$this->nbt = new BigEndianNbtSerializer();
-	}
-
-	public function isLegacy(): Generator {
-		$type = $this->database->getType();
-		$rowCount = count(yield from $this->database->asyncSelectRaw($type == "mysql" ?  "DESCRIBE auctions;" : "PRAGMA table_info(auctions);"));
-		return $rowCount == 7;
 	}
 
 	public function convert(): Generator {
-		yield from $this->database->getConnector()->asyncGeneric(Query::INIT);
-		yield from $this->database->asyncGenericRaw("INSERT INTO listings (uuid, username, item, price, created, end_time, expired) SELECT uuid, username, nbt, price, id, end_time, expired FROM auctions;");
-		$rows = yield from $this->database->asyncSelectRaw("SELECT * from listings;");
-		foreach ($rows as $listing) {
-			try {
-				$uuid = Uuid::fromBytes($listing['uuid']);
-				$nbt = $this->nbt->read(zlib_decode($listing["item"]));
-				$item = Item::nbtDeserialize($nbt->mustGetCompoundTag());
-				yield from $this->database->asyncGenericRaw("UPDATE listings SET uuid = :uuid, item = :item WHERE id = :id;", ["uuid" => $uuid->toString(), "item" => json_encode($item->jsonSerialize()), "id" => $listing['id']]);
-			} catch (Exception) {}
+		$type = $this->database->getType();
+		/** @var SqlSelectResult[] $columns */
+		$columns = yield from $this->database->asyncSelectRaw($type == DatabaseType::MySQL ? "DESCRIBE listings" : "pragma table_info(listings)");
+		foreach($columns[0]->getRows() as $column) {
+			$name = $column[$type == DatabaseType::MySQL ? "Field" : "name"];
+			$columnType = strtolower($column[$type == DatabaseType::MySQL ? "Type" : "type"]);
+			if($name == "item" && ($columnType == "text" || $columnType == "json")) {
+				AuctionHouse::getInstance()->getLogger()->notice("Migrating to new database schema");
+				yield from $this->database->asyncGenericRaw("CREATE TABLE IF NOT EXISTS temp AS SELECT * FROM listings;");
+				yield from $this->database->asyncGenericRaw("DROP TABLE listings;");
+				yield from $this->database->getConnector()->asyncGeneric(Query::INIT);
+				/** @var SqlSelectResult[] $listings */
+				$listings = yield from $this->database->asyncSelectRaw("SELECT * from temp;");
+				foreach($listings[0]->getRows() as $listing) {
+					$jsonItem = json_decode($listing["item"], true);
+					if(is_array($jsonItem)) {
+						$item = Item::legacyJsonDeserialize($jsonItem);
+						$listing["item"] = Utils::serializeItem($item);
+					} else {
+						$item = trim($listing["item"],'"');
+						$listing["item"] = hex2bin($item);
+					}
+					$listing["created_at"] = $listing["created"];
+					$listing["expires_at"] = $listing["end_time"];
+					$listing["player_uuid"] = Uuid::fromString($listing["uuid"])->getBytes();
+					yield from $this->database->getConnector()->asyncInsert(Query::INSERT, $listing);
+				}
+				yield from $this->database->asyncGenericRaw("DROP TABLE temp;");
+				AuctionHouse::getInstance()->getLogger()->notice("Migration successfully completed");
+				break;
+			}
 		}
-		yield from $this->database->asyncChangeRaw("DROP TABLE auctions;");
 	}
 }

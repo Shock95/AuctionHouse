@@ -9,43 +9,40 @@ use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\category\Category;
 use shock95x\auctionhouse\category\ICategory;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Utils;
 
 class CategoryListMenu extends PagingMenu {
 
-	private int $total;
-
-	public function __construct(Player $player, bool $returnMain = true) {
+	public function __construct(Player $player) {
 		$this->setName(Locale::get($player, "category-menu-name"));
-		parent::__construct($player, $returnMain);
+		parent::__construct($player);
 	}
 
-	protected function init(DataStorage $storage): void {
-		$this->total = count(Category::getAll());
-		$this->pages = (int) ceil($this->total / 45);
-		parent::init($storage);
+	protected function init(Database $database): void {
+		$this->setTotalCount(count(Category::getAll()));
+		$this->renderButtons();
 	}
 
 	public function renderButtons() : void {
 		parent::renderButtons();
-		$categories = array_slice(array_values(Category::getAll()), ($this->page - 1) * 45, 45);
+		$categories = array_slice(array_values(Category::getAll()), $this->getItemOffset(), 45);
 		/** @var ICategory $category */
 		foreach($categories as $index => $category) {
 			$item = $category->getMenuItem();
 			$item->setLore([TextFormat::RESET . TextFormat::GRAY . "Click to open category"]);
 			$this->getInventory()->setItem($index, $item);
 		}
-		$stats = Utils::getButtonItem($this->player, "stats", "category-list-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->page, $this->pages, $this->total]);
+		$stats = Utils::getButtonItem($this->player, "stats", "category-list-stats", ["{PAGE}", "{MAX}", "{TOTAL}"], [$this->getPage(), $this->getPageCount(), $this->getTotalCount()]);
 		$this->getInventory()->setItem(49, $stats);
 	}
 
 	public function handle(Player $player, Item $itemClicked, Inventory $inventory, int $slot): bool {
 		$categories = array_values(Category::getAll());
 		if($slot <= 44 && isset($categories[$slot])) {
-			self::open(new CategoryMenu($player, $categories[$slot]), false);
+			(new CategoryMenu($player, $categories[$slot]))->setReturnMenu($this)->open();
 		}
 		return parent::handle($player, $itemClicked, $inventory, $slot);
 	}

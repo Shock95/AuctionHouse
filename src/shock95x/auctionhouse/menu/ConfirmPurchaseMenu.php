@@ -7,14 +7,11 @@ use muqsit\invmenu\InvMenu;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
-use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\sound\FizzSound;
 use Ramsey\Uuid\Uuid;
 use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\storage\DataStorage;
-use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\event\ItemPurchasedEvent;
 use shock95x\auctionhouse\menu\type\AHMenu;
@@ -22,6 +19,7 @@ use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
 use SOFe\AwaitGenerator\Await;
+use function PHPUnit\Framework\equalTo;
 
 class ConfirmPurchaseMenu extends AHMenu {
 
@@ -37,13 +35,13 @@ class ConfirmPurchaseMenu extends AHMenu {
 	}
 
 	public function renderButtons(): void {
-		foreach (self::INDEX_CONFIRM as $x) {
-			$confirmItem = Utils::getButtonItem($this->player, "confirm_purchase", "purchase-confirm");
-			$this->getInventory()->setItem($x, $confirmItem);
+		$confirm = Utils::getButtonItem($this->player, "confirm_purchase", "purchase-confirm");
+		$cancel = Utils::getButtonItem($this->player, "cancel_purchase", "purchase-cancel");
+		foreach(self::INDEX_CONFIRM as $x) {
+			$this->getInventory()->setItem($x, $confirm);
 		}
-		foreach (self::INDEX_CANCEL as $x) {
-			$cancelItem = Utils::getButtonItem($this->player, "cancel_purchase", "purchase-cancel");
-			$this->getInventory()->setItem($x, $cancelItem);
+		foreach(self::INDEX_CANCEL as $x) {
+			$this->getInventory()->setItem($x, $cancel);
 		}
 	}
 
@@ -69,14 +67,15 @@ class ConfirmPurchaseMenu extends AHMenu {
 		if (!in_array($slot, self::INDEX_CONFIRM)) return false;
 
 		Await::f2c(function () use ($player) {
-			$storage = DataStorage::getInstance();
+			$database = AuctionHouse::getInstance()->getDatabase();
 			/** @var ?AHListing $listing */
-			$listing = yield from Await::promise(fn($resolve) => $storage->getListingById($this->getListings()[0]?->getId(), $resolve));
+			$listing = yield from Await::promise(fn($resolve) => $database->getListingById($this->getListings()[0]?->getId(), $resolve));
 			if($listing == null || $listing->isExpired()) {
+				$player->removeCurrentWindow();
 				Locale::sendMessage($player, "listing-gone");
 				return;
 			}
-			if ($listing->getSellerUUID() == $player->getUniqueId()) {
+			if ($listing->getSellerUUID()->equals($player->getUniqueId())) {
 				$player->removeCurrentWindow();
 				Locale::sendMessage($player, "self-purchase");
 				return;
@@ -92,26 +91,30 @@ class ConfirmPurchaseMenu extends AHMenu {
 			$event->call();
 			if($event->isCancelled()) return;
 
-			$storage->removeListing($listing);
-
-			$res = yield from Await::promise(fn($resolve) => $economy->subtractMoney($player, $listing->getPrice(), $resolve));
-			if(!$res) {
+			$sub = yield from $economy->subtractMoneyAsync($player, $listing->getPrice());
+			if(!$sub) {
 				Locale::sendMessage($player, "cannot-afford");
 				return;
 			}
-			$res = yield from Await::promise(fn($resolve) => $economy->addMoney($listing->getSeller(), $listing->getPrice(), $resolve));
-			if(!$res) {
-				yield from Await::promise(fn($resolve) => $economy->addMoney($player, $listing->getPrice(), $resolve));
+			$add = yield from $economy->addMoneyAsync($listing->getSeller(), $listing->getPrice());
+			if(!$add) {
+				yield from $economy->addMoneyAsync($player, $listing->getPrice());
 				Locale::sendMessage($player, "purchase-economy-error");
+				return;
+			}
+			$res = yield from $database->removeListingAsync($listing->getId());
+			if(!$res) {
+				$player->removeCurrentWindow();
+				Locale::sendMessage($player, "listing-gone");
 				return;
 			}
 			$player->removeCurrentWindow();
 			$player->getInventory()->addItem($item);
 			$player->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "purchased-item", true)));
 
-			$seller = AuctionHouse::getInstance()->getServer()->getPlayerByUUID(Uuid::fromString($listing->getSellerUUID()));
-			$seller?->getWorld()->addSound($seller?->getPosition(), new FizzSound(), [$seller]);
-			$seller?->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($player, "seller-message", true)));
+			$seller = AuctionHouse::getInstance()->getServer()->getPlayerByUUID($listing->getSellerUUID());
+			$seller?->getWorld()->addSound($seller->getPosition(), new FizzSound(), [$seller]);
+			$seller?->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$player->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $item->getCount()], Locale::get($seller, "seller-message", true)));
 			(new AuctionEndEvent($listing, AuctionEndEvent::PURCHASED, $player))->call();
 		});
 		return true;

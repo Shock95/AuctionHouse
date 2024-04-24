@@ -7,7 +7,7 @@ use onebone\economyapi\EconomyAPI;
 use pocketmine\player\Player;
 
 
-class EconomySProvider implements EconomyProvider {
+class EconomySProvider extends EconomyProvider {
 
 	protected ?EconomyAPI $economyAPI;
 
@@ -15,12 +15,12 @@ class EconomySProvider implements EconomyProvider {
 		$this->economyAPI = EconomyAPI::getInstance();
 	}
 
-	public function addMoney(string|Player $player, float $amount, callable $callback): void {
+	public function addMoney(string|Player $player, int $amount, callable $callback): void {
 		$ret = $this->economyAPI->addMoney($player, $amount);
 		$callback($ret === EconomyAPI::RET_SUCCESS);
 	}
 
-	public function subtractMoney(string|Player $player, float $amount,  callable $callback): void {
+	public function subtractMoney(string|Player $player, int $amount,  callable $callback): void {
 		$ret = $this->economyAPI->reduceMoney($player, $amount);
 		$callback($ret === EconomyAPI::RET_SUCCESS);
 	}

@@ -12,16 +12,13 @@ use shock95x\auctionhouse\AHListing;
 class AuctionEndEvent extends Event {
 
 	const CANCELLED = 0;
-	const EXPIRED = 1;
-	const PURCHASED = 2;
-	const EXPIRED_PURGED = 3;
-	const ADMIN_PURGED = 4;
-	const ADMIN_REMOVED = 5;
+	const PURCHASED = 1;
+	const ADMIN_REMOVED = 2;
 
 	public function __construct(
 		private AHListing $listing,
 		private int $type,
-		private ?Player $purchaser = null
+		private ?Player $buyer = null
 	) {}
 
 	public function getListing() : AHListing {
@@ -32,12 +29,12 @@ class AuctionEndEvent extends Event {
 		return $this->type;
 	}
 
-	public function getPurchaser() : ?Player {
-		return $this->purchaser;
+	public function getBuyer() : ?Player {
+		return $this->buyer;
 	}
 
 	public function getSeller() : ?IPlayer {
 		$listing = $this->listing;
-		return Server::getInstance()->getPlayerByRawUUID($listing->getSellerUUID()) ?? Server::getInstance()->getOfflinePlayer($listing->getSeller());
+		return Server::getInstance()->getPlayerByUUID($listing->getSellerUUID()) ?? Server::getInstance()->getOfflinePlayer($listing->getSeller());
 	}
 }

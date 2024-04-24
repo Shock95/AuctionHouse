@@ -26,6 +26,6 @@ class PotionCategory implements ICategory {
 	}
 
 	public function getMenuItem(): Item {
-		return VanillaItems::WATER_POTION()->setCustomName(TextFormat::RESET . $this->getDisplayName());
+		return VanillaItems::POTION()->setCustomName(TextFormat::RESET . $this->getDisplayName());
 	}
 }

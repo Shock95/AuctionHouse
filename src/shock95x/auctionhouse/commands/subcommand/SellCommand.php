@@ -11,8 +11,9 @@ use DateTime;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use pocketmine\scheduler\ClosureTask;
+use shock95x\auctionhouse\AHListing;
 use shock95x\auctionhouse\AuctionHouse;
-use shock95x\auctionhouse\database\storage\DataStorage;
+use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\economy\EconomyProvider;
 use shock95x\auctionhouse\event\ItemListedEvent;
 use shock95x\auctionhouse\manager\CooldownManager;
@@ -35,6 +36,8 @@ class SellCommand extends BaseSubCommand {
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		assert($sender instanceof Player);
 		Await::f2c(function () use ($sender, $args) {
+			/** @var Database $database */
+			$database = $this->plugin->getDatabase();
 			$item = $sender->getInventory()->getItemInHand();
 			if($item->isNull()) {
 				Locale::sendMessage($sender, "no-item");
@@ -53,7 +56,7 @@ class SellCommand extends BaseSubCommand {
 				return;
 			}
 			$price = $args["price"];
-			$listingCount = yield from Await::promise(fn($result) => DataStorage::getInstance()->getActiveCountByPlayer($sender, $result));
+			$listingCount = yield from Await::promise(fn($result) => $database->getActiveCountByPlayer($sender->getUniqueId(), $result));
 			if($listingCount >= (Utils::getMaxListings($sender))) {
 				$sender->sendMessage(str_ireplace(["{MAX}"], [Utils::getMaxListings($sender)], Locale::get($sender, "max-listings", true)));
 				return;
@@ -79,9 +82,7 @@ class SellCommand extends BaseSubCommand {
 
 			$listingPrice = Settings::getListingPrice();
 			if($listingPrice > 0) {
-				$subtractMoneyOk = yield from Await::promise(function($result) use ($listingPrice, $sender) {
-					$this->getEconomy()->subtractMoney($sender, $listingPrice, $result);
-				});
+				$subtractMoneyOk = yield from $this->getEconomy()->subtractMoneyAsync($sender, $listingPrice);
 				if(!$subtractMoneyOk) {
 					return;
 				}
@@ -91,9 +92,7 @@ class SellCommand extends BaseSubCommand {
 			$event->call();
 			if($event->isCancelled()) {
 				// refund the listing price
-				$addMoneyOk = yield from Await::promise(function($result) use ($listingPrice, $sender) {
-					$this->getEconomy()->addMoney($sender, $listingPrice, $result);
-				});
+				$addMoneyOk = yield from $this->getEconomy()->addMoneyAsync($sender, $listingPrice);
 				if(!$addMoneyOk) {
 					// TODO we failed to refund; what now?
 				}
@@ -103,7 +102,8 @@ class SellCommand extends BaseSubCommand {
 
 			$count = $item->getCount();
 			Utils::removeItem($sender, $item);
-			$listing = yield from DataStorage::getInstance()->createListingAsync($sender, $item->setCount($count), (int) $price);
+			/** @var AHListing $listing */
+			$listing = yield from $database->createListingAsync($sender, $item->setCount($count), (int) $price);
 			$sender->sendMessage(str_ireplace(["{PLAYER}", "{ITEM}", "{PRICE}", "{AMOUNT}"], [$sender->getName(), $item->getName(), $listing->getPrice(true, Settings::formatPrice()), $count], Locale::get($sender, "item-listed", true)));
 		});
 	}

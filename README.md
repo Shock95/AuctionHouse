@@ -4,7 +4,7 @@ Feature-packed AuctionHouse plugin for PocketMine-MP
 ## Overview  
 AuctionHouse allows players to list their items for sale and purchase items that others have listed for sale
   
-![AuctionHouse](https://github.com/Shock95x/AuctionHouse/blob/master/img/auctionhouse.png)  
+![AuctionHouse](https://github.com/Shock95/AuctionHouse/blob/master/img/auctionhouse.png)  
 ---  
 ## Features  
 >- Chest GUI  
@@ -22,7 +22,7 @@ AuctionHouse allows players to list their items for sale and purchase items that
 
 ---  
 ## Download  
-Download the plugin from [Poggit](https://poggit.pmmp.io/p/AuctionHouse) or [GitHub releases](https://github.com/Shock95x/AuctionHouse/releases)
+Download the plugin from [Poggit](https://poggit.pmmp.io/p/AuctionHouse) or [GitHub releases](https://github.com/Shock95/AuctionHouse/releases)
   
 ---  
 ## Config  
@@ -55,7 +55,7 @@ creative-sale: false
 max-listings: 45
 # Shows item lore on the auction house
 show-lore: true
-# Days to automatically delete expired listings (-1 to disable)
+# Days to automatically delete expired listings (0 to disable)
 expired-duration: 15
 # Formats price with commas (ex. 1,000,000)
 price-formatted: true
@@ -91,17 +91,20 @@ cancel_purchase: "minecraft:stained_glass_pane:14"
 ---  
 ## Commands  
   
-| Command        | Description           |  
-| ------------- |:--------------|  
-| /ah      | AuctionHouse main command, opens the shop menu if there are no specified parameters |  
-| /ah shop | Opens the shop menu    |  
-| /ah sell **[price]** | Allows player to list items in their hand on the auction house. **[price]** is the amount that the player is listing the item to sell for     |  
-| /ah listings | Shows all active listings of the player |  
-| /ah listings **[player]**| Shows all active listings of a specific player |  
-| /ah category | Opens category menu |  
-| /ah admin | Opens the AuctionHouse admin menu (OP Command) |  
-| /ah reload | Allows player to reload configuration files (OP command) |  
-| /ah about | Shows AuctionHouse version the server is running |  
+| Command                         | Description                                                                         |  
+|---------------------------------|:------------------------------------------------------------------------------------|  
+| /ah                             | AuctionHouse main command, opens the shop menu if there are no specified parameters |  
+| /ah shop                        | Opens the shop menu                                                                 |  
+| /ah sell **[price]**            | Allows player to sell an item on the auction house                                  |  
+| /ah listings                    | Shows all active listings of the player                                             |  
+| /ah listings **[player]**       | Allows player to see active listings of a specific player                           |  
+| /ah category                    | Allows player to open the category menu                                             |  
+| /ah admin                       | Allows player to open the admin menu (OP Command)                                   |  
+| /ah admin relistall             | Allows player to relist all items in the auction house (OP Command)                 |  
+| /ah admin returnall             | Allows player to return all items in the auction house back to players (OP Command) |  
+| /ah admin listings **[player]** | Allows player to see all listings of a specific player (OP Command)                 |  
+| /ah reload                      | Allows player to reload config files (OP command)                                   |  
+| /ah about                       | Shows plugin version                                                                |  
 ---  
 ## API  
 ### Events  
@@ -114,19 +117,17 @@ cancel_purchase: "minecraft:stained_glass_pane:14"
 | [shock95x\auctionhouse\event\MenuCloseEvent](https://github.com/Shock95x/AuctionHouse/blob/master/src/shock95x/auctionhouse/event/MenuCloseEvent.php) | Called when a menu is closed by player |  
   
 ## Contributing  
-You can contribute to this project by creating or modifying a language file and opening a PR!  
-### Contributors 
-- [Shock95x](https://github.com/Shock95x) (English)  
-- [ipad54](https://github.com/ipad54) (Russian)
-- [No4NaMe](https://github.com/No4NaMe) (Russian)
-- [Unickorn](https://github.com/Unickorn) (German)
-- Chaosfelix4451#0157 (German)
+You can contribute to this project by creating or modifying a language file and opening a PR!
+### Contributors
+- [Shock95](https://github.com/Shock95) (English)
+- [ipad54](https://github.com/ipad54), [No4NaMe](https://github.com/No4NaMe), [XackiGiFF](https://github.com/XackiGiFF) (Russian)
+- [Unickorn](https://github.com/Unickorn), Chaosfelix4451 (German)
 - [xAliTura01](https://github.com/xAliTura01) (Turkish)
 - [NotEnriko](https://github.com/NotEnriko) (Indonesian)
-
-## Credits / Virions Used
+- 
+## Virions Used
 - [InvMenu](https://github.com/Muqsit/InvMenu) (Muqsit)  
 - [libasynql](https://github.com/poggit/libasynql) (SOFe)
 - [await-generator](https://github.com/SOF3/await-generator) (SOFe)
-- [Commando](https://github.com/CortexPE/Commando) (CortexPE)
+- [Commando](https://github.com/Paroxity/Commando) (CortexPE + Paroxity)
 - [UpdateNotifier](https://github.com/ifera-mc/UpdateNotifier) (Ifera)
