@@ -58,7 +58,7 @@ jobs:
       - uses: SOF3/pharynx@v0.2
         id: pharynx
         with:
-          additional-assets:
+          additional-assets: |
             - icon.png
       - uses: actions/upload-artifact@v3
         with:
