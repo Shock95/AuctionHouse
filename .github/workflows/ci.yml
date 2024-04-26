@@ -59,7 +59,7 @@ jobs:
         id: pharynx
         with:
           additional-assets: |
-            - icon.png
+            icon.png
       - uses: actions/upload-artifact@v3
         with:
           name: plugin.phar
