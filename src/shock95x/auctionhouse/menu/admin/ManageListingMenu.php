@@ -17,7 +17,7 @@ use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\event\AuctionEndEvent;
 use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
-use SOFe\AwaitGenerator\Await;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\SOFe\AwaitGenerator\Await;
 
 class ManageListingMenu extends AHMenu {
 

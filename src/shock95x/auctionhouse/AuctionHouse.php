@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse;
 
-use CortexPE\Commando\exception\HookAlreadyRegistered;
-use CortexPE\Commando\PacketHooker;
-use JackMD\UpdateNotifier\UpdateNotifier;
-use muqsit\invmenu\InvMenuHandler;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\CortexPE\Commando\exception\HookAlreadyRegistered;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\CortexPE\Commando\PacketHooker;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\JackMD\UpdateNotifier\UpdateNotifier;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\muqsit\invmenu\InvMenuHandler;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\item\enchantment\Enchantment;

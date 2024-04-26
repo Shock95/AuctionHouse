@@ -11,7 +11,7 @@ use shock95x\auctionhouse\database\Database;
 use shock95x\auctionhouse\database\Query;
 use shock95x\auctionhouse\event\AuctionStartEvent;
 use shock95x\auctionhouse\utils\Utils;
-use SOFe\AwaitGenerator\Await;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\SOFe\AwaitGenerator\Await;
 
 /**
  * Use AuctionHouse->getDatabase()

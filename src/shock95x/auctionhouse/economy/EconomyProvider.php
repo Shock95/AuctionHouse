@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace shock95x\auctionhouse\economy;
 
 use pocketmine\player\Player;
-use SOFe\AwaitGenerator\Await;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\SOFe\AwaitGenerator\Await;
 
 abstract class EconomyProvider {
 

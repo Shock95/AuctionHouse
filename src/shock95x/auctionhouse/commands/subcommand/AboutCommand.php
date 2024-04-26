@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\commands\subcommand;
 
-use CortexPE\Commando\BaseSubCommand;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\CortexPE\Commando\BaseSubCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 use shock95x\auctionhouse\utils\Utils;

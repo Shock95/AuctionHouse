@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\commands\arguments;
 
-use CortexPE\Commando\args\BaseArgument;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\CortexPE\Commando\args\BaseArgument;
 use pocketmine\command\CommandSender;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 

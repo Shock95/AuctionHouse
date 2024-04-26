@@ -2,8 +2,8 @@
 
 namespace shock95x\auctionhouse\commands\subcommand\admin;
 
-use CortexPE\Commando\BaseSubCommand;
-use CortexPE\Commando\constraint\InGameRequiredConstraint;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\CortexPE\Commando\BaseSubCommand;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\CortexPE\Commando\constraint\InGameRequiredConstraint;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use shock95x\auctionhouse\commands\arguments\PlayerArgument;

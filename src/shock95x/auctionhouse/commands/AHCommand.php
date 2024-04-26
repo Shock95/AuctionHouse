@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\commands;
 
-use CortexPE\Commando\BaseCommand;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\CortexPE\Commando\BaseCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use shock95x\auctionhouse\commands\subcommand\AboutCommand;

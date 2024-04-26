@@ -17,7 +17,7 @@ use shock95x\auctionhouse\menu\type\PagingMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
-use SOFe\AwaitGenerator\Await;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\SOFe\AwaitGenerator\Await;
 
 class AdminMenu extends PagingMenu {
 

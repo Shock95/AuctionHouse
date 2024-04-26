@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace shock95x\auctionhouse\menu;
 
-use muqsit\invmenu\InvMenu;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\muqsit\invmenu\InvMenu;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
@@ -18,7 +18,7 @@ use shock95x\auctionhouse\menu\type\AHMenu;
 use shock95x\auctionhouse\utils\Locale;
 use shock95x\auctionhouse\utils\Settings;
 use shock95x\auctionhouse\utils\Utils;
-use SOFe\AwaitGenerator\Await;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\SOFe\AwaitGenerator\Await;
 use function PHPUnit\Framework\equalTo;
 
 class ConfirmPurchaseMenu extends AHMenu {

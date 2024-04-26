@@ -1,6 +1,1 @@
---- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/Shock95x/AuctionHouse
-projects:
-  AuctionHouse:
-    path: ""
-    icon: icon.png
-...
+{"projects":{"AuctionHouse":{"path":".","lint":false}}}

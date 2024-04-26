@@ -4,7 +4,7 @@ namespace shock95x\auctionhouse\database\legacy;
 use Generator;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
-use poggit\libasynql\result\SqlSelectResult;
+use shock95x\auctionhouse\libs\_45f135c7cfd69bf7\poggit\libasynql\result\SqlSelectResult;
 use Ramsey\Uuid\Uuid;
 use shock95x\auctionhouse\AuctionHouse;
 use shock95x\auctionhouse\database\Database;
