@@ -8,6 +8,10 @@
 			"name": "Shock95"
 		}
 	],
+	"scripts": {
+		"analyze": "vendor/bin/phpstan",
+		"build": "php -dphar.readonly=0 vendor/bin/pharynx -i=. -c -p=AuctionHouse.phar"
+	},
 	"require": {
 		"pocketmine/pocketmine-mp": "^5.0.0",
 		"sof3/await-generator": "^3.6",
@@ -15,32 +19,16 @@
 		"muqsit/invmenu": "^4.6.5",
 		"ifera-mc/update-notifier": "dev-master",
 		"muqsit/simple-packet-handler": "dev-pm5",
-		"cortexpe/commando": "3.1.0"
+		"cortexpe/commando": "dev-fork"
 	},
 	"require-dev": {
-		"sof3/pharynx": "^0.3.4"
+		"sof3/pharynx": "^0.3.4",
+		"phpstan/phpstan": "^1.2"
 	},
 	"repositories": [
 		{
-			"type": "package",
-			"package": {
-				"name": "cortexpe/commando",
-				"version": "3.1.0",
-				"source": {
-					"url": "https://github.com/Paroxity/Commando.git",
-					"type": "git",
-					"reference": "8473a5030c7e9bed6f7a25533a797361898ab47e"
-				},
-				"autoload": {
-					"classmap": ["src"]
-				},
-				"extra": {
-					"virion": {
-						"spec": "3.0",
-						"namespace-root": "CortexPE\\Commando"
-					}
-				}
-			}
+			"type": "git",
+			"url": "https://github.com/JavierLeon9966/Commando.git"
 		},
 		{
 			"type": "git",
